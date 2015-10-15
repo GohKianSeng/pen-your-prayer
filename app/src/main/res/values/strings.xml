@@ -1,0 +1,8 @@
+<resources>
+    <!-- never remove this. else facebook login wont work. -->
+    <string name="facebook_app_id">1643913965854375</string>
+
+
+    <string name="app_name">Pen Your Prayer</string>
+
+</resources>

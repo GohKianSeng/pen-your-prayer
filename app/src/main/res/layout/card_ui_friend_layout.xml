@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ *******************************************************************************
+  ~   Copyright (c) 2013-2014 Gabriele Mariotti.
+  ~
+  ~   Licensed under the Apache License, Version 2.0 (the "License");
+  ~   you may not use this file except in compliance with the License.
+  ~   You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~   Unless required by applicable law or agreed to in writing, software
+  ~   distributed under the License is distributed on an "AS IS" BASIS,
+  ~   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~   See the License for the specific language governing permissions and
+  ~   limitations under the License.
+  ~  *****************************************************************************
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!-- Card visible layout -->
+    <it.gmariotti.cardslib.library.view.ForegroundLinearLayout
+        android:id="@+id/card_main_layout"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- Compound view for Header Card
+             If you want to customize this element use attr card:card_header_layout_resourceID
+             You can also use your CardHeader subclass-->
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ScrollView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/scrollView">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/prayer_editText"
+                        android:text="Its was the most exciting day of my life. Something was going to happen today that would change my life forever. Forever I waited for this day. It was the day I would be getting babtised. It was with this man named Chever Omark. He was very unusal. I was very catious about everything. I mean, He had a gray shirt that had a drunk stay on it the day I met him. I would never go talking to him again, after the batisim. But I dought he would do anything. I was dressed in a beautiful gown. My sister was in a t- shirt, but that was her best style she told me. I suggested she should wear something nicer since were praising the lord today but she resisted."
+                        android:textAppearance="@android:style/TextAppearance.Small"
+                        />
+
+                </RelativeLayout>
+
+
+            </ScrollView>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Goh Kian Seng"
+                    android:id="@+id/textView3"
+                    android:textAppearance="@android:style/TextAppearance.Small" />
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:textAppearance="@android:style/TextAppearance.Small"
+                    android:text="10 Aug 2015 03:34 PM"
+                    android:id="@+id/textView2"
+                    android:layout_gravity="right"
+                    android:gravity="bottom|right" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/card_thumb_and_content_layout"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <!-- Main Content View -->
+
+                <ImageView
+                    android:id="@+id/profile_img"
+                    android:src="@drawable/profile2"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"></ImageView>
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/imageButton"
+                    android:src="@drawable/amen_1"
+                    android:background="@null"
+                    android:layout_weight="2" />
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/imageButton2"
+                    android:src="@drawable/comment_1"
+                    android:layout_weight="2"
+                    android:background="@null" />
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/imageButton4"
+                    android:src="@drawable/answered_1"
+                    android:layout_weight="2"
+                    android:background="@null" />
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="25dp"
+                    android:id="@+id/imageButton5"
+                    android:src="@drawable/option_1"
+                    android:layout_weight="2"
+                    android:background="@null"
+                    android:layout_gravity="center" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </it.gmariotti.cardslib.library.view.ForegroundLinearLayout>
+
+    <!-- Expand layout. You can customize this element with your CardExpand class -->
+
+</LinearLayout><!-- From: file:/home/gabriele/Lavoro/Android/AndroidStudioProjects/wrks/cardslib/library-core/src/main/res/layout/native_card_thumbnail_layout.xml -->

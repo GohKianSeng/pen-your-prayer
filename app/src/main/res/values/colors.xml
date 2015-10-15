@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ripple">#d100d1</color>
+    <color name="accent">#800080</color>
+    <color name="accent_pressed">#6e006e</color>
+</resources>

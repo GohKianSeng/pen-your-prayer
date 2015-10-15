@@ -1,0 +1,30 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimaryDark">#490049</item>
+        <item name="colorPrimary">#800080</item>
+    </style>
+
+    <style name="ActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
+        <item name="android:background">#800080</item>
+    </style>
+
+    <style name="native_list_external">
+        <item name="android:clipToPadding">false</item>
+        <item name="android:scrollbarStyle">outsideOverlay</item>
+    </style>
+
+    <style name="ThemeLight" parent="@style/RTE_ThemeLight">
+        <item name="colorPrimary">#CFD8DC</item>
+        <item name="colorAccent">#90A4AE</item>
+        <item name="colorPrimaryDark">#90A4AE</item>
+    </style>
+
+    <style name="LoginPasswordEditTextTheme">
+        <item name="colorControlNormal">#ffffff</item>
+        <item name="colorControlActivated">#ffffff</item>
+        <item name="colorControlHighlight">#ffffff</item>
+    </style>
+
+</resources>

@@ -1,0 +1,118 @@
+<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/prayer_list_swiperefresh"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#f0f0f0">
+
+<!--RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card="http://schemas.android.com/apk/res-auto"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#f0f0f0"-->
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#ffffff">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="All"
+                android:id="@+id/prayerlist_category_all"
+                android:layout_weight="1"
+                android:textAlignment="center"
+                android:gravity="center_vertical|center_horizontal"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:background="@drawable/prayerlist_topbar_border"
+                android:textColor="#8a8a8a" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Mine"
+                android:id="@+id/prayerlist_category_mine"
+                android:layout_weight="1"
+                android:textAlignment="center"
+                android:gravity="center_vertical|center_horizontal"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:background="@drawable/prayerlist_topbar_border"
+                android:textColor="#8a8a8a" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Friends&apos;"
+                android:id="@+id/prayerlist_category_friend"
+                android:layout_weight="1"
+                android:gravity="center_vertical|center_horizontal"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:textColor="#8a8a8a"
+                android:background="@drawable/prayerlist_topbar_border" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Public&apos;s"
+                android:id="@+id/prayerlist_category_public"
+                android:layout_weight="1"
+                android:textAlignment="center"
+                android:gravity="center_vertical|center_horizontal"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:background="@drawable/prayerlist_topbar_border"
+                android:textColor="#8a8a8a" />
+        </LinearLayout>
+
+        <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            xmlns:card="http://schemas.android.com/apk/res-auto"
+            xmlns:fab="http://schemas.android.com/apk/res-auto">
+
+
+
+            <com.melnykov.fab.FloatingActionButton
+                android:id="@+id/fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|right"
+                android:layout_margin="16dp"
+                fab:fab_colorNormal="@color/accent"
+                fab:fab_colorPressed="@color/accent_pressed"
+                fab:fab_colorRipple="@color/ripple"
+                fab:fab_type="normal"
+                android:src="@mipmap/floating_action_button" />
+
+            <ListView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/prayer_listView"
+                android:clipToPadding="false"
+                android:divider="#f0f0f0"
+                android:dividerHeight="10dp"
+                android:padding="10dp"
+                android:scrollbarStyle="outsideOverlay"
+                tools:listitem="@layout/card_ui_owner_layout"/>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+
+</android.support.v4.widget.SwipeRefreshLayout>
