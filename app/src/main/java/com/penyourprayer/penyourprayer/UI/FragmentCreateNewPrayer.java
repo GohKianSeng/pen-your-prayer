@@ -42,7 +42,7 @@ public class FragmentCreateNewPrayer extends Fragment implements FragmentBackHan
 
     RTEditText mRTMessageField;
     private ImageButton createnew_prayer_tag_friend_ImageButton;
-
+    private boolean publicView = false;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -73,7 +73,7 @@ public class FragmentCreateNewPrayer extends Fragment implements FragmentBackHan
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-
+        mainActivity = ((MainActivity) getActivity());
         this.getActivity().setTheme(R.style.ThemeLight);
     }
 
@@ -97,10 +97,12 @@ public class FragmentCreateNewPrayer extends Fragment implements FragmentBackHan
             }
         });
 
+        if(mainActivity.selectedFriends.size() > 0)
+            ((ImageButton)mCustomView.findViewById(R.id.createnewprayer_tagfriend_ImageButton)).setImageResource(R.drawable.ic_actionbar_tagfriend_w);
+
         ((ImageButton)mCustomView.findViewById(R.id.createnewprayer_tagfriend_ImageButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((ImageButton) v).setImageResource(R.drawable.ic_actionbar_tagfriend_w);
                 mainActivity.replaceWithTagAFriend();
             }
         });
@@ -108,7 +110,13 @@ public class FragmentCreateNewPrayer extends Fragment implements FragmentBackHan
         ((ImageButton)mCustomView.findViewById(R.id.createnewprayer_public_ImageButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((ImageButton) v).setImageResource(R.drawable.ic_actionbar_public_w);
+                if (publicView) {
+                    ((ImageButton) v).setImageResource(R.drawable.ic_actionbar_public_p);
+                    publicView = false;
+                } else {
+                    ((ImageButton) v).setImageResource(R.drawable.ic_actionbar_public_w);
+                    publicView = true;
+                }
             }
         });
 
@@ -120,16 +128,7 @@ public class FragmentCreateNewPrayer extends Fragment implements FragmentBackHan
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mainActivity = ((MainActivity) getActivity());
-
-        //createnew_prayer_tag_friend_ImageButton = (ImageButton) view.findViewById(R.id.createnew_prayer_tag_friend_ImageButton);
-        //createnew_prayer_tag_friend_ImageButton.setOnClickListener(new View.OnClickListener() {
-        //    @Override
-        //    public void onClick(View v) {
-        //        mainActivity.replaceWithTagAFriend();
-        //    }
-        //});
-
+        mainActivity.lockDrawer(true);
 
         // initialize rich text manager
         RTMediaFactoryImpl sfd = new RTMediaFactoryImpl(this.getActivity().getApplicationContext());

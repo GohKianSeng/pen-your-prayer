@@ -3,6 +3,8 @@ package com.penyourprayer.penyourprayer.UI;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,11 +13,13 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.penyourprayer.penyourprayer.Common.FriendProfileModel;
-import com.penyourprayer.penyourprayer.Common.ProfileFriendListViewAdapter;
+import com.penyourprayer.penyourprayer.Common.ListViewAdapterProfileFriend;
+import com.penyourprayer.penyourprayer.Database.Database;
 import com.penyourprayer.penyourprayer.R;
 
 import java.util.ArrayList;
@@ -40,7 +44,7 @@ public class FragmentTagAFriend extends Fragment {
     private String mParam2;
     private MainActivity mainActivity;
     EditText searcheditText;
-    private ProfileFriendListViewAdapter adapter;
+    private ListViewAdapterProfileFriend adapter;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -65,6 +69,7 @@ public class FragmentTagAFriend extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        mainActivity = ((MainActivity) getActivity());
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
@@ -75,6 +80,36 @@ public class FragmentTagAFriend extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        actionBar.setDisplayShowHomeEnabled(false);
+        actionBar.setDisplayShowTitleEnabled(false);
+
+        View mCustomView = inflater.inflate(R.layout.actionbar_tag_a_friend, null);
+        actionBar.setCustomView(mCustomView);
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.show();
+
+        ((ImageButton)mCustomView.findViewById(R.id.tagafriend_back_ImageButton)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mainActivity.popBackFragmentStack();
+            }
+        });
+
+        ((ImageButton)mCustomView.findViewById(R.id.tagafriend_done_ImageButton)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ArrayList<FriendProfileModel> selectedFriends = new ArrayList<FriendProfileModel>();
+                for(int x=0; x<friends.size(); x++){
+                    if(friends.get(x).selected)
+                        selectedFriends.add(friends.get(x));
+                }
+                mainActivity.selectedFriends = selectedFriends;
+                mainActivity.popBackFragmentStack();
+            }
+        });
+
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_tag_afriend, container, false);
     }
@@ -82,13 +117,9 @@ public class FragmentTagAFriend extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mainActivity = ((MainActivity) getActivity());
-
-        friends = new ArrayList<FriendProfileModel>();
-        for(int x=0; x<10; x++) {
-            FriendProfileModel f = new FriendProfileModel("Joshua No" + String.valueOf(x), "http://images.pajezy.com/notes/profile.png", false);
-            friends.add(f);
-        }
+        Database db = new Database(mainActivity);
+        friends = db.getAllFriends();
+        updateFriendList();
 
 
         searcheditText = (EditText) view.findViewById(R.id.search_editText);
@@ -110,9 +141,8 @@ public class FragmentTagAFriend extends Fragment {
         list = (ListView)view.findViewById(R.id.tag_a_friend_listView);
 
 
-        adapter = new ProfileFriendListViewAdapter(this.getActivity(), R.layout.list_view_row_tag_friend, friends);
+        adapter = new ListViewAdapterProfileFriend(this.getActivity(), R.layout.list_view_row_tag_friend, friends);
         list.setAdapter(adapter);
-        int sss = adapter.getCount();
 
         list.setItemsCanFocus(false);
         // we want multiple clicks
@@ -127,6 +157,16 @@ public class FragmentTagAFriend extends Fragment {
                 ((CheckBox)view.findViewById(R.id.profile_checkBox)).setChecked(f.selected);
             }
         });
+    }
+
+    private void updateFriendList(){
+        for(int x=0; x< friends.size(); x++){
+            for(int y=0; y<mainActivity.selectedFriends.size(); y++){
+                if(friends.get(x).GUID.compareToIgnoreCase(mainActivity.selectedFriends.get(y).GUID) == 0){
+                    friends.get(x).selected = true;
+                }
+            }
+        }
     }
 
 }

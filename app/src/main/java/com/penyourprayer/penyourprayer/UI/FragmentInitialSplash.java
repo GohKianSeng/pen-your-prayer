@@ -12,8 +12,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.penyourprayer.penyourprayer.Common.FriendProfileModel;
 import com.penyourprayer.penyourprayer.Database.Database;
 import com.penyourprayer.penyourprayer.R;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,6 +32,7 @@ public class FragmentInitialSplash extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private ArrayList<FriendProfileModel> friends;
 
     private MainActivity mainActivity;
 
@@ -86,12 +90,14 @@ public class FragmentInitialSplash extends Fragment {
         Typeface tf = Typeface.createFromAsset(this.getActivity().getAssets(), "fonts/journal.ttf");
         ((TextView) view.findViewById(R.id.splash_appname)).setTypeface(tf);
 
+
+
         AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... params) {
 
-                Database db = new Database(mainActivity.getBaseContext());
-
+                Database db = new Database(mainActivity);
+                friends = db.getAllFriends();
                 SystemClock.sleep(1000);
                 //start checking, to login or already login.
                 return "";
@@ -99,6 +105,8 @@ public class FragmentInitialSplash extends Fragment {
 
             @Override
             protected void onPostExecute(String token) {
+                mainActivity.friends = friends;
+                mainActivity.loadDrawerContent(true);
                 mainActivity.replaceWithLoginFragment();
             }
 

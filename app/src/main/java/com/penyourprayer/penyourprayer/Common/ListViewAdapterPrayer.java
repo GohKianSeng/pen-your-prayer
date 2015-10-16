@@ -17,11 +17,11 @@ import com.penyourprayer.penyourprayer.R;
 
 import java.util.ArrayList;
 
-public class PrayerListViewAdapter extends ArrayAdapter {
+public class ListViewAdapterPrayer extends ArrayAdapter {
         private Context context;
         public ArrayList<PrayerModel> resource;
 
-        public PrayerListViewAdapter(Context context, int resourcesID,  ArrayList<PrayerModel> resource) {
+        public ListViewAdapterPrayer(Context context, int resourcesID, ArrayList<PrayerModel> resource) {
                 super(context, resourcesID, resource);
                 // TODO Auto-generated constructor stub
                 this.context = context;

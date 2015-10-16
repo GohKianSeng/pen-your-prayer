@@ -14,12 +14,19 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 
 import com.penyourprayer.penyourprayer.Common.FragmentBackHandlerInterface;
+import com.penyourprayer.penyourprayer.Common.FriendProfileModel;
 import com.penyourprayer.penyourprayer.Common.ImageProcessor;
+import com.penyourprayer.penyourprayer.Common.ListViewAdapterDrawerProfileFriend;
+import com.penyourprayer.penyourprayer.Common.ListViewAdapterProfileFriend;
+import com.penyourprayer.penyourprayer.Database.Database;
 import com.penyourprayer.penyourprayer.R;
 
 import com.twitter.sdk.android.Twitter;
@@ -27,12 +34,16 @@ import com.twitter.sdk.android.core.TwitterAuthConfig;
 import io.fabric.sdk.android.Fabric;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout;
     private String TWITTER_KEY = "jSBnTpknelOuZX6e4Cg101oue", TWITTER_SECRET = "w5j7WPwHWwY4DSfJ82tRVZF7SBogZJ6XABptVt431uOowvwFKC";
     private boolean drawerCurrentFriendMode = true;
+    public ArrayList<FriendProfileModel> friends;
+    public ArrayList<FriendProfileModel> selectedFriends = new ArrayList<FriendProfileModel>();
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -44,14 +55,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void lockDrawer(boolean lockDrawer) {
-        if(!lockDrawer){
-            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-        }
-        else{
-            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-        }
+    @Override
+    public void onBackPressed(){
 
+        Fragment f = getSupportFragmentManager().findFragmentById(R.id.fragment);
+        if (f instanceof FragmentBackHandlerInterface) {
+            ((FragmentBackHandlerInterface) f).onBackPressed();
+        }
+        else {
+            super.onBackPressed();
+        }
     }
 
     @Override
@@ -79,11 +92,12 @@ public class MainActivity extends AppCompatActivity {
                     ((ImageView)v.findViewById(R.id.drawer_profile_menu_button)).setImageResource(R.drawable.ic_drawer_menu_down);
                     drawerCurrentFriendMode = true;
                 }
-
+                loadDrawerContent(drawerCurrentFriendMode);
             }
         });
+    }
 
-
+    private void printHashKeyForFacebook(){
         // Add code to print out the key hash
         try {
             PackageInfo info = getPackageManager().getPackageInfo(
@@ -102,20 +116,60 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void popBackFragmentStack(){
+    public void loadDrawerContent(boolean drawerCurrentFriendMode){
+        ArrayList<FriendProfileModel> settings = new ArrayList<FriendProfileModel>();
+
+        FriendProfileModel set = new FriendProfileModel(FriendProfileModel.ActionName.Logout);
+        settings.add(set);
+        set = new FriendProfileModel(FriendProfileModel.ActionName.Settings);
+        settings.add(set);
+
+
+        if(drawerCurrentFriendMode){
+            ListView list = (ListView)findViewById(R.id.drawer_listview);
+
+            ListViewAdapterDrawerProfileFriend adapter = new ListViewAdapterDrawerProfileFriend(this, R.layout.list_view_row_friends_drawer, friends);
+            list.setAdapter(adapter);
+
+            list.setItemsCanFocus(false);
+            list.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+
+            list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                }
+            });
+        }
+        else{
+            ListView list = (ListView)findViewById(R.id.drawer_listview);
+            ListViewAdapterDrawerProfileFriend adapter = new ListViewAdapterDrawerProfileFriend(this, R.layout.list_view_row_friends_drawer, settings);
+            list.setAdapter(adapter);
+
+            list.setItemsCanFocus(false);
+            list.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+
+            list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                }
+            });
+        }
+    }
+
+    public void popBackFragmentStack() {
         getSupportFragmentManager().popBackStack();
     }
 
-    @Override
-    public void onBackPressed(){
+    public void lockDrawer(boolean lockDrawer) {
+        if(!lockDrawer){
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        }
+        else{
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        }
 
-        Fragment f = getSupportFragmentManager().findFragmentById(R.id.fragment);
-        if (f instanceof FragmentBackHandlerInterface) {
-            ((FragmentBackHandlerInterface) f).onBackPressed();
-        }
-        else {
-            super.onBackPressed();
-        }
     }
 
     public boolean isNavigationDrawerOpened(){

@@ -43,12 +43,21 @@
 
     </LinearLayout>
 
-    <ListView android:id="@+id/left_drawer"
-        android:layout_width="240dp"
+    <!--ScrollView
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:choiceMode="singleChoice"
-        android:divider="#f0f0f0"
-        android:dividerHeight="9dp"
-        android:background="#ffffff"/>
+        android:id="@+id/scrollView2"
+        android:fillViewport="true"-->
+
+        <ListView android:id="@+id/drawer_listview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:choiceMode="singleChoice"
+            android:divider="#f0f0f0"
+            android:dividerHeight="2dp"
+            android:background="#ffffff"/>
+    <!--/ScrollView-->
+
+
 </LinearLayout>

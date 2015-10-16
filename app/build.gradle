@@ -15,7 +15,7 @@ android {
         config {
             keyAlias 'KeyStore'
             keyPassword 'yWqikr1981'
-            storeFile file('C:/Users/ks/Desktop/PenYourPrayer/keystore.jks')
+            storeFile file('C:/Users/sisgks/Desktop/pen-your-prayer/keystore.jks')
             storePassword 'yWqikr1981'
         }
     }

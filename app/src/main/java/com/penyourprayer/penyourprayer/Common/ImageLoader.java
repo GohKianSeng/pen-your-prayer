@@ -76,7 +76,7 @@ public class ImageLoader {
             os.close();
             conn.disconnect();
             bitmap = decodeFile(f);
-            return bitmap;
+            return ImageProcessor.getRoundedCornerBitmap(bitmap);
         } catch (Throwable ex){
             ex.printStackTrace();
             if(ex instanceof OutOfMemoryError)
@@ -113,7 +113,7 @@ public class ImageLoader {
             FileInputStream stream2=new FileInputStream(f);
             Bitmap bitmap=BitmapFactory.decodeStream(stream2, null, o2);
             stream2.close();
-            return bitmap;
+            return ImageProcessor.getRoundedCornerBitmap(bitmap);
         } catch (FileNotFoundException e) {
         }
         catch (IOException e) {

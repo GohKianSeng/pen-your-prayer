@@ -13,7 +13,6 @@
             android:layout_height="24dp"
             android:id="@+id/createnewprayer_back_ImageButton"
             android:src="@drawable/ic_actionbar_back_w"
-            android:layout_weight="1"
             android:background="?attr/selectableItemBackground"
             android:scaleType="fitCenter" />
 
@@ -22,7 +21,7 @@
             android:layout_height="24dp"
             android:id="@+id/createnewprayer_tagfriend_ImageButton"
             android:src="@drawable/ic_actionbar_tagfriend_p"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:scaleType="fitCenter"
             android:background="?attr/selectableItemBackground" />
 
@@ -32,7 +31,7 @@
             android:id="@+id/createnewprayer_public_ImageButton"
             android:src="@drawable/ic_actionbar_public_p"
             android:background="?attr/selectableItemBackground"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:scaleType="fitCenter" />
 
         <ImageButton
@@ -41,7 +40,6 @@
             android:id="@+id/createnewprayer_done_ImageButton"
             android:background="?attr/selectableItemBackground"
             android:src="@drawable/ic_actionbar_done_p"
-            android:layout_weight="1"
             android:scaleType="fitCenter"/>
 
     </LinearLayout>

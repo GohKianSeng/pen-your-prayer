@@ -18,12 +18,12 @@ import com.penyourprayer.penyourprayer.R;
 
 import java.util.ArrayList;
 
-public class ProfileFriendListViewAdapter extends ArrayAdapter {
+public class ListViewAdapterProfileFriend extends ArrayAdapter {
         public ArrayList<FriendProfileModel> friends = null;
         public Context context;
         private ImageLoader imageLoader;
 
-        public ProfileFriendListViewAdapter(Context context, int resourcesID, ArrayList<FriendProfileModel> resource) {
+        public ListViewAdapterProfileFriend(Context context, int resourcesID, ArrayList<FriendProfileModel> resource) {
                 super(context, resourcesID, resource);
                 // TODO Auto-generated constructor stub
                 this.context = context;
@@ -96,8 +96,8 @@ public class ProfileFriendListViewAdapter extends ArrayAdapter {
 
                 ArrayList<FriendProfileModel> test = new ArrayList<FriendProfileModel>();
                 for(int x=0; x<10; x++) {
-                        FriendProfileModel f = new FriendProfileModel("Siewlin No" + String.valueOf(x), "http://images.pajezy.com/notes/profile.png", false);
-                        test.add(f);
+                        //FriendProfileModel f = new FriendProfileModel("Siewlin No" + String.valueOf(x), "http://images.pajezy.com/notes/profile.png", false);
+                        //test.add(f);
                 }
                 return test;
         }
