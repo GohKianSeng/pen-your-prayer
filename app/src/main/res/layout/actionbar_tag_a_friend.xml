@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/tagafriend_done_ImageButton"
             android:background="?attr/selectableItemBackground"
-            android:src="@drawable/ic_actionbar_back_w"
+            android:src="@drawable/ic_actionbar_done_w"
             android:scaleType="fitCenter" />
 
     </LinearLayout>

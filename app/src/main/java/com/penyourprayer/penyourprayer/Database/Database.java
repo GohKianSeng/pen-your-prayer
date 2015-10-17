@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.penyourprayer.penyourprayer.Common.FriendProfileModel;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Created by sisgks on 21/09/2015.
@@ -92,5 +93,16 @@ public class Database extends SQLiteOpenHelper {
         }
 
         return friend;
+    }
+
+    public void AddNewPrayer(String prayer, boolean publicView, ArrayList<FriendProfileModel> selectedFriends){
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("GUID", UUID.randomUUID().toString());
+        cv.put("Content", prayer);
+        cv.put("PublicView", publicView);
+
+        long id = db.insert("tb_ownerPrayer", null, cv);
+        String.valueOf(id);
     }
 }

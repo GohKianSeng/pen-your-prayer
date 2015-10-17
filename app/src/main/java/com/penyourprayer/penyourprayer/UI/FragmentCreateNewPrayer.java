@@ -8,6 +8,9 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,9 +22,14 @@ import com.onegravity.rteditor.RTManager;
 import com.onegravity.rteditor.api.RTApi;
 import com.onegravity.rteditor.api.RTMediaFactoryImpl;
 import com.onegravity.rteditor.api.RTProxyImpl;
+import com.onegravity.rteditor.api.format.RTFormat;
 import com.onegravity.rteditor.toolbar.HorizontalRTToolbar;
 import com.penyourprayer.penyourprayer.Common.FragmentBackHandlerInterface;
+import com.penyourprayer.penyourprayer.Common.FriendProfileModel;
+import com.penyourprayer.penyourprayer.Database.Database;
 import com.penyourprayer.penyourprayer.R;
+
+import java.util.ArrayList;
 
 
 /**
@@ -39,7 +47,7 @@ public class FragmentCreateNewPrayer extends Fragment implements FragmentBackHan
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
+    private ImageButton actionbar_done;
     RTEditText mRTMessageField;
     private ImageButton createnew_prayer_tag_friend_ImageButton;
     private boolean publicView = false;
@@ -120,6 +128,8 @@ public class FragmentCreateNewPrayer extends Fragment implements FragmentBackHan
             }
         });
 
+        actionbar_done = (ImageButton)mCustomView.findViewById(R.id.createnewprayer_done_ImageButton);
+
         return inflater.inflate(R.layout.fragment_create_new_prayer, container, false);
 
     }
@@ -148,6 +158,34 @@ public class FragmentCreateNewPrayer extends Fragment implements FragmentBackHan
         mRTMessageField = (RTEditText) view.findViewById(R.id.rtEditText_1);
         mRTManager.registerEditor(mRTMessageField, true);
         mRTMessageField.requestFocus();
+        mRTMessageField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (mRTMessageField.getText().toString().trim().length() > 0) {
+                    actionbar_done.setImageResource(R.drawable.ic_actionbar_done_w);
+                    actionbar_done.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            saveNewPrayer();
+
+                        }
+                    });
+                } else {
+                    actionbar_done.setImageResource(R.drawable.ic_actionbar_done_p);
+                    actionbar_done.setOnClickListener(null);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         InputMethodManager imm = (InputMethodManager) this.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(mRTMessageField, InputMethodManager.SHOW_IMPLICIT);
@@ -202,5 +240,14 @@ public class FragmentCreateNewPrayer extends Fragment implements FragmentBackHan
         }
         else
             mainActivity.popBackFragmentStack();
+    }
+
+    private void saveNewPrayer(){
+        String prayer = mRTMessageField.getText(RTFormat.HTML);
+        Database db = new Database(mainActivity);
+        db.AddNewPrayer(prayer, publicView, mainActivity.selectedFriends);
+
+        mainActivity.selectedFriends = new ArrayList<FriendProfileModel>();
+        mainActivity.popBackFragmentStack();
     }
 }
