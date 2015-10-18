@@ -245,7 +245,7 @@ public class FragmentCreateNewPrayer extends Fragment implements FragmentBackHan
     private void saveNewPrayer(){
         String prayer = mRTMessageField.getText(RTFormat.HTML);
         Database db = new Database(mainActivity);
-        db.AddNewPrayer(prayer, publicView, mainActivity.selectedFriends);
+        db.AddNewPrayer(mainActivity, prayer, publicView, mainActivity.selectedFriends);
 
         mainActivity.selectedFriends = new ArrayList<FriendProfileModel>();
         mainActivity.popBackFragmentStack();

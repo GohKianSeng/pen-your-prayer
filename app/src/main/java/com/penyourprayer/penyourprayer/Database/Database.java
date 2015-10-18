@@ -5,10 +5,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.net.ParseException;
 
 import com.penyourprayer.penyourprayer.Common.FriendProfileModel;
+import com.penyourprayer.penyourprayer.Common.OwnerPrayerModel;
 
+import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -18,15 +23,15 @@ public class Database extends SQLiteOpenHelper {
 
     // All Static variables
     // Database Version
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 8;
 
     // Database Name
     private static final String DATABASE_NAME = "PenYourPrayerSQLite";
     private static final String tb_Friends = "CREATE TABLE tb_Friends ('GUID' TEXT NOT NULL UNIQUE, 'Name' TEXT NOT NULL, 'ProfilePicture' TEXT, PRIMARY KEY(GUID))";
-    private static final String tb_OwnerPrayerAmen = "CREATE TABLE tb_OwnerPrayerAmen ('OwnerPrayerGUID' TEXT NOT NULL,'WhoGUID' TEXT NOT NULL,'WhoName' TEXT NOT NULL,'WhoProfilePicture' TEXT, 'CreatedWhen' INTEGER DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY(OwnerPrayerGUID,WhoGUID))";
-    private static final String tb_OwnerPrayerComment = "CREATE TABLE tb_OwnerPrayerComment ('GUID' TEXT NOT NULL,'OwnerPrayerGUID' TEXT NOT NULL,'WhoGUID' TEXT NOT NULL,'WhoName' TEXT NOT NULL,'WhoProfilePicture' TEXT,'Comment' TEXT NOT NULL,'CreatedWhen' INTEGER DEFAULT CURRENT_TIMESTAMP,'TouchedWhen' INTEGER DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY(GUID))";
-    private static final String tb_OwnerPrayerTagFriends = "CREATE TABLE tb_OwnerPrayerTagFriends ( 'OwnerPrayerGUID' TEXT NOT NULL, 'WhoGUID' TEXT NOT NULL, 'WhoName' TEXT NOT NULL, 'WhoProfilePicture' TEXT, PRIMARY KEY(OwnerPrayerGUID,WhoGUID))";
-    private static final String tb_ownerPrayer = "CREATE TABLE tb_ownerPrayer ( 'GUID' TEXT NOT NULL UNIQUE, 'CreatedWhen' INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP, 'TouchedWhen' INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP, 'Content' TEXT NOT NULL, 'PublicView' INTEGER DEFAULT 0, 'Deleted' INTEGER DEFAULT 0, PRIMARY KEY(GUID))";
+    private static final String tb_OwnerPrayerAmen = "CREATE TABLE tb_OwnerPrayerAmen ('OwnerPrayerGUID' TEXT NOT NULL,'WhoGUID' TEXT NOT NULL,'WhoName' TEXT NOT NULL,'WhoProfilePicture' TEXT, 'CreatedWhen' DATETIME DEFAULT (DATETIME('NOW','LOCALTIME')), PRIMARY KEY(OwnerPrayerGUID,WhoGUID))";
+    private static final String tb_OwnerPrayerComment = "CREATE TABLE tb_OwnerPrayerComment ('GUID' TEXT NOT NULL,'OwnerPrayerGUID' TEXT NOT NULL,'WhoGUID' TEXT NOT NULL,'WhoName' TEXT NOT NULL,'WhoProfilePicture' TEXT,'Comment' TEXT NOT NULL,'CreatedWhen' DATETIME DEFAULT (DATETIME('NOW','LOCALTIME')),'TouchedWhen' DATETIME DEFAULT (DATETIME('NOW','LOCALTIME')),PRIMARY KEY(GUID))";
+    private static final String tb_OwnerPrayerTagFriends = "CREATE TABLE tb_OwnerPrayerTagFriends ( OwnerPrayerGUID TEXT NOT NULL, WhoGUID TEXT NOT NULL, PRIMARY KEY(OwnerPrayerGUID,WhoGUID))";
+    private static final String tb_ownerPrayer = "CREATE TABLE tb_ownerPrayer ( GUID TEXT NOT NULL UNIQUE, CreatedWhen DATETIME NOT NULL DEFAULT (DATETIME('NOW','LOCALTIME')), TouchedWhen DATETIME NOT NULL DEFAULT (DATETIME('NOW','LOCALTIME')), Content TEXT NOT NULL, PublicView INTEGER NOT NULL DEFAULT 0, ServerSent INTEGER NOT NULL DEFAULT 0, Deleted INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(GUID));";
 
 
     public Database(Context context) {
@@ -95,14 +100,72 @@ public class Database extends SQLiteOpenHelper {
         return friend;
     }
 
-    public void AddNewPrayer(String prayer, boolean publicView, ArrayList<FriendProfileModel> selectedFriends){
+    public void AddNewPrayer(Context ctx, String prayer, boolean publicView, ArrayList<FriendProfileModel> selectedFriends){
+        getAllOwnerPrayer();
         SQLiteDatabase db = getWritableDatabase();
-        ContentValues cv = new ContentValues();
-        cv.put("GUID", UUID.randomUUID().toString());
-        cv.put("Content", prayer);
-        cv.put("PublicView", publicView);
+        long id = -1;
+        String tUUID = "";
+        while(id == -1) {
+            tUUID = UUID.randomUUID().toString();
+            ContentValues cv = new ContentValues();
+            cv.put("GUID", tUUID);
+            cv.put("Content", prayer);
+            cv.put("PublicView", publicView);
 
-        long id = db.insert("tb_ownerPrayer", null, cv);
-        String.valueOf(id);
+            id = db.insert("tb_ownerPrayer", null, cv);
+        }
+        for(int x=0; x<selectedFriends.size(); x++){
+            FriendProfileModel f = selectedFriends.get(x);
+            long id2 = -1;
+            while(id2 == -1) {
+                ContentValues cv = new ContentValues();
+                cv.put("OwnerPrayerGUID", tUUID);
+                cv.put("WhoGUID", f.GUID);
+
+                id2 = db.insert("tb_OwnerPrayerTagFriends", null, cv);
+            }
+        }
+    }
+
+    public void getAllOwnerPrayer(){
+        ArrayList<OwnerPrayerModel> prayer = new ArrayList<OwnerPrayerModel>();
+
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT GUID, CreatedWhen, TouchedWhen, Content, PublicView, ServerSent, Deleted, " +
+                "(SELECT COUNT(1) FROM tb_OwnerPrayerTagFriends WHERE OwnerPrayerGUID = A.GUID) AS NumberOfFriendsTag " +
+                "from tb_ownerPrayer AS A";
+
+        Cursor c = db.rawQuery(query, new String[]{});
+        while (c.moveToNext()) {
+            OwnerPrayerModel o = new OwnerPrayerModel();
+            o.GUID = c.getString(c.getColumnIndex("GUID"));
+            //2015-10-18 23:28:21
+            o.CreatedWhen = convertToDateTime(c.getString(c.getColumnIndex("CreatedWhen")));
+            o.TouchedWhen = convertToDateTime(c.getString(c.getColumnIndex("TouchedWhen")));
+            o.Content = c.getString(c.getColumnIndex("Content"));
+            o.publicView = convertToBoolean(c.getInt(c.getColumnIndex("PublicView")));
+            o.ServerSent = convertToBoolean(c.getInt(c.getColumnIndex("ServerSent")));
+            o.deleted = convertToBoolean(c.getInt(c.getColumnIndex("Deleted")));
+            o.NumberOfFriendsTag = c.getInt(c.getColumnIndex("NumberOfFriendsTag"));
+        }
+
+    }
+
+    private boolean convertToBoolean(int bool){
+        if(bool == 0)
+            return false;
+        else
+            return true;
+    }
+    private Date convertToDateTime(String dtStart){
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date;
+        try {
+            date = format.parse(dtStart);
+            return date;
+        } catch (Exception e) {
+
+        }
+        return null;
     }
 }
