@@ -31,7 +31,7 @@ public class Database extends SQLiteOpenHelper {
     private static final String tb_OwnerPrayerAmen = "CREATE TABLE tb_OwnerPrayerAmen ('OwnerPrayerGUID' TEXT NOT NULL,'WhoGUID' TEXT NOT NULL,'WhoName' TEXT NOT NULL,'WhoProfilePicture' TEXT, 'CreatedWhen' DATETIME DEFAULT (DATETIME('NOW','LOCALTIME')), PRIMARY KEY(OwnerPrayerGUID,WhoGUID))";
     private static final String tb_OwnerPrayerComment = "CREATE TABLE tb_OwnerPrayerComment ('GUID' TEXT NOT NULL,'OwnerPrayerGUID' TEXT NOT NULL,'WhoGUID' TEXT NOT NULL,'WhoName' TEXT NOT NULL,'WhoProfilePicture' TEXT,'Comment' TEXT NOT NULL,'CreatedWhen' DATETIME DEFAULT (DATETIME('NOW','LOCALTIME')),'TouchedWhen' DATETIME DEFAULT (DATETIME('NOW','LOCALTIME')),PRIMARY KEY(GUID))";
     private static final String tb_OwnerPrayerTagFriends = "CREATE TABLE tb_OwnerPrayerTagFriends ( OwnerPrayerGUID TEXT NOT NULL, WhoGUID TEXT NOT NULL, PRIMARY KEY(OwnerPrayerGUID,WhoGUID))";
-    private static final String tb_ownerPrayer = "CREATE TABLE tb_ownerPrayer ( GUID TEXT NOT NULL UNIQUE, CreatedWhen DATETIME NOT NULL DEFAULT (DATETIME('NOW','LOCALTIME')), TouchedWhen DATETIME NOT NULL DEFAULT (DATETIME('NOW','LOCALTIME')), Content TEXT NOT NULL, PublicView INTEGER NOT NULL DEFAULT 0, ServerSent INTEGER NOT NULL DEFAULT 0, Deleted INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(GUID));";
+    private static final String tb_ownerPrayer = "CREATE TABLE tb_ownerPrayer ( GUID TEXT NOT NULL UNIQUE, CreatedWhen DATETIME NOT NULL DEFAULT (DATETIME('NOW','LOCALTIME')), TouchedWhen DATETIME NOT NULL DEFAULT (DATETIME('NOW','LOCALTIME')), Content TEXT NOT NULL, PublicView INTEGER NOT NULL DEFAULT 0, ServerSent INTEGER NOT NULL DEFAULT 0, Deleted INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(GUID))";
 
 
     public Database(Context context) {
@@ -127,13 +127,15 @@ public class Database extends SQLiteOpenHelper {
         }
     }
 
-    public void getAllOwnerPrayer(){
+    public ArrayList<OwnerPrayerModel> getAllOwnerPrayer(){
         ArrayList<OwnerPrayerModel> prayer = new ArrayList<OwnerPrayerModel>();
 
         SQLiteDatabase db = getReadableDatabase();
         String query = "SELECT GUID, CreatedWhen, TouchedWhen, Content, PublicView, ServerSent, Deleted, " +
-                "(SELECT COUNT(1) FROM tb_OwnerPrayerTagFriends WHERE OwnerPrayerGUID = A.GUID) AS NumberOfFriendsTag " +
-                "from tb_ownerPrayer AS A";
+                "(SELECT COUNT(1) FROM tb_OwnerPrayerTagFriends WHERE OwnerPrayerGUID = A.GUID) AS NumberOfFriendsTag, " +
+                "(SELECT COUNT(1) FROM tb_OwnerPrayerComment WHERE OwnerPrayerGUID = A.GUID) AS NumberOfComment, " +
+                "(SELECT COUNT(1) FROM tb_OwnerPrayerAmen WHERE OwnerPrayerGUID = A.GUID) AS NumberOfAmen " +
+                "from tb_ownerPrayer AS A ORDER BY TouchedWhen DESC";
 
         Cursor c = db.rawQuery(query, new String[]{});
         while (c.moveToNext()) {
@@ -146,9 +148,48 @@ public class Database extends SQLiteOpenHelper {
             o.publicView = convertToBoolean(c.getInt(c.getColumnIndex("PublicView")));
             o.ServerSent = convertToBoolean(c.getInt(c.getColumnIndex("ServerSent")));
             o.deleted = convertToBoolean(c.getInt(c.getColumnIndex("Deleted")));
-            o.NumberOfFriendsTag = c.getInt(c.getColumnIndex("NumberOfFriendsTag"));
+            o.numberOfFriendsTag = c.getLong(c.getColumnIndex("NumberOfFriendsTag"));
+            o.numberOfAmen = c.getLong(c.getColumnIndex("NumberOfAmen"));
+            o.numberOfComment = c.getLong(c.getColumnIndex("NumberOfComment"));
+            prayer.add(o);
         }
+        return prayer;
+    }
 
+    public ArrayList<FriendProfileModel> getSelectedTagFriend(String GUID){
+        String query = "SELECT C.GUID, C.Name, C.ProfilePicture FROM tb_ownerPrayer AS A INNER JOIN tb_OwnerPrayerTagFriends AS B ON A.GUID = B.OwnerPrayerGUID INNER JOIN tb_Friends AS C ON C.GUID = B.WhoGUID WHERE A.GUID = '" + GUID + "'";
+        ArrayList<FriendProfileModel> selectedFriends = new ArrayList<FriendProfileModel>();
+
+        SQLiteDatabase db = getReadableDatabase();
+
+        Cursor c = db.rawQuery(query, new String[]{});
+        while (c.moveToNext()) {
+            FriendProfileModel f = new FriendProfileModel(c.getString(c.getColumnIndex("GUID")),
+                    c.getString(c.getColumnIndex("Name")),
+                    c.getString(c.getColumnIndex("ProfilePicture")),
+                    true);
+            selectedFriends.add(f);
+        }
+        return selectedFriends;
+    }
+
+    public void updateOwnerPrayerTagFriends(String GUID, ArrayList<FriendProfileModel> selectedFriends){
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete("tb_OwnerPrayerTagFriends", "OwnerPrayerGUID" + "= '" + GUID + "'" , null);
+        for(int x=0; x<selectedFriends.size(); x++){
+            ContentValues cv = new ContentValues();
+            cv.put("OwnerPrayerGUID", GUID);
+            cv.put("WhoGUID", selectedFriends.get(x).GUID);
+            db.insert("tb_OwnerPrayerTagFriends", null, cv);
+        }
+    }
+
+    public void updateOwnerPrayerPublicView(String GUID, boolean publicView){
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("PublicView", publicView);
+        int id = db.update("tb_ownerPrayer", cv, "GUID = '" + GUID + "'", null);
+        String.valueOf(id);
     }
 
     private boolean convertToBoolean(int bool){

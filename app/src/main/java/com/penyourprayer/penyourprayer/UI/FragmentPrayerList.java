@@ -23,7 +23,8 @@ import android.widget.TextView;
 
 import com.melnykov.fab.FloatingActionButton;
 import com.penyourprayer.penyourprayer.Common.ListViewAdapterPrayer;
-import com.penyourprayer.penyourprayer.Common.PrayerModel;
+import com.penyourprayer.penyourprayer.Common.OwnerPrayerModel;
+import com.penyourprayer.penyourprayer.Database.Database;
 import com.penyourprayer.penyourprayer.R;
 
 import java.util.ArrayList;
@@ -132,15 +133,11 @@ public class FragmentPrayerList extends Fragment {
         //int listImages[] = new int[]{R.drawable.angry_1, R.drawable.angry_2,
         //        R.drawable.angry_3, R.drawable.angry_4, R.drawable.angry_5};
 
-        ArrayList<PrayerModel> cards = new ArrayList<PrayerModel>();
 
-        for (int i = 0; i<100; i++) {
-            // Create a Card
-            PrayerModel card = new PrayerModel();
-            cards.add(card);
-        }
+        Database db = new Database(mainActivity);
+        ArrayList<OwnerPrayerModel> allprayers = db.getAllOwnerPrayer();
 
-        ListViewAdapterPrayer prayerArrayAdapter = new ListViewAdapterPrayer(this.getActivity(), R.layout.card_ui_owner_layout, cards);
+        ListViewAdapterPrayer prayerArrayAdapter = new ListViewAdapterPrayer(this.getActivity(), R.layout.card_ui_owner_layout, allprayers);
 
         final ListView listView = (ListView) view.findViewById(R.id.prayer_listView);
         listView.setFastScrollEnabled(true);

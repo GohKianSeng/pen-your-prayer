@@ -111,7 +111,7 @@ public class FragmentCreateNewPrayer extends Fragment implements FragmentBackHan
         ((ImageButton)mCustomView.findViewById(R.id.createnewprayer_tagfriend_ImageButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mainActivity.replaceWithTagAFriend();
+                mainActivity.replaceWithTagAFriend(null);
             }
         });
 

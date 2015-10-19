@@ -1,5 +1,6 @@
 package com.penyourprayer.penyourprayer.Common;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -15,9 +16,21 @@ public class OwnerPrayerModel {
     public boolean publicView = false;
     public boolean ServerSent = false;
     public boolean deleted = false;
-    public int NumberOfFriendsTag = 0;
+    public long numberOfFriendsTag = 0;
+    public long numberOfAmen = 0;
+    public long numberOfComment = 0;
 
     public ArrayList<FriendProfileModel> selectedFriends = new ArrayList<FriendProfileModel>();
 
     public OwnerPrayerModel(){}
+
+    public String formattedCreatedWhen(){
+        SimpleDateFormat format = new SimpleDateFormat("dd MMM yyyy hh:mm:ss aa");
+        return format.format(CreatedWhen);
+    }
+
+    public String formattedTouchedWhen(){
+        SimpleDateFormat format = new SimpleDateFormat("dd MMM yyyy hh:mm:ss aa");
+        return format.format(TouchedWhen);
+    }
 }

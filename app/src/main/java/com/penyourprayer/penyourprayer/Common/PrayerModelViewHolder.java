@@ -11,8 +11,8 @@ import com.penyourprayer.penyourprayer.R;
  */
 public class PrayerModelViewHolder {
 
-    public TextView prayer_textView;
-    public ImageButton amen_imageButton;
+    public TextView prayer_textView, createdwhen_textview, serversent_textview;
+    public ImageButton amen_imageButton, comment_imageButton, tagfriend_imageButton, publicView_imageButton, answered_imageButton, delete_imageButton;
 
     public PrayerModelViewHolder(){
 

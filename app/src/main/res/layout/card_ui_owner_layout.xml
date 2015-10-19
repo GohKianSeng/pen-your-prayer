@@ -26,7 +26,7 @@
     android:background="#ffffff">
 
         <ScrollView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/scrollView"
             android:paddingLeft="5dp"
@@ -38,9 +38,9 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/prayer_textView"
+                    android:id="@+id/card_ui_prayer_textView"
                     android:textColor="#000000"
                     android:text="Its was the most exciting day of my life. Something was going to happen today that would change my life forever. Forever I waited for this day. It was the day I would be getting babtised. It was with this man named Chever Omark. He was very unusal. I was very catious about everything. I mean, He had a gray shirt that had a drunk stay on it the day I met him. I would never go talking to him again, after the batisim. But I dought he would do anything. I was dressed in a beautiful gown. My sister was in a t- shirt, but that was her best style she told me. I suggested she should wear something nicer since were praising the lord today but she resisted."
                     android:textAppearance="@android:style/TextAppearance.Small" />
@@ -50,18 +50,35 @@
 
         </ScrollView>
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
         <TextView
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:text="10 Aug 2015 03:34 PM"
-            android:id="@+id/textView2"
-            android:textColor="#000000"
-            android:layout_gravity="right"
-            android:gravity="bottom|right"
+            android:layout_height="wrap_content"
             android:textSize="10sp"
-            android:paddingRight="5dp" />
+            android:paddingLeft="5dp"
+            android:text="Saved"
+            android:id="@+id/card_ui_serversent_textview"
+            android:layout_weight="1"
+            android:textColor="#800080" />
 
-        <LinearLayout
+        <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:text="10 Aug 2015 03:34 PM"
+                android:id="@+id/card_ui_createdwhen"
+                android:textColor="#000000"
+                android:layout_gravity="right"
+                android:gravity="bottom|right"
+                android:textSize="10sp"
+                android:paddingRight="5dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <LinearLayout
             android:id="@+id/card_thumb_and_content_layout"
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -72,7 +89,7 @@
             <ImageButton
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:id="@+id/amen_imageButton"
+                android:id="@+id/card_ui_amen_imageButton"
                 android:background="@null"
                 android:layout_weight="1"
                 android:src="@drawable/amen_1"
@@ -81,7 +98,7 @@
             <ImageButton
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:id="@+id/imageButton2"
+                android:id="@+id/card_ui_comment_imageButton"
                 android:src="@drawable/comment_1"
                 android:layout_weight="1"
                 android:background="@null"
@@ -90,7 +107,7 @@
             <ImageButton
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:id="@+id/imageButton3"
+                android:id="@+id/card_ui_tagfriend_imageButton"
                 android:src="@drawable/tagfriend_1"
                 android:layout_weight="1"
                 android:background="@null"
@@ -99,16 +116,7 @@
             <ImageButton
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:id="@+id/imageButton4"
-                android:src="@drawable/answered_1"
-                android:layout_weight="1"
-                android:background="@null"
-                android:scaleType="fitCenter"/>
-
-            <ImageButton
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:id="@+id/imageButton5"
+                android:id="@+id/card_ui_publicview_imageButton"
                 android:src="@drawable/public_1"
                 android:layout_weight="1"
                 android:background="@null"
@@ -118,7 +126,16 @@
             <ImageButton
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:id="@+id/imageButton6"
+                android:id="@+id/card_ui_answered_imageButton"
+                android:src="@drawable/answered_1"
+                android:layout_weight="1"
+                android:background="@null"
+                android:scaleType="fitCenter"/>
+
+            <ImageButton
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:id="@+id/card_ui_delete_imageButton"
                 android:src="@drawable/delete_1"
                 android:background="@null"
                 android:scaleType="fitCenter"

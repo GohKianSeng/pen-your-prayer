@@ -32,16 +32,14 @@ import java.util.ArrayList;
 public class FragmentTagAFriend extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_PARAM1 = "GUID";
 
     private ListView list;
     private ArrayList<FriendProfileModel> friends;
     private boolean startSearching = false;
     private String searchFor = "";
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private String GUID;
     private MainActivity mainActivity;
     EditText searcheditText;
     private ListViewAdapterProfileFriend adapter;
@@ -54,11 +52,10 @@ public class FragmentTagAFriend extends Fragment {
      * @return A new instance of fragment FragmentTagAFriend.
      */
     // TODO: Rename and change types and number of parameters
-    public static FragmentTagAFriend newInstance(String param1, String param2) {
+    public static FragmentTagAFriend newInstance(String GUID) {
         FragmentTagAFriend fragment = new FragmentTagAFriend();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(ARG_PARAM1, GUID);
         fragment.setArguments(args);
         return fragment;
     }
@@ -72,8 +69,7 @@ public class FragmentTagAFriend extends Fragment {
         mainActivity = ((MainActivity) getActivity());
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            GUID = getArguments().getString(ARG_PARAM1);
         }
     }
 
@@ -93,6 +89,9 @@ public class FragmentTagAFriend extends Fragment {
         ((ImageButton)mCustomView.findViewById(R.id.tagafriend_back_ImageButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (GUID.length() > 0) {
+                    mainActivity.selectedFriends = new ArrayList<FriendProfileModel>();
+                }
                 mainActivity.popBackFragmentStack();
             }
         });
@@ -101,12 +100,19 @@ public class FragmentTagAFriend extends Fragment {
             @Override
             public void onClick(View v) {
                 ArrayList<FriendProfileModel> selectedFriends = new ArrayList<FriendProfileModel>();
-                for(int x=0; x<friends.size(); x++){
-                    if(friends.get(x).selected)
+                for (int x = 0; x < friends.size(); x++) {
+                    if (friends.get(x).selected)
                         selectedFriends.add(friends.get(x));
                 }
-                mainActivity.selectedFriends = selectedFriends;
-                mainActivity.popBackFragmentStack();
+                if (GUID == null) {
+                    mainActivity.selectedFriends = selectedFriends;
+                    mainActivity.popBackFragmentStack();
+                } else if (GUID.length() > 0) {
+                    Database db = new Database(mainActivity);
+                    db.updateOwnerPrayerTagFriends(GUID, selectedFriends);
+                    mainActivity.selectedFriends = new ArrayList<FriendProfileModel>();
+                    mainActivity.popBackFragmentStack();
+                }
             }
         });
 
@@ -126,10 +132,9 @@ public class FragmentTagAFriend extends Fragment {
         searcheditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if ( (actionId == EditorInfo.IME_ACTION_DONE) || ((event.getKeyCode() == KeyEvent.KEYCODE_ENTER) && (event.getAction() == KeyEvent.ACTION_DOWN ))){
+                if ((actionId == EditorInfo.IME_ACTION_DONE) || ((event.getKeyCode() == KeyEvent.KEYCODE_ENTER) && (event.getAction() == KeyEvent.ACTION_DOWN))) {
                     String tString = searcheditText.getText().toString();
-                    if(tString.trim().length() > 0)
-                    {
+                    if (tString.trim().length() > 0) {
                         adapter.getFilter().filter(searchFor);
                     }
                 }
