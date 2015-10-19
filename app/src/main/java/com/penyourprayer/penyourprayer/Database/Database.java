@@ -188,8 +188,7 @@ public class Database extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put("PublicView", publicView);
-        int id = db.update("tb_ownerPrayer", cv, "GUID = '" + GUID + "'", null);
-        String.valueOf(id);
+        db.update("tb_ownerPrayer", cv, "GUID = '" + GUID + "'", null);
     }
 
     private boolean convertToBoolean(int bool){
