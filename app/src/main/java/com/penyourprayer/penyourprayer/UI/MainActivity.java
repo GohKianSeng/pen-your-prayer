@@ -44,6 +44,11 @@ public class MainActivity extends AppCompatActivity {
     public ArrayList<FriendProfileModel> friends;
     public ArrayList<FriendProfileModel> selectedFriends = new ArrayList<FriendProfileModel>();
 
+    public String OwnerGUID = "sdfsdf1323123";
+    public String OwnerName = "Kian Seng";
+    public String OwnerProfilePicture = "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTy9gsPmNSg7MdCHvmdzn7DHOwSKcPko4q0wdiCuhgiUUWCGZ4rJA";
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

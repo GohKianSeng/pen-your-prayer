@@ -25,6 +25,7 @@ import com.melnykov.fab.FloatingActionButton;
 import com.penyourprayer.penyourprayer.Common.ListViewAdapterPrayer;
 import com.penyourprayer.penyourprayer.Common.OwnerPrayerModel;
 import com.penyourprayer.penyourprayer.Database.Database;
+import com.penyourprayer.penyourprayer.QuickstartPreferences;
 import com.penyourprayer.penyourprayer.R;
 
 import java.util.ArrayList;
@@ -42,6 +43,7 @@ public class FragmentPrayerList extends Fragment {
     private ImageButton delete_ImageButton;
     private SwipeRefreshLayout prayer_list_swiperefresh;
     private View previousPrayerListCategory = null;
+
     public FragmentPrayerList() {
         // Required empty public constructor
     }
@@ -50,6 +52,7 @@ public class FragmentPrayerList extends Fragment {
     @Override
     public void onCreate(Bundle safeInstanceState){
         super.onCreate(safeInstanceState);
+        mainActivity = ((MainActivity) getActivity());
 
     }
 
@@ -88,7 +91,6 @@ public class FragmentPrayerList extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mainActivity = ((MainActivity) getActivity());
         mainActivity.lockDrawer(false);
 
         View.OnClickListener prayerCategoryListener = new View.OnClickListener() {
@@ -135,7 +137,7 @@ public class FragmentPrayerList extends Fragment {
 
 
         Database db = new Database(mainActivity);
-        ArrayList<OwnerPrayerModel> allprayers = db.getAllOwnerPrayer();
+        ArrayList<OwnerPrayerModel> allprayers = db.getAllOwnerPrayer(mainActivity.OwnerGUID);
 
         ListViewAdapterPrayer prayerArrayAdapter = new ListViewAdapterPrayer(this.getActivity(), R.layout.card_ui_owner_layout, allprayers);
 

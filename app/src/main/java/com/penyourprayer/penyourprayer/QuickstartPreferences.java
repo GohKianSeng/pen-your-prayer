@@ -5,6 +5,11 @@ package com.penyourprayer.penyourprayer;
  */
 public class QuickstartPreferences {
 
+    //OwnerGUID
+    public static final String OwnerGUID = "OwnerGUID";
+    public static final String OwnerName = "OwnerName";
+    public static final String OwnerProfilePicture = "OwnerProfilePicture";
+
     //Google cloud messaging id
     public static final String gcm_defaultSenderId = "1036182018589";
 

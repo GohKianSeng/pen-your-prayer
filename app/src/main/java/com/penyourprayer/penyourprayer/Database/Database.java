@@ -101,7 +101,6 @@ public class Database extends SQLiteOpenHelper {
     }
 
     public void AddNewPrayer(Context ctx, String prayer, boolean publicView, ArrayList<FriendProfileModel> selectedFriends){
-        getAllOwnerPrayer();
         SQLiteDatabase db = getWritableDatabase();
         long id = -1;
         String tUUID = "";
@@ -127,14 +126,15 @@ public class Database extends SQLiteOpenHelper {
         }
     }
 
-    public ArrayList<OwnerPrayerModel> getAllOwnerPrayer(){
+    public ArrayList<OwnerPrayerModel> getAllOwnerPrayer(String OwnerGUID){
         ArrayList<OwnerPrayerModel> prayer = new ArrayList<OwnerPrayerModel>();
 
         SQLiteDatabase db = getReadableDatabase();
         String query = "SELECT GUID, CreatedWhen, TouchedWhen, Content, PublicView, ServerSent, Deleted, " +
                 "(SELECT COUNT(1) FROM tb_OwnerPrayerTagFriends WHERE OwnerPrayerGUID = A.GUID) AS NumberOfFriendsTag, " +
                 "(SELECT COUNT(1) FROM tb_OwnerPrayerComment WHERE OwnerPrayerGUID = A.GUID) AS NumberOfComment, " +
-                "(SELECT COUNT(1) FROM tb_OwnerPrayerAmen WHERE OwnerPrayerGUID = A.GUID) AS NumberOfAmen " +
+                "(SELECT COUNT(1) FROM tb_OwnerPrayerAmen WHERE OwnerPrayerGUID = A.GUID) AS NumberOfAmen, " +
+                "(SELECT COUNT(1) FROM tb_OwnerPrayerAmen WHERE OwnerPrayerGUID = A.GUID AND WhoGUID = '" + OwnerGUID + "') AS OwnerAmen " +
                 "from tb_ownerPrayer AS A ORDER BY TouchedWhen DESC";
 
         Cursor c = db.rawQuery(query, new String[]{});
@@ -151,6 +151,7 @@ public class Database extends SQLiteOpenHelper {
             o.numberOfFriendsTag = c.getLong(c.getColumnIndex("NumberOfFriendsTag"));
             o.numberOfAmen = c.getLong(c.getColumnIndex("NumberOfAmen"));
             o.numberOfComment = c.getLong(c.getColumnIndex("NumberOfComment"));
+            o.ownerAmen = convertToBoolean(c.getInt(c.getColumnIndex("OwnerAmen")));
             prayer.add(o);
         }
         return prayer;
@@ -175,7 +176,7 @@ public class Database extends SQLiteOpenHelper {
 
     public void updateOwnerPrayerTagFriends(String GUID, ArrayList<FriendProfileModel> selectedFriends){
         SQLiteDatabase db = getWritableDatabase();
-        db.delete("tb_OwnerPrayerTagFriends", "OwnerPrayerGUID" + "= '" + GUID + "'" , null);
+        db.delete("tb_OwnerPrayerTagFriends", "OwnerPrayerGUID" + "= '" + GUID + "'", null);
         for(int x=0; x<selectedFriends.size(); x++){
             ContentValues cv = new ContentValues();
             cv.put("OwnerPrayerGUID", GUID);
@@ -189,6 +190,22 @@ public class Database extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         cv.put("PublicView", publicView);
         db.update("tb_ownerPrayer", cv, "GUID = '" + GUID + "'", null);
+    }
+
+    public void AmenOwnerPrayer(String OwnerPrayerGUID, String whoGUID, String whoName, String whoProfilePicture, boolean amen){
+        SQLiteDatabase db = getWritableDatabase();
+        if(amen) {
+            ContentValues cv = new ContentValues();
+            cv.put("WhoGUID", whoGUID);
+            cv.put("WhoName", whoName);
+            cv.put("WhoProfilePicture", whoProfilePicture);
+            cv.put("OwnerPrayerGUID", OwnerPrayerGUID);
+            db.delete("tb_OwnerPrayerAmen", "OwnerPrayerGUID" + "= '" + OwnerPrayerGUID + "' AND WhoGUID = '" + whoGUID + "'", null);
+            db.insert("tb_OwnerPrayerAmen", null, cv);
+        }
+        else{
+            db.delete("tb_OwnerPrayerAmen", "OwnerPrayerGUID" + "= '" + OwnerPrayerGUID + "' AND WhoGUID = '" + whoGUID + "'", null);
+        }
     }
 
     private boolean convertToBoolean(int bool){

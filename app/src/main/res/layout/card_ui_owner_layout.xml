@@ -86,16 +86,33 @@
 
             <!-- Main Content View -->
 
-            <ImageButton
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:id="@+id/card_ui_amen_imageButton"
-                android:background="@null"
-                android:layout_weight="1"
-                android:src="@drawable/amen_1"
-                android:scaleType="fitCenter"/>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center">
 
             <ImageButton
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:id="@+id/card_ui_amen_imageButton"
+                    android:background="@null"
+                    android:src="@drawable/amen_1"
+                    android:scaleType="fitCenter"
+                    android:layout_weight="1" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="9999.8K"
+                android:textSize="10sp"
+                android:id="@+id/card_ui_amen_count_textview"
+                android:gravity="center_vertical|center_horizontal" />
+        </LinearLayout>
+
+        <ImageButton
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:id="@+id/card_ui_comment_imageButton"
@@ -120,7 +137,6 @@
                 android:src="@drawable/public_1"
                 android:layout_weight="1"
                 android:background="@null"
-                android:layout_gravity="center"
                 android:scaleType="fitCenter"/>
 
             <ImageButton

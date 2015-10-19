@@ -19,6 +19,7 @@ public class OwnerPrayerModel {
     public long numberOfFriendsTag = 0;
     public long numberOfAmen = 0;
     public long numberOfComment = 0;
+    public boolean ownerAmen = false;
 
     public ArrayList<FriendProfileModel> selectedFriends = new ArrayList<FriendProfileModel>();
 

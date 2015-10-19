@@ -47,6 +47,7 @@ public class ListViewAdapterPrayer extends ArrayAdapter {
                         p.delete_imageButton = (ImageButton) convertView.findViewById(R.id.card_ui_delete_imageButton);
                         p.serversent_textview = (TextView) convertView.findViewById(R.id.card_ui_serversent_textview);
                         p.createdwhen_textview = (TextView) convertView.findViewById(R.id.card_ui_createdwhen);
+                        p.amen_count_textview = (TextView) convertView.findViewById(R.id.card_ui_amen_count_textview);
                         convertView.setTag(p);
                 }
                 else{
@@ -73,9 +74,14 @@ public class ListViewAdapterPrayer extends ArrayAdapter {
                 p.amen_imageButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                                if (resource.get(position).numberOfAmen > 0) {
+                                Database db = new Database(mainactivity);
+                                if (resource.get(position).ownerAmen) {
+                                        resource.get(position).ownerAmen = false;
                                         ((ImageButton) v).setImageResource(R.drawable.amen_1);
+                                        db.AmenOwnerPrayer(resource.get(position).GUID, mainactivity.OwnerGUID, mainactivity.OwnerName, mainactivity.OwnerProfilePicture, false);
                                 } else {
+                                        resource.get(position).ownerAmen = true;
+                                        db.AmenOwnerPrayer(resource.get(position).GUID, mainactivity.OwnerGUID, mainactivity.OwnerName, mainactivity.OwnerProfilePicture, true);
                                         ((ImageButton) v).setImageResource(R.drawable.amen_2);
                                 }
                         }
@@ -92,6 +98,11 @@ public class ListViewAdapterPrayer extends ArrayAdapter {
                 });
 
 
+
+
+
+                //set data
+                p.amen_count_textview.setText(String.valueOf(resource.get(position).numberOfAmen));
                 p.prayer_textView.setText(Html.fromHtml(resource.get(position).Content));
                 p.createdwhen_textview.setText("Pen Date: " + resource.get(position).formattedCreatedWhen());
                 if(resource.get(position).ServerSent)
@@ -102,7 +113,7 @@ public class ListViewAdapterPrayer extends ArrayAdapter {
                 else
                         p.tagfriend_imageButton.setImageResource(R.drawable.tagfriend_1);
 
-                if(resource.get(position).numberOfAmen > 0)
+                if(resource.get(position).ownerAmen)
                         p.amen_imageButton.setImageResource(R.drawable.amen_2);
                 else
                         p.amen_imageButton.setImageResource(R.drawable.amen_1);
