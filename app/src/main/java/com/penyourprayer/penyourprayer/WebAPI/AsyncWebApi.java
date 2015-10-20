@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.text.TextUtils;
 
+import com.penyourprayer.penyourprayer.Common.UserLoginModel;
 import com.penyourprayer.penyourprayer.QuickstartPreferences;
 
 import java.io.BufferedReader;
@@ -133,13 +134,15 @@ public class AsyncWebApi extends AsyncTask {
         return result.toString();
     }
 
-    public void RegisterNewUser(String Name, String Email, String Password, String DeviceRegistrationToken){
+    public void RegisterNewUser(UserLoginModel user){
         List param = new ArrayList();
-        param.add(new WebApiParameter("Name", Name));
-        param.add(new WebApiParameter("Password", Password));
-        param.add(new WebApiParameter("ConfirmPassword", Password));
-        param.add(new WebApiParameter("UserName", Email));
-        param.add(new WebApiParameter("DeviceRegistrationToken", DeviceRegistrationToken));
+        param.add(new WebApiParameter("Name", user.Name));
+        param.add(new WebApiParameter("UserName", user.ID));
+        param.add(new WebApiParameter("URLPictureProfile", user.URLPictureProfile));
+        param.add(new WebApiParameter("AccessSecret", user.accessSecret));
+        param.add(new WebApiParameter("AccessToken", user.accessToken));
+        param.add(new WebApiParameter("LoginType", user.loginType.toString()));
+        param.add(new WebApiParameter("DeviceRegistrationToken", user.GoogleCloudMessagingDeviceID));
         this.execute(QuickstartPreferences.RegisterNewUser, param);
     }
 

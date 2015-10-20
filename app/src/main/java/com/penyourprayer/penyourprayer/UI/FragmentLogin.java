@@ -4,12 +4,15 @@ import android.accounts.Account;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -26,16 +29,24 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
+import com.penyourprayer.penyourprayer.Common.UserLoginModel;
+import com.penyourprayer.penyourprayer.QuickstartPreferences;
 import com.penyourprayer.penyourprayer.R;
+import com.penyourprayer.penyourprayer.WebAPI.AsyncWebApi;
+import com.penyourprayer.penyourprayer.WebAPI.AsyncWebApiResponse;
 import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterAuthClient;
+import com.twitter.sdk.android.core.models.User;
 
 
 import android.net.Uri;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 
 import java.io.IOException;
@@ -68,27 +79,35 @@ public class FragmentLogin extends Fragment implements
             //check if user  https://graph.facebook.com/debug_token?access_token=1643913965854375|k20-5EWrMw-Y3HQK9KpriMvqtaI&input_token=CAAXXIYv53qcBABBeCsx36mD8BJZANGjC5lvys8MlHcoSZAGHvmX81UhD7nXQdn4tsG6094oGl3keXgmor7KKz2dEYs801DNbrfMbZCdirQ5I001f4vA8r3kYxSzqsk0cqKG12JdFQwsD6Ig82XAl4sZAqtYsCJAYPTfvFdX5MKsitcPiGAyRrRHi25ZB8ukMzZAZAREqq9qlWyxrvPLSZCUujDX2ZAKRGW2co39fXWHR9vQZDZD
             //access the api on behalf of user. https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=1643913965854375&client_secret=c452f73b77ad32cb7ce20aa7b2eb9c2c&fb_exchange_token=CAAXXIYv53qcBAGz20x10buKcCgUq1YgrZB36mMKhqtFRN7vtjaxK84ZBZBocMXvlgkQTwySPVTCXxCREVJZCHX2riODZAof9K7wV7Do1VVoElJw2YvD4OYhN0wDIjBZCEAz4NvjM5yfYa2W8r3Uf4pWh36RmkHXBXeDV6vPUlDOsqpNBeHyUKkZCmZC0ZCas7lB8RuXRagX5NCqd48QkmuOZCbZBf9L8xBwpN5tUHscWjOe2QZDZD
             if(profile != null){
-                //mTextView.setText("Welcome " + profile.getName());
-                Uri uri = profile.getProfilePictureUri(50, 50);
-                String s = uri.toString();
 
+                UserLoginModel user = new UserLoginModel();
+                user.accessToken = loginResult.getAccessToken().getToken();
+                user.ID = profile.getId();
+                user.Name = profile.getName();
+                user.URLPictureProfile = profile.getProfilePictureUri(50, 50).toString();
 
-
-
-
+                startLoginProcess(user);
             }
         }
 
         @Override
         public void onCancel() {
-
+            showLoginComponent(View.VISIBLE);
         }
 
         @Override
         public void onError(FacebookException error) {
-
+            showLoginComponent(View.VISIBLE);
         }
     };
+
+    private EditText email;
+    private EditText password;
+    private Button emailLogin;
+    private TextView alternativeLoginTextView;
+    private View alternativeLoginLayout, otherLayout;
+    private ProgressBar loginProgressbar;
+
 
     public FragmentLogin() {
     }
@@ -124,11 +143,20 @@ public class FragmentLogin extends Fragment implements
         super.onViewCreated(view, savedInstanceState);
         mainActivity = ((MainActivity) getActivity());
 
+        loginProgressbar = (ProgressBar) view.findViewById(R.id.login_progressBar);
+        email = (EditText) view.findViewById(R.id.email_editText);
+        password = (EditText) view.findViewById(R.id.password_editText);
+        emailLogin = (Button) view.findViewById(R.id.email_login_button);
+        alternativeLoginTextView = (TextView) view.findViewById(R.id.alternativelogin_textView);
+        alternativeLoginLayout = view.findViewById(R.id.AlternativeLoginLayout);
+        otherLayout = view.findViewById(R.id.OtherLayout);
+
         LoginManager.getInstance().registerCallback(mCallbackManager, mCallback);
 
         ((ImageButton)view.findViewById(R.id.socal_login_facebook_imageButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                showLoginComponent(View.GONE);
                 LoginManager.getInstance().logInWithReadPermissions(mainActivity, Arrays.asList("public_profile"));
             }
         });
@@ -136,6 +164,9 @@ public class FragmentLogin extends Fragment implements
         ((ImageButton) view.findViewById(R.id.socal_login_googleplus_imageButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                showLoginComponent(View.GONE);
+                loginProgressbar.setVisibility(View.VISIBLE);
+
                 mShouldResolve = true;
                 mGoogleApiClient.connect();
             }
@@ -144,18 +175,37 @@ public class FragmentLogin extends Fragment implements
         ((ImageButton) view.findViewById(R.id.socal_login_twitter_imageButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                showLoginComponent(View.GONE);
+                loginProgressbar.setVisibility(View.VISIBLE);
                 mTwitterAuthClient.authorize(mainActivity, new com.twitter.sdk.android.core.Callback<TwitterSession>() {
 
                     @Override
                     public void success(Result<TwitterSession> twitterSessionResult) {
-                        String output = "Status: " +
-                                "Your login was successful " +
-                                twitterSessionResult.data.getUserName() +
-                                "\nAuth Token Received: " +
-                                twitterSessionResult.data.getAuthToken().token;
-                        String secret = twitterSessionResult.data.getAuthToken().secret;
-                        String sdfsdf = twitterSessionResult.data.getAuthToken().token;
-                        long sss = twitterSessionResult.data.getId();
+
+                        final UserLoginModel user = new UserLoginModel();
+                        user.loginType = UserLoginModel.LoginType.Twitter;
+                        user.ID = String.valueOf(twitterSessionResult.data.getId());
+                        user.accessToken = twitterSessionResult.data.getAuthToken().token;
+                        user.accessSecret = twitterSessionResult.data.getAuthToken().secret;
+
+                        TwitterSession session = Twitter.getSessionManager().getActiveSession();
+                        Twitter.getApiClient(session).getAccountService()
+                                .verifyCredentials(true, false, new Callback<User>() {
+
+                                    @Override
+                                    public void success(Result<User> userResult) {
+
+                                        user.Name = userResult.data.name;
+                                        user.URLPictureProfile = userResult.data.profileBackgroundImageUrlHttps;
+                                        startLoginProcess(user);
+                                    }
+
+                                    @Override
+                                    public void failure(TwitterException e) {
+
+                                    }
+
+                                });
                     }
 
                     @Override
@@ -163,8 +213,6 @@ public class FragmentLogin extends Fragment implements
                         e.printStackTrace();
                     }
                 });
-
-
             }
         });
 
@@ -172,7 +220,15 @@ public class FragmentLogin extends Fragment implements
         view.findViewById(R.id.email_login_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mainActivity.replaceWithPrayerListFragment();
+                showLoginComponent(View.GONE);
+                loginProgressbar.setVisibility(View.VISIBLE);
+
+                UserLoginModel user = new UserLoginModel();
+                user.ID = email.getText().toString();
+                user.password = password.getText().toString();
+                user.loginType = UserLoginModel.LoginType.Email;
+
+                startLoginProcess(user);
             }
         });
 
@@ -232,18 +288,26 @@ public class FragmentLogin extends Fragment implements
             String personPhoto = currentPerson.getImage().getUrl();
             String personGooglePlusProfile = currentPerson.getUrl();
 
-            String loginName = personName;
+
+            UserLoginModel user = new UserLoginModel();
+            user.loginType = UserLoginModel.LoginType.GooglePlus;
+            user.ID = currentPerson.getId();
+            user.Name = currentPerson.getDisplayName();
+            user.URLPictureProfile = currentPerson.getUrl();
+
+
             final Context c = this.getContext();
 
-            AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
+            AsyncTask<UserLoginModel, Void, UserLoginModel> task = new AsyncTask<UserLoginModel, Void, UserLoginModel>() {
                 @Override
-                protected String doInBackground(Void... params) {
-                    String token = "123123";
+                protected UserLoginModel doInBackground(UserLoginModel... params) {
+                    String token = "";
+                    UserLoginModel user = params[0];
                     String accountName = Plus.AccountApi.getAccountName(mGoogleApiClient);
                     Account account = new Account(accountName, GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
                     String scopes = "audience:server:client_id:" + "1036182018589-qq5e49a73sc4p0q9f02isfin56snbcsd.apps.googleusercontent.com"; // Not the app's client ID.
                     try {
-                        token = GoogleAuthUtil.getToken(c, account, scopes);
+                        user.accessToken = GoogleAuthUtil.getToken(c, account, scopes);
                     } catch (IOException e) {
                         String sss = "";
                         //Log.e(TAG, "Error retrieving ID token.", e);
@@ -254,7 +318,7 @@ public class FragmentLogin extends Fragment implements
                         return null;
                     }
 
-                    return token;
+                    return user;
                     //https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=eyJhbGciOiJSUzI1NiIsImtpZCI6Ijg4NTEyODVhNzM5ZjY0YTY0MGVjOGU5YTc2MjVlMjAzYWMwNGMwOTAifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXVkIjoiMTAzNjE4MjAxODU4OS1xcTVlNDlhNzNzYzRwMHE5ZjAyaXNmaW41NnNuYmNzZC5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbSIsInN1YiI6IjExNzg4NzA0NTM3ODc4ODY4NTMyOCIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhenAiOiIxMDM2MTgyMDE4NTg5LWtxMjZmMnFpM2dhZGlvMWFnZ3QwcWFvYzEzZ3Z2NjQ2LmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiZW1haWwiOiJ6bml0ZXI4MUBnbWFpbC5jb20iLCJpYXQiOjE0NDE2MTE1NzMsImV4cCI6MTQ0MTYxNTE3MywibmFtZSI6IktpYW4gU2VuZyIsInBpY3R1cmUiOiJodHRwczovL2xoNi5nb29nbGV1c2VyY29udGVudC5jb20vLWNKRVp5aUk5N05VL0FBQUFBQUFBQUFJL0FBQUFBQUFBQnkwLzdGU2dMYmIxd21ZL3M5Ni1jL3Bob3RvLmpwZyIsImdpdmVuX25hbWUiOiJLaWFuIiwiZmFtaWx5X25hbWUiOiJTZW5nIn0.Z-3MpKeZo2GYrMHrCxTMn39clk0JTJOYTubLi4s0q6AXfiqyw2ZLKN_YvugZfNttsfBh4YKnscTXFiAWFpXVyfXkG-s5YpDu1SGz2aVyHZtOIE8WLAXNn3aETuwNIe8BnndbwwSp9b1Hn-z9vj4q1iSM-em0El3z-tHD-VG5e9PDcGP5XLhLQWtX89ClOfsk3xNFMVo__Gd8HIB8BBBqxdX6DT491lRpa78WMA65oQ31TPwAdrcfzi3m9HzIbQTknopwsAPOKd-kBKR66udcaUKZa9fZ_lxhDb_aF_td-CF8Co3YhOPmzJBNWguCtcjB-SqAF5d5w67z-hgbt6TigQ
                     /**
                      *
@@ -280,14 +344,12 @@ public class FragmentLogin extends Fragment implements
                 }
 
                 @Override
-                protected void onPostExecute(String token) {
-                    //mToken = token;
-                    //Toast.makeText(context, "GoogleToken: "+ token, Toast.LENGTH_LONG).show();
-                    //Log.v(TAG, "Access token retrieved:" + token);
+                protected void onPostExecute(UserLoginModel user) {
+                    startLoginProcess(user);
                 }
 
             };
-            task.execute();
+            task.execute(user);
 
         }
     }
@@ -299,30 +361,48 @@ public class FragmentLogin extends Fragment implements
         // ConnectionResult to see possible error codes.
         //Log.d(TAG, "onConnectionFailed:" + connectionResult);
 
-        if (!mIsResolving && mShouldResolve) {
-            if (connectionResult.hasResolution()) {
-                try {
-                    connectionResult.startResolutionForResult(this.getActivity(), RC_SIGN_IN);
-                    mIsResolving = true;
-                } catch (IntentSender.SendIntentException e) {
-                    //Log.e(TAG, "Could not resolve ConnectionResult.", e);
-                    mIsResolving = false;
-                    mGoogleApiClient.connect();
-                }
-            } else {
-                // Could not resolve the connection result, show the user an
-                // error dialog.
-                //showErrorDialog(connectionResult);
-            }
-        } else {
-            // Show the signed-out UI
-            //showSignedOutUI();
-        }
+        loginProgressbar.setVisibility(View.GONE);
+        showLoginComponent(View.VISIBLE);
+
     }
 
     @Override
     public void onConnectionSuspended(int id){
-        String ss = "";
+        loginProgressbar.setVisibility(View.GONE);
+        showLoginComponent(View.VISIBLE);
     }
 
+
+
+
+    private void startLoginProcess(UserLoginModel user){
+        SharedPreferences sharedPreferences = mainActivity.getSharedPreferences("PenYourPrayer.SharePreference", Context.MODE_PRIVATE);
+        user.GoogleCloudMessagingDeviceID = sharedPreferences.getString(QuickstartPreferences.DeviceRegistrationToken, "");
+
+        if(user.GoogleCloudMessagingDeviceID.length() == 0) {
+            loginProgressbar.setVisibility(View.GONE);
+            showLoginComponent(View.VISIBLE);
+            //show some error meessage here
+        }
+        else{
+            AsyncWebApi webSync = new AsyncWebApi(mainActivity);
+            webSync.RegisterNewUser();
+            webSync.onCompleteListener(new AsyncWebApiResponse() {
+                @Override
+                public void WebAPITaskComplete(Object output) {
+
+                }
+            });
+
+        }
+    }
+
+    private void showLoginComponent(int show){
+        email.setVisibility(show);
+        password.setVisibility(show);
+        emailLogin.setVisibility(show);
+        alternativeLoginTextView.setVisibility(show);
+        alternativeLoginLayout.setVisibility(show);
+        otherLayout.setVisibility(show);
+    }
 }

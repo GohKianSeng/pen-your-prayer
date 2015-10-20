@@ -101,7 +101,11 @@ public class ListViewAdapterPrayer extends ArrayAdapter {
 
 
 
-                //set data
+                /****************************************************************
+                *
+                * Set Data
+                *
+                * ****************************************************************/
                 p.amen_count_textview.setText(String.valueOf(resource.get(position).numberOfAmen));
                 p.prayer_textView.setText(Html.fromHtml(resource.get(position).Content));
                 p.createdwhen_textview.setText("Pen Date: " + resource.get(position).formattedCreatedWhen());

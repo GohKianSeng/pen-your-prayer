@@ -1,12 +1,17 @@
 package com.penyourprayer.penyourprayer.UI;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,12 +26,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.penyourprayer.penyourprayer.Common.FragmentBackHandlerInterface;
 import com.penyourprayer.penyourprayer.Common.FriendProfileModel;
 import com.penyourprayer.penyourprayer.Common.ImageProcessor;
 import com.penyourprayer.penyourprayer.Common.ListViewAdapterDrawerProfileFriend;
 import com.penyourprayer.penyourprayer.Common.ListViewAdapterProfileFriend;
 import com.penyourprayer.penyourprayer.Database.Database;
+import com.penyourprayer.penyourprayer.GoogleCloudMessaging.RegistrationIntentService;
+import com.penyourprayer.penyourprayer.QuickstartPreferences;
 import com.penyourprayer.penyourprayer.R;
 
 import com.twitter.sdk.android.Twitter;
@@ -38,16 +47,17 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private DrawerLayout mDrawerLayout;
     private String TWITTER_KEY = "jSBnTpknelOuZX6e4Cg101oue", TWITTER_SECRET = "w5j7WPwHWwY4DSfJ82tRVZF7SBogZJ6XABptVt431uOowvwFKC";
     private boolean drawerCurrentFriendMode = true;
     public ArrayList<FriendProfileModel> friends;
     public ArrayList<FriendProfileModel> selectedFriends = new ArrayList<FriendProfileModel>();
-
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
     public String OwnerGUID = "sdfsdf1323123";
     public String OwnerName = "Kian Seng";
     public String OwnerProfilePicture = "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTy9gsPmNSg7MdCHvmdzn7DHOwSKcPko4q0wdiCuhgiUUWCGZ4rJA";
-
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -76,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        sharedPreferences = this.getSharedPreferences("PenYourPrayer.SharePreference", Context.MODE_PRIVATE);
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
         setContentView(R.layout.activity_main);
@@ -100,6 +111,50 @@ public class MainActivity extends AppCompatActivity {
                 loadDrawerContent(drawerCurrentFriendMode);
             }
         });
+
+
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String Topic = sharedPreferences.getString(QuickstartPreferences.BroadcastMessageTopic, "");
+            }
+        };
+
+
+        if (checkPlayServices()) {
+            // Start IntentService to register this application with GCM.
+            Intent intent = new Intent(this, RegistrationIntentService.class);
+            startService(intent);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                new IntentFilter(QuickstartPreferences.BroadcastMessage));
+    }
+
+    @Override
+    protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        super.onPause();
+    }
+
+    private boolean checkPlayServices() {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                //Log.i(TAG, "This device is not supported.");
+                //Device not supported.
+                finish();
+            }
+            return false;
+        }
+        return true;
     }
 
     private void printHashKeyForFacebook(){

@@ -20,6 +20,13 @@
             android:id="@+id/imageView"
             android:src="@drawable/ic_launcher" />
 
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/login_progressBar"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone" />
+
         <EditText
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -56,7 +63,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="Alternative Login"
-            android:id="@+id/textView4"
+            android:id="@+id/alternativelogin_textView"
             android:paddingTop="30dp"
             android:textColor="#ffffff" />
 
@@ -66,7 +73,9 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="false"
             android:layout_alignParentTop="false"
-            android:layout_centerInParent="true">
+            android:layout_centerInParent="true"
+            android:id="@+id/AlternativeLoginLayout"
+            android:measureWithLargestChild="false">
 
             <ImageButton
                 android:layout_width="wrap_content"
@@ -100,7 +109,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:id="@+id/linearLayout">
+        android:id="@+id/OtherLayout">
 
         <TextView
             android:layout_width="wrap_content"
