@@ -1,4 +1,137 @@
-public void sendToGCM()
+			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:sszzz").create();
+
+            RestAdapter adapter = new RestAdapter.Builder()
+                    .setEndpoint(url)
+                    .setConverter(new GsonConverter(gson))
+                    .build();
+            RestInterface restInterface = adapter.create(RestInterface.class);
+            restInterface.Useraccount(123, new Date(), true, "ssdfsfd", "sdfsdf2222222", new Callback<Prayer>() {
+                @Override
+                public void success(Prayer model, Response response) {
+                    Date d = model.mystring;
+                    String sss = model.mydatetime;
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    String merror = error.getMessage();
+                }
+            });
+	
+			
+			public interface RestInterface {
+				// C# public Prayer Get(){}
+				@GET("/api/Useraccount")
+				void Useraccount(Callback<Prayer> cb);
+
+				//public Prayer Put(int myint, string mydate, bool mybool, string mystring, [FromBody]string value){}
+				@PUT("/api/Useraccount")
+				void Useraccount(@Query("myint") int myint, @Query("mydate") Date mydate, @Query("mybool") boolean mybool, @Query("mystring") String mystring, @Body String value, Callback<Prayer> cb);
+
+				@Multipart
+				@POST("/api/Useraccount")
+				void Useraccount(@Part("pathImage") TypedFile pathImage, @Query("filename") String filename, Callback<Prayer> cb);
+
+			}
+	
+			<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+			<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+			compile 'com.squareup.retrofit:retrofit:1.9.0'
+			compile 'com.squareup.okhttp:okhttp:2.4.0'
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+		//MSSQL will store UTC time.
+		//RESTFUL api will send UTC time, "2013-10-22T23:29:58+00:00"
+		//android will receive GMT+8 store as GMT +8
+	
+		public static void Register(HttpConfiguration config)
+        {
+            config.Routes.MapHttpRoute(
+                name: "DefaultApi",
+                routeTemplate: "api/{controller}/{id}",
+                defaults: new { id = RouteParameter.Optional }
+            );
+
+            var appXmlType = config.Formatters.XmlFormatter.SupportedMediaTypes.FirstOrDefault(t => t.MediaType == "application/xml");
+            config.Formatters.XmlFormatter.SupportedMediaTypes.Remove(appXmlType);
+        }
+	
+		protected void Application_Start()
+        {
+            AreaRegistration.RegisterAllAreas();
+
+            WebApiConfig.Register(GlobalConfiguration.Configuration);
+            FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
+            RouteConfig.RegisterRoutes(RouteTable.Routes);
+            BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            var json = GlobalConfiguration.Configuration.Formatters.JsonFormatter;
+            json.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;
+        }
+	
+		public Prayer Put(int myint, string mydate, bool mybool, string mystring, [FromBody]string value)
+        {
+            Prayer prayer = new Prayer();
+            Item ss = new Item();
+            ss.list_boolean = mybool;
+            ss.list_datetime = DateTime.Now;
+            ss.list_int = myint;
+            ss.list_float = 0.0001F;
+            ss.list_string = "@body-" + value + " - Date : " + mydate;
+
+            prayer.mylist.Add(ss);
+
+            ss = new Item();
+            ss.list_boolean = mybool;
+            ss.list_datetime = DateTime.Now;
+            ss.list_int = myint;
+            ss.list_string = "@body-" + value + " - Date : " + mydate;
+
+            prayer.mylist.Add(ss);
+            prayer.myboolean = mybool;
+            prayer.mydatetime = DateTime.Now;
+            prayer.myint = myint;
+            prayer.mystring = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss")+ "+00:00";
+
+
+
+            return prayer;
+        }
+	
+		public Prayer Post(string filename)
+        {
+            var httpRequest = HttpContext.Current.Request;
+            if (httpRequest.Files.Count > 0)
+            {
+                foreach(string file in httpRequest.Files)
+                {
+                    var postedFile = httpRequest.Files[file];
+                    var filePath = HttpContext.Current.Server.MapPath("~/" + postedFile.FileName);
+                    postedFile.SaveAs(filePath);
+                    // NOTE: To store in memory use postedFile.InputStream
+                }
+
+                
+            }
+
+            Prayer prayer = new Prayer();
+            prayer.myboolean = true;
+            prayer.mydatetime = DateTime.Now;
+            return prayer;
+        }
+	
+		public void sendToGCM()
         {
             string regId = "f1VpytvmVH8:APA91bEtVbY9Owg2j0plHYKG-WTg8nJ-UpAdRWVxncQPF_e6cFfWd5tp_ue_55RE1ti2Rrx3JE7XQYGJpRElrWpeFE2Y_2VQjufec9WrFYbwb-BJ4gdg8LYSTJzoxc6clBVqnAllcB2T";
                      
