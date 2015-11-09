@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -65,7 +66,8 @@ public class httpClient extends OkHttpClient {
                     Random rand = new Random();
                     String Nonce = String.valueOf(rand.nextInt(32700));
 
-                    String hashContent = hmacSha1(method.toUpperCase() + LoginType.toUpperCase() + UserName.toUpperCase() + now + Nonce + queryContent + bodyContent, HMACKey);
+                    String contentToHash = method.toUpperCase() + LoginType.toUpperCase() + UserName.toUpperCase() + now + Nonce + md5CheckSum(queryContent).toUpperCase() + md5CheckSum(bodyContent).toUpperCase();
+                    String hashContent = hmacSha1(contentToHash, HMACKey);
                     
                     String header = "hmac_logintype=\"" + LoginType.toUpperCase() + "\";" + "\n" +
                                     "hmac_username=\"" + UserName.toUpperCase() + "\";" + "\n" +
@@ -112,6 +114,24 @@ public class httpClient extends OkHttpClient {
         catch (final Exception e) {
             return "";
         }
+    }
+
+    private String md5CheckSum(String in) {
+        MessageDigest digest;
+        try {
+            digest = MessageDigest.getInstance("MD5");
+            digest.reset();
+            digest.update(in.getBytes());
+            byte[] a = digest.digest();
+            int len = a.length;
+            StringBuilder sb = new StringBuilder(len << 1);
+            for (int i = 0; i < len; i++) {
+                sb.append(Character.forDigit((a[i] & 0xf0) >> 4, 16));
+                sb.append(Character.forDigit(a[i] & 0x0f, 16));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) { e.printStackTrace(); }
+        return "";
     }
 
     private String hmacSha1(String base_string, String key)
