@@ -217,18 +217,21 @@ public class FragmentLogin extends Fragment implements
         });
 
 
-        view.findViewById(R.id.email_login_button).setOnClickListener(new View.OnClickListener() {
+        emailLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showLoginComponent(View.GONE);
-                loginProgressbar.setVisibility(View.VISIBLE);
+                if(email.getText().toString().trim().length() > 0 && password.getText().toString().length()>0) {
 
-                UserLoginModel user = new UserLoginModel();
-                user.ID = email.getText().toString();
-                user.password = password.getText().toString();
-                user.loginType = UserLoginModel.LoginType.Email;
+                    showLoginComponent(View.GONE);
+                    loginProgressbar.setVisibility(View.VISIBLE);
 
-                startLoginProcess(user);
+                    UserLoginModel user = new UserLoginModel();
+                    user.ID = email.getText().toString();
+                    user.password = password.getText().toString();
+                    user.loginType = UserLoginModel.LoginType.Email;
+
+                    //startLoginProcess(user);
+                }
             }
         });
 
@@ -307,7 +310,8 @@ public class FragmentLogin extends Fragment implements
                     Account account = new Account(accountName, GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
                     String scopes = "audience:server:client_id:" + "1036182018589-qq5e49a73sc4p0q9f02isfin56snbcsd.apps.googleusercontent.com"; // Not the app's client ID.
                     try {
-                        user.accessToken = GoogleAuthUtil.getToken(c, account, scopes);
+                        String googleToken = GoogleAuthUtil.getToken(c, account, scopes);
+                        user.accessToken = googleToken;
                     } catch (IOException e) {
                         String sss = "";
                         //Log.e(TAG, "Error retrieving ID token.", e);
@@ -386,7 +390,7 @@ public class FragmentLogin extends Fragment implements
         }
         else{
             AsyncWebApi webSync = new AsyncWebApi(mainActivity);
-            webSync.RegisterNewUser();
+            webSync.RegisterNewUser(user);
             webSync.onCompleteListener(new AsyncWebApiResponse() {
                 @Override
                 public void WebAPITaskComplete(Object output) {

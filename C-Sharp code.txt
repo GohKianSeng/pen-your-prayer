@@ -39,17 +39,132 @@
 			compile 'com.squareup.retrofit:retrofit:1.9.0'
 			compile 'com.squareup.okhttp:okhttp:2.4.0'
 	
+			public String getToken(String url, String json) {
+				try {
+					url = "http://192.168.78.97:1234/Token";
+					json = "grant_type=password";
+					OkHttpClient client = new OkHttpClient();
+					RequestBody body = RequestBody.create(MediaType.parse(""), json);
+					Request request = new Request.Builder()
+							.url(url)
+							.post(body)
+							.build();
+					com.squareup.okhttp.Response response = client.newCall(request).execute();
+					return response.body().string();
+				}
+				catch( Exception e){
+					String sdf = e.toString();;
+					sdf = "";
+				}
+				return "";
+			}
+	
+			private String hmacSha1(String base_string, String key)
+            throws UnsupportedEncodingException, NoSuchAlgorithmException,
+            InvalidKeyException {
+
+				try {
+					Mac mac = Mac.getInstance("HmacSHA1");
+					SecretKeySpec secret = new SecretKeySpec(key.getBytes("UTF-8"), mac.getAlgorithm());
+					mac.init(secret);
+					byte[] digest = mac.doFinal(base_string.getBytes());
+
+					String retVal = android.util.Base64.encodeToString(digest, Base64.DEFAULT);
+
+					Log.v("aa", "String: " + base_string);
+					Log.v("aa", "key: " + key);
+					Log.v("aa", "result: " + retVal);
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
+				}
+				return "";
+			}
+	
+			OkHttpClient httpClient = new OkHttpClient();
+			httpClient.interceptors().add(new Interceptor() {
+                                          @Override
+                                          public com.squareup.okhttp.Response intercept(Interceptor.Chain chain) throws IOException {
+                                              Request original = chain.request();
+                                              try {
+                                                  String bodyContent = bodyToString(original.body());
+                                                  String queryContent = original.uri().getQuery();
+
+                                                  Request request = original.newBuilder()
+                                                          .header("Authorization", "testing")
+                                                          .header("Identity", "userguid")
+                                                          .method(original.method(), original.body())
+                                                          .build();
+
+
+                                                  chain.proceed(request);
+                                              }
+                                              catch(Exception e){
+                                                  String sdf = e.toString();
+                                              }
+                                              return chain.proceed(original);
+                                          }
+                                      });
+
+
+					sending of datetime, use RFC 7231 
+					C# DateTime.UtcNow.ToString("r")
+					Java Calendar calendar = Calendar.getInstance();
+						SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
+						System.out.println("Date: " + dateFormat.format(calendar.getTime()));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	
 	
 	
 	
+			public class BasicAuthorizeAttribute : AuthorizeAttribute
+			{
+				protected override bool IsAuthorized(HttpActionContext actionContext)
+				{
+					string receivedHash = "";
+					if (actionContext.Request.Headers.Authorization != null) 
+					{
+						string query = actionContext.Request.RequestUri.Query.Substring(1);
+						string content = actionContext.Request.Content.ToString();
+						receivedHash = actionContext.Request.Headers.Authorization.ToString().Split(' ')[1];
+						string receivedUserIdentity = actionContext.Request.Headers.GetValues("Identity").ElementAt(0);
+						//check the hmacsha1 if ok set the userid
+						IIdentity identity = new GenericIdentity("NewUser");
+						IPrincipal principal = new GenericPrincipal(identity, null);
+						
+						actionContext.RequestContext.Principal = principal;
+
+					return true;
+
+					}
+					return false;
+				}
 	
 	
-	
-	
-	
-	
-	
+			public static string Encode(string input, byte[] key)
+            {
+                HMACSHA1 myhmacsha1 = new HMACSHA1(key);
+                byte[] byteArray = Encoding.ASCII.GetBytes(input);
+                MemoryStream stream = new MemoryStream(byteArray);
+                byte[] s1 = myhmacsha1.ComputeHash(stream);
+                return System.Convert.ToBase64String(s1);
+
+            }
 	
 		//MSSQL will store UTC time.
 		//RESTFUL api will send UTC time, "2013-10-22T23:29:58+00:00"

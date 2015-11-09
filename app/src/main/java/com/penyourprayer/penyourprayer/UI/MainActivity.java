@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     public String OwnerGUID = "sdfsdf1323123";
     public String OwnerName = "Kian Seng";
     public String OwnerProfilePicture = "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTy9gsPmNSg7MdCHvmdzn7DHOwSKcPko4q0wdiCuhgiUUWCGZ4rJA";
-    SharedPreferences sharedPreferences;
+    public SharedPreferences sharedPreferences;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -252,7 +253,6 @@ public class MainActivity extends AppCompatActivity {
         transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
 
         transaction.replace(R.id.fragment, newFragment);
-        //transaction.addToBackStack(newFragment.getTag());
 
         transaction.commit();
     }
@@ -274,7 +274,35 @@ public class MainActivity extends AppCompatActivity {
     public void replaceWithSignUpFragment(){
 
         // Create fragment and give it an argument specifying the article it should show
-        Fragment newFragment = new FragmentSignUp();
+        Fragment newFragment = new FragmentSignupStep1();
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
+
+        transaction.replace(R.id.fragment, newFragment);
+        transaction.addToBackStack("fragment_login");
+
+        transaction.commit();
+    }
+
+    public void replaceWithSignUpStep2Fragment(String fullname){
+
+        // Create fragment and give it an argument specifying the article it should show
+        Fragment newFragment = FragmentSignupStep2.newInstance(fullname);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
+
+        transaction.replace(R.id.fragment, newFragment);
+        transaction.addToBackStack(null);
+
+        transaction.commit();
+    }
+
+    public void replaceWithSignUpStep3Fragment(String fullname, String email){
+
+        // Create fragment and give it an argument specifying the article it should show
+        Fragment newFragment = FragmentSignupStep3.newInstance(fullname, email);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
@@ -310,5 +338,9 @@ public class MainActivity extends AppCompatActivity {
         transaction.addToBackStack(null);
 
         transaction.commit();
+    }
+
+    public void clearAllFragmentStackToLoginFragment(){
+        getSupportFragmentManager().popBackStack("fragment_login", FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
 }

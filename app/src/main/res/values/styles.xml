@@ -27,4 +27,9 @@
         <item name="colorControlHighlight">#ffffff</item>
     </style>
 
+    <style name="HintAppearanceTextInputLayout" parent="@android:style/TextAppearance">
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:textSize">9sp</item>
+    </style>
+
 </resources>

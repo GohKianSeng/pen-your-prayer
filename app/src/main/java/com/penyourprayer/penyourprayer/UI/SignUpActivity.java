@@ -56,7 +56,7 @@ public class SignUpActivity extends AppCompatActivity {
             public void onClick(View view) {
                 webSync = new AsyncWebApi(view.getContext());
                 webSync.onCompleteListener(null);
-                webSync.RegisterNewUser(editTextName.getText().toString(), editTextEmail.getText().toString(), editTextPassword1.getText().toString(), sharedPreferences.getString(QuickstartPreferences.DeviceRegistrationToken, ""));
+                //webSync.RegisterNewUser(editTextName.getText().toString(), editTextEmail.getText().toString(), editTextPassword1.getText().toString(), sharedPreferences.getString(QuickstartPreferences.DeviceRegistrationToken, ""));
             }
         });
 

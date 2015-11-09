@@ -36,10 +36,11 @@ public class QuickstartPreferences {
     public static final String Password = "Password";
     public static final String Cookie = "Cookie";
 
-    //Web url
-    public static final String api_server = "http://99.99.99.101/";
-    public static final String RegisterNewUser = "/Account/RegisterNewUser";
-    public static final String VerifyUserDevice = "/Account/VerifyUserDevice";
-    public static final String GCMTokenRefresh = "/Account/GCMTokenRefresh";
+    //RandomDeviceID
+    public static final String RandomUserID = "RandomUserID";
+    public static final String AnonymousHMACKey = "sSLPIZ4XmZRNEwDAQxY0yuC+MeSQVzxXJNbZTgAlRF/zAocJlTU4WPOjAXmQwbZ+XhkoYGS8exqzUKhxqCfY4SXOJTB+GG5R";
 
+    //Web url
+    public static final String api_server = "http://pyptesting.com/";
+    public static final String locale_server = "https://www.telize.com/";
 }

@@ -1,6 +1,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
@@ -27,27 +30,25 @@
             android:layout_gravity="center_horizontal"
             android:visibility="gone" />
 
-        <EditText
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textEmailAddress"
-            android:ems="10"
-            android:id="@+id/email_editText"
-            android:hint="Email"
-            android:textColorHint="#ffffff"
-            android:textColor="#ffffff"
-            android:backgroundTint="#ffffff" />
 
         <EditText
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
+            android:id="@+id/email_editText"
+            android:inputType="textEmailAddress"
             android:layout_height="wrap_content"
-            android:inputType="textPassword"
-            android:ems="10"
+            android:hint="Email Address"
+            android:backgroundTint="#ffffff"
+            android:textColor="#ffffff"
+            android:textColorHint="#ffffff" />
+
+        <EditText
+            android:layout_width="match_parent"
             android:id="@+id/password_editText"
+            android:inputType="textPassword"
+            android:layout_height="wrap_content"
             android:hint="Password"
             android:textColorHint="#ffffff"
             android:textColor="#ffffff"
-            style="@style/LoginPasswordEditTextTheme"
             android:backgroundTint="#ffffff" />
 
         <Button
