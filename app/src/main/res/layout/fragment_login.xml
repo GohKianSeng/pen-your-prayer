@@ -39,7 +39,8 @@
             android:hint="Email Address"
             android:backgroundTint="#ffffff"
             android:textColor="#ffffff"
-            android:textColorHint="#ffffff" />
+            android:textColorHint="#ffffff"
+            android:text="mail@pyptesting.com" />
 
         <EditText
             android:layout_width="match_parent"
@@ -49,7 +50,8 @@
             android:hint="Password"
             android:textColorHint="#ffffff"
             android:textColor="#ffffff"
-            android:backgroundTint="#ffffff" />
+            android:backgroundTint="#ffffff"
+            android:text="a" />
 
         <Button
             android:layout_width="fill_parent"

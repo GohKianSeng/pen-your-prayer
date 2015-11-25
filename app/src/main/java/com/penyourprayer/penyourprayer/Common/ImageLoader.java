@@ -14,6 +14,9 @@ package com.penyourprayer.penyourprayer.Common;
         import java.util.WeakHashMap;
         import java.util.concurrent.ExecutorService;
         import java.util.concurrent.Executors;
+
+        import android.graphics.Matrix;
+        import android.media.ExifInterface;
         import android.os.Handler;
         import android.content.Context;
         import android.graphics.Bitmap;
@@ -34,7 +37,7 @@ public class ImageLoader {
     }
 
     final int stub_id=R.drawable.profile1;
-    public void DisplayImage(String url, ImageView imageView)
+    public void DisplayImage(String url, ImageView imageView, boolean needRounding)
     {
         imageViews.put(imageView, url);
         Bitmap bitmap=memoryCache.get(url);
@@ -42,14 +45,14 @@ public class ImageLoader {
             imageView.setImageBitmap(bitmap);
         else
         {
-            queuePhoto(url, imageView);
+            queuePhoto(url, imageView, needRounding);
             imageView.setImageResource(stub_id);
         }
     }
 
-    private void queuePhoto(String url, ImageView imageView)
+    private void queuePhoto(String url, ImageView imageView, boolean needRounding)
     {
-        PhotoToLoad p=new PhotoToLoad(url, imageView);
+        PhotoToLoad p=new PhotoToLoad(url, imageView, needRounding);
         executorService.submit(new PhotosLoader(p));
     }
 
@@ -59,8 +62,22 @@ public class ImageLoader {
 
         //from SD cache
         Bitmap b = decodeFile(f);
-        if(b!=null)
+        if(b!=null) {
             return b;
+        }
+
+        try {
+            f = new File(url);
+            if (f.exists()) {
+
+                b = decodeFile(f);
+                if (b != null) {
+                    ExifInterface exif = new ExifInterface(url);
+                    int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
+                    return RotateImageCorrectly(b, orientation);
+                }
+            }
+        }catch(Exception e){}
 
         //from web
         try {
@@ -75,8 +92,7 @@ public class ImageLoader {
             Utils.CopyStream(is, os);
             os.close();
             conn.disconnect();
-            bitmap = decodeFile(f);
-            return ImageProcessor.getRoundedCornerBitmap(bitmap);
+            return decodeFile(f);
         } catch (Throwable ex){
             ex.printStackTrace();
             if(ex instanceof OutOfMemoryError)
@@ -113,7 +129,7 @@ public class ImageLoader {
             FileInputStream stream2=new FileInputStream(f);
             Bitmap bitmap=BitmapFactory.decodeStream(stream2, null, o2);
             stream2.close();
-            return ImageProcessor.getRoundedCornerBitmap(bitmap);
+            return bitmap;
         } catch (FileNotFoundException e) {
         }
         catch (IOException e) {
@@ -127,7 +143,9 @@ public class ImageLoader {
     {
         public String url;
         public ImageView imageView;
-        public PhotoToLoad(String u, ImageView i){
+        public boolean needRounding;
+        public PhotoToLoad(String u, ImageView i, boolean needRounding){
+            this.needRounding = needRounding;
             url=u;
             imageView=i;
         }
@@ -145,6 +163,10 @@ public class ImageLoader {
                 if(imageViewReused(photoToLoad))
                     return;
                 Bitmap bmp=getBitmap(photoToLoad.url);
+                if(photoToLoad.needRounding)
+                    bmp = ImageProcessor.getRoundedBitmap(bmp);
+                else
+                    bmp = ImageProcessor.getRoundedCornerBitmap(bmp);
                 memoryCache.put(photoToLoad.url, bmp);
                 if(imageViewReused(photoToLoad))
                     return;
@@ -185,5 +207,19 @@ public class ImageLoader {
         fileCache.clear();
     }
 
+    private Bitmap RotateImageCorrectly(Bitmap myBitmap, int orientation){
+
+        Matrix matrix = new Matrix();
+        if (orientation == 6) {
+            matrix.postRotate(90);
+        }
+        else if (orientation == 3) {
+            matrix.postRotate(180);
+        }
+        else if (orientation == 8) {
+            matrix.postRotate(270);
+        }
+        return Bitmap.createBitmap(myBitmap, 0, 0, myBitmap.getWidth(), myBitmap.getHeight(), matrix, true); // rotating bitmap
+    }
 }
 

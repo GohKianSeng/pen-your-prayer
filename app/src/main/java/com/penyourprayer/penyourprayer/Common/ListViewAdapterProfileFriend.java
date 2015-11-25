@@ -51,9 +51,9 @@ public class ListViewAdapterProfileFriend extends ArrayAdapter {
                 }
 
 
-                p.name_TextView.setText(friends.get(position).name);
+                p.name_TextView.setText(friends.get(position).DisplayName);
                 p.selected_CheckBox.setChecked(friends.get(position).selected);
-                imageLoader.DisplayImage(friends.get(position).img_url, p.profile_ImageView);
+                imageLoader.DisplayImage(friends.get(position).ProfilePictureURL, p.profile_ImageView, true);
 
                 p.selected_CheckBox.setOnClickListener(new View.OnClickListener() {
                     @Override

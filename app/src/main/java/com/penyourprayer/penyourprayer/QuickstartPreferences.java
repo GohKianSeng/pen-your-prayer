@@ -5,10 +5,15 @@ package com.penyourprayer.penyourprayer;
  */
 public class QuickstartPreferences {
 
+    public static final String DefaultTimeFormat = "yyyy-MM-dd'T'HH:mm:sszzz";
+
     //OwnerGUID
-    public static final String OwnerGUID = "OwnerGUID";
-    public static final String OwnerName = "OwnerName";
-    public static final String OwnerProfilePicture = "OwnerProfilePicture";
+    public static final String OwnerLoginType = "OwnerLoginType";
+    public static final String OwnerUserName = "OwnerUserName";
+    public static final String OwnerID = "OwnerID";
+    public static final String OwnerDisplayName = "OwnerDisplayName";
+    public static final String OwnerProfilePictureURL = "OwnerProfilePictureURL";
+    public static final String OwnerHMACKey = "OwnerHMACKey";
 
     //Google cloud messaging id
     public static final String gcm_defaultSenderId = "1036182018589";

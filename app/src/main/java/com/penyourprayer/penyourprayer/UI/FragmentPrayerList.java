@@ -16,12 +16,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
+import android.widget.ArrayAdapter;
+import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.melnykov.fab.FloatingActionButton;
+import com.penyourprayer.penyourprayer.Common.Interface.InterfacePrayerListUpdated;
 import com.penyourprayer.penyourprayer.Common.ListViewAdapterPrayer;
 import com.penyourprayer.penyourprayer.Common.OwnerPrayerModel;
 import com.penyourprayer.penyourprayer.Database.Database;
@@ -33,7 +36,7 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FragmentPrayerList extends Fragment {
+public class FragmentPrayerList extends Fragment implements InterfacePrayerListUpdated {
 
     private ActionBar actionBar;
     private ImageView mImageView;
@@ -43,11 +46,12 @@ public class FragmentPrayerList extends Fragment {
     private ImageButton delete_ImageButton;
     private SwipeRefreshLayout prayer_list_swiperefresh;
     private View previousPrayerListCategory = null;
-
+    private ListViewAdapterPrayer prayerArrayAdapter;
     public FragmentPrayerList() {
         // Required empty public constructor
     }
-
+    private ArrayList<OwnerPrayerModel> allprayers;
+    private ListView listView;
 
     @Override
     public void onCreate(Bundle safeInstanceState){
@@ -137,11 +141,11 @@ public class FragmentPrayerList extends Fragment {
 
 
         Database db = new Database(mainActivity);
-        ArrayList<OwnerPrayerModel> allprayers = db.getAllOwnerPrayer(mainActivity.OwnerGUID);
+        allprayers = db.getAllOwnerPrayer(mainActivity.OwnerID);
 
-        ListViewAdapterPrayer prayerArrayAdapter = new ListViewAdapterPrayer(this.getActivity(), R.layout.card_ui_owner_layout, allprayers);
+        prayerArrayAdapter = new ListViewAdapterPrayer(this.getActivity(), R.layout.card_ui_owner_layout, allprayers);
 
-        final ListView listView = (ListView) view.findViewById(R.id.prayer_listView);
+        listView = (ListView) view.findViewById(R.id.prayer_listView);
         listView.setFastScrollEnabled(true);
         if (listView != null) {
             listView.setAdapter(prayerArrayAdapter);
@@ -207,4 +211,19 @@ public class FragmentPrayerList extends Fragment {
         Log.e("Testing", "Category - " + String.valueOf(category));
     }
 
+    @Override
+    public void onListUpdate(final ArrayList<OwnerPrayerModel> allprayers){
+        Runnable run = new Runnable(){
+            public void run(){
+                prayerArrayAdapter.updatePrayerList(allprayers);
+            }
+        };
+        mainActivity.runOnUiThread(run);
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
 }

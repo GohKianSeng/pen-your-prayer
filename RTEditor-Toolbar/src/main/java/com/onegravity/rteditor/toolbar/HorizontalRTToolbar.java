@@ -154,7 +154,7 @@ public class HorizontalRTToolbar extends LinearLayout implements RTToolbar, View
         //initImageButton(R.id.toolbar_inc_indent);
         //initImageButton(R.id.toolbar_dec_indent);
         //initImageButton(R.id.toolbar_link);
-        //initImageButton(R.id.toolbar_image);
+        initImageButton(R.id.toolbar_image);
         initImageButton(R.id.toolbar_undo);
         initImageButton(R.id.toolbar_redo);
         //initImageButton(R.id.toolbar_clear);
@@ -647,8 +647,8 @@ public class HorizontalRTToolbar extends LinearLayout implements RTToolbar, View
                 //    mListener.onEffectSelected(Effects.INDENTATION, false);
                 //} else if (id == R.id.toolbar_link) {
                 //    mListener.onCreateLink();
-                //} else if (id == R.id.toolbar_image) {
-                //    mListener.onPickImage();
+                } else if (id == R.id.toolbar_image) {
+                    mListener.onPickImage();
                 //} else if (id == R.id.toolbar_image_capture) {
                 //    mListener.onCaptureImage();
                 //} else if (id == R.id.toolbar_clear) {

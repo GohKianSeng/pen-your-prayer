@@ -59,14 +59,17 @@ public class httpClient extends OkHttpClient {
             public com.squareup.okhttp.Response intercept(Interceptor.Chain chain) throws IOException {
                 Request original = chain.request();
                 try {
-                    String bodyContent = bodyToString(original.body());
+                    String contentMD5 = md5CheckSum(bodyToBytes(original.body())).toUpperCase();
+                    //String bodyContent = bodyToString(original.body());
                     String queryContent = original.uri().getQuery();
+                    if(queryContent == null)
+                        queryContent = "";
                     String now = getHttpFormatTime();
                     String method = original.method();
                     Random rand = new Random();
                     String Nonce = String.valueOf(rand.nextInt(32700));
 
-                    String contentToHash = method.toUpperCase() + LoginType.toUpperCase() + UserName.toUpperCase() + now + Nonce + md5CheckSum(queryContent).toUpperCase() + md5CheckSum(bodyContent).toUpperCase();
+                    String contentToHash = method.toUpperCase() + LoginType.toUpperCase() + UserName.toUpperCase() + now + Nonce + md5CheckSum(queryContent).toUpperCase() + contentMD5;
                     String hashContent = hmacSha1(contentToHash, HMACKey);
                     
                     String header = "hmac_logintype=\"" + LoginType.toUpperCase() + "\";" + "\n" +
@@ -99,6 +102,20 @@ public class httpClient extends OkHttpClient {
         return dateFormat.format(calendar.getTime()).substring(0, 29);
     }
 
+    private byte[] bodyToBytes(RequestBody request){
+
+        try {
+            final RequestBody copy = request;
+            final Buffer buffer = new Buffer();
+            copy.writeTo(buffer);
+            return buffer.readByteArray();
+
+        }
+        catch (final Exception e) {
+            return null;
+        }
+    }
+
     private String bodyToString(RequestBody request){
 
         try {
@@ -122,6 +139,24 @@ public class httpClient extends OkHttpClient {
             digest = MessageDigest.getInstance("MD5");
             digest.reset();
             digest.update(in.getBytes());
+            byte[] a = digest.digest();
+            int len = a.length;
+            StringBuilder sb = new StringBuilder(len << 1);
+            for (int i = 0; i < len; i++) {
+                sb.append(Character.forDigit((a[i] & 0xf0) >> 4, 16));
+                sb.append(Character.forDigit(a[i] & 0x0f, 16));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) { e.printStackTrace(); }
+        return "";
+    }
+
+    private String md5CheckSum(byte[] in) {
+        MessageDigest digest;
+        try {
+            digest = MessageDigest.getInstance("MD5");
+            digest.reset();
+            digest.update(in);
             byte[] a = digest.digest();
             int len = a.length;
             StringBuilder sb = new StringBuilder(len << 1);

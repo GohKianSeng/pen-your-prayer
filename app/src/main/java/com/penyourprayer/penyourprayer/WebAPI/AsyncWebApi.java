@@ -134,18 +134,6 @@ public class AsyncWebApi extends AsyncTask {
         return result.toString();
     }
 
-    public void RegisterNewUser(UserLoginModel user){
-        List param = new ArrayList();
-        param.add(new WebApiParameter("Name", user.Name));
-        param.add(new WebApiParameter("UserName", user.ID));
-        param.add(new WebApiParameter("URLPictureProfile", user.URLPictureProfile));
-        param.add(new WebApiParameter("AccessSecret", user.accessSecret));
-        param.add(new WebApiParameter("AccessToken", user.accessToken));
-        param.add(new WebApiParameter("LoginType", user.loginType.toString()));
-        param.add(new WebApiParameter("DeviceRegistrationToken", user.GoogleCloudMessagingDeviceID));
-        //this.execute(QuickstartPreferences.RegisterNewUser, param);
-    }
-
     public void GCMTokenRefresh(String Email, String DeviceRegistrationToken){
         List param = new ArrayList();
         param.add(new WebApiParameter("DeviceRegistrationToken", DeviceRegistrationToken));

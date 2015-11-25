@@ -167,7 +167,7 @@ public class FragmentTagAFriend extends Fragment {
     private void updateFriendList(){
         for(int x=0; x< friends.size(); x++){
             for(int y=0; y<mainActivity.selectedFriends.size(); y++){
-                if(friends.get(x).GUID.compareToIgnoreCase(mainActivity.selectedFriends.get(y).GUID) == 0){
+                if(friends.get(x).UserID.compareToIgnoreCase(mainActivity.selectedFriends.get(y).UserID) == 0){
                     friends.get(x).selected = true;
                 }
             }

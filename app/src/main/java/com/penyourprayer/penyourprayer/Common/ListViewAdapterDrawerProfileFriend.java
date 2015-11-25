@@ -49,8 +49,8 @@ public class ListViewAdapterDrawerProfileFriend extends ArrayAdapter {
                 }
 
                 if(!friends.get(position).isAction) {
-                        p.name_TextView.setText(friends.get(position).name);
-                        imageLoader.DisplayImage(friends.get(position).img_url, p.profile_ImageView);
+                        p.name_TextView.setText(friends.get(position).DisplayName);
+                        imageLoader.DisplayImage(friends.get(position).ProfilePictureURL, p.profile_ImageView, true);
                 }
                 else{
                         p.name_TextView.setText(friends.get(position).actionName.toString());

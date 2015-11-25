@@ -3,6 +3,7 @@ package com.penyourprayer.penyourprayer.UI;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -133,9 +135,20 @@ public class FragmentSignupStep3 extends Fragment {
                 GetLocaleAndStartRegistering();
             }
         });
+
+        password_edittext.requestFocus();
+        InputMethodManager imm = (InputMethodManager) this.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(password_edittext, InputMethodManager.SHOW_IMPLICIT);
     }
 
     private void GetLocaleAndStartRegistering(){
+        IPAddressLocale s = new IPAddressLocale();
+        s.country = "Singapore";
+        RegisterUser(new IPAddressLocale());
+        if(true)
+            return;
+
+        //need to find new ipgeo location service.
         LocaleInterface LI = localeAdapter.create(LocaleInterface.class);
         LI.getLocale(new Callback<IPAddressLocale>() {
             @Override
@@ -190,18 +203,7 @@ public class FragmentSignupStep3 extends Fragment {
     }
 
     private void registrationSuccessful(){
-
-        new AlertDialog.Builder(mainActivity)
-                .setTitle("Registration Completed")
-                .setMessage("An email has been sent to the registered address. Please click on the link provided to activate your account. Thanks you.")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        //mainActivity.clearAllFragmentStackToLoginFragment();
-                    }
-                })
-                .show();
-        mainActivity.clearAllFragmentStackToLoginFragment();
-
+        mainActivity.replaceWithSignUpStep4Fragment(fullname, email);
     }
 
     private boolean passwordValidationSuccessful(){

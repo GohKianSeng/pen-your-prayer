@@ -10,15 +10,15 @@ public class FriendProfileModel{
 
     public ActionName actionName;
     public boolean isAction = false;
-    public String name, img_url;
+    public String DisplayName, ProfilePictureURL;
     public boolean selected = false;
-    public String GUID = "";
+    public String UserID = "";
 
-    public FriendProfileModel(String GUID, String name, String img_url, boolean selected){
-        this.GUID = GUID;
-        this.name = name;
+    public FriendProfileModel(String UserID, String name, String img_url, boolean selected){
+        this.UserID = UserID;
+        this.DisplayName = name;
         this.selected = selected;
-        this.img_url = img_url;
+        this.ProfilePictureURL = img_url;
     }
 
     public FriendProfileModel(ActionName actionName){

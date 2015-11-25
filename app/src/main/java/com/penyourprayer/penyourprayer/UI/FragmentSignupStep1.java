@@ -1,6 +1,7 @@
 package com.penyourprayer.penyourprayer.UI;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -8,6 +9,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -69,5 +71,9 @@ public class FragmentSignupStep1 extends Fragment {
                 mainActivity.replaceWithSignUpStep2Fragment(fullname_edittext.getText().toString().trim());
             }
         });
+
+        fullname_edittext.requestFocus();
+        InputMethodManager imm = (InputMethodManager) this.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(fullname_edittext, InputMethodManager.SHOW_IMPLICIT);
     }
 }

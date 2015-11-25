@@ -1,7 +1,9 @@
 package com.penyourprayer.penyourprayer.UI;
 
 import android.accounts.Account;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
@@ -30,10 +32,14 @@ import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 import com.penyourprayer.penyourprayer.Common.UserLoginModel;
+import com.penyourprayer.penyourprayer.Common.Utils;
 import com.penyourprayer.penyourprayer.QuickstartPreferences;
 import com.penyourprayer.penyourprayer.R;
 import com.penyourprayer.penyourprayer.WebAPI.AsyncWebApi;
 import com.penyourprayer.penyourprayer.WebAPI.AsyncWebApiResponse;
+import com.penyourprayer.penyourprayer.WebAPI.Model.SimpleJsonResponse;
+import com.penyourprayer.penyourprayer.WebAPI.UserAccountInterface;
+import com.penyourprayer.penyourprayer.WebAPI.httpClient;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -47,6 +53,7 @@ import com.twitter.sdk.android.core.models.User;
 import android.net.Uri;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import java.io.IOException;
@@ -55,6 +62,10 @@ import java.util.Arrays;
 
 
 import io.fabric.sdk.android.Fabric;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.OkClient;
+import retrofit.client.Response;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -63,7 +74,8 @@ public class FragmentLogin extends Fragment implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
-    TwitterAuthClient mTwitterAuthClient;
+    private RestAdapter adapter;
+    private TwitterAuthClient mTwitterAuthClient;
     private MainActivity mainActivity;
     private String TWITTER_KEY = "jSBnTpknelOuZX6e4Cg101oue", TWITTER_SECRET = "w5j7WPwHWwY4DSfJ82tRVZF7SBogZJ6XABptVt431uOowvwFKC";
     //private TextView mTextView;
@@ -82,7 +94,7 @@ public class FragmentLogin extends Fragment implements
 
                 UserLoginModel user = new UserLoginModel();
                 user.accessToken = loginResult.getAccessToken().getToken();
-                user.ID = profile.getId();
+                user.UserName = profile.getId();
                 user.Name = profile.getName();
                 user.URLPictureProfile = profile.getProfilePictureUri(50, 50).toString();
 
@@ -115,6 +127,7 @@ public class FragmentLogin extends Fragment implements
     @Override
     public void onCreate(Bundle safeInstanceState){
         super.onCreate(safeInstanceState);
+        mainActivity = ((MainActivity) getActivity());
         FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
         mCallbackManager = CallbackManager.Factory.create();
 
@@ -129,6 +142,11 @@ public class FragmentLogin extends Fragment implements
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this.getActivity(), new Twitter(authConfig));
         mTwitterAuthClient= new TwitterAuthClient();
+
+        adapter = new RestAdapter.Builder()
+                .setEndpoint(QuickstartPreferences.api_server)
+                .setClient(new OkClient(new httpClient("ANONYMOUS", Utils.TempUserID(mainActivity), QuickstartPreferences.AnonymousHMACKey)))
+                .build();
     }
 
     @Override
@@ -141,7 +159,6 @@ public class FragmentLogin extends Fragment implements
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mainActivity = ((MainActivity) getActivity());
 
         loginProgressbar = (ProgressBar) view.findViewById(R.id.login_progressBar);
         email = (EditText) view.findViewById(R.id.email_editText);
@@ -152,6 +169,13 @@ public class FragmentLogin extends Fragment implements
         otherLayout = view.findViewById(R.id.OtherLayout);
 
         LoginManager.getInstance().registerCallback(mCallbackManager, mCallback);
+
+        view.findViewById(R.id.forgot_password_textView).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mainActivity.replaceWithResetPasswordFragment();
+            }
+        });
 
         ((ImageButton)view.findViewById(R.id.socal_login_facebook_imageButton)).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -184,9 +208,9 @@ public class FragmentLogin extends Fragment implements
 
                         final UserLoginModel user = new UserLoginModel();
                         user.loginType = UserLoginModel.LoginType.Twitter;
-                        user.ID = String.valueOf(twitterSessionResult.data.getId());
+                        user.UserName = String.valueOf(twitterSessionResult.data.getId());
                         user.accessToken = twitterSessionResult.data.getAuthToken().token;
-                        user.accessSecret = twitterSessionResult.data.getAuthToken().secret;
+                        user.password_secret = twitterSessionResult.data.getAuthToken().secret;
 
                         TwitterSession session = Twitter.getSessionManager().getActiveSession();
                         Twitter.getApiClient(session).getAccountService()
@@ -226,11 +250,11 @@ public class FragmentLogin extends Fragment implements
                     loginProgressbar.setVisibility(View.VISIBLE);
 
                     UserLoginModel user = new UserLoginModel();
-                    user.ID = email.getText().toString();
-                    user.password = password.getText().toString();
+                    user.UserName = email.getText().toString();
+                    user.password_secret = password.getText().toString();
                     user.loginType = UserLoginModel.LoginType.Email;
 
-                    //startLoginProcess(user);
+                    startLoginProcess(user);
                 }
             }
         });
@@ -294,7 +318,7 @@ public class FragmentLogin extends Fragment implements
 
             UserLoginModel user = new UserLoginModel();
             user.loginType = UserLoginModel.LoginType.GooglePlus;
-            user.ID = currentPerson.getId();
+            user.UserName = currentPerson.getId();
             user.Name = currentPerson.getDisplayName();
             user.URLPictureProfile = currentPerson.getUrl();
 
@@ -389,16 +413,94 @@ public class FragmentLogin extends Fragment implements
             //show some error meessage here
         }
         else{
-            AsyncWebApi webSync = new AsyncWebApi(mainActivity);
-            webSync.RegisterNewUser(user);
-            webSync.onCompleteListener(new AsyncWebApiResponse() {
+            UserAccountInterface useracctInt = adapter.create(UserAccountInterface.class);
+            useracctInt.Login(user.loginType.toString(), user.UserName, user.accessToken, user.password_secret, "", new retrofit.Callback<UserLoginModel>() {
                 @Override
-                public void WebAPITaskComplete(Object output) {
+                public void success(UserLoginModel model, Response response) {
+                    if(!model.EmailVerification){
+                        new AlertDialog.Builder(mainActivity)
+                                .setTitle("Account not activated!")
+                                .setMessage("Please check your email to activate your account. if your did not receive, please click resend.")
+                                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        showLoginComponent(View.VISIBLE);
+                                        loginProgressbar.setVisibility(View.GONE);
+                                    }
+                                })
+                                .setNegativeButton("Resend", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        ResendAccountActivation();
+                                    }
+                                })
+                                .show();
+                    }
+                    else if(model.HMACHashKey == null || model.HMACHashKey.length() == 0){
 
+                        new AlertDialog.Builder(mainActivity)
+                                .setTitle("Login Fail!")
+                                .setMessage("Invalid Credentials.")
+                                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        showLoginComponent(View.VISIBLE);
+                                        loginProgressbar.setVisibility(View.GONE);
+                                    }
+                                })
+                                .show();
+
+                    }
+                    else{
+
+                        mainActivity.OwnerID = String.valueOf(model.ID);
+                        mainActivity.OwnerDisplayName = model.Name;
+                        mainActivity.OwnerProfilePictureURL = model.URLPictureProfile;
+                        mainActivity.sharedPreferences.edit().putLong(QuickstartPreferences.OwnerID, model.ID).apply();
+                        mainActivity.sharedPreferences.edit().putString(QuickstartPreferences.OwnerDisplayName, model.Name).apply();
+                        mainActivity.sharedPreferences.edit().putString(QuickstartPreferences.OwnerProfilePictureURL, model.URLPictureProfile).apply();
+                        mainActivity.sharedPreferences.edit().putString(QuickstartPreferences.OwnerHMACKey, model.HMACHashKey).apply();
+                        mainActivity.sharedPreferences.edit().putString(QuickstartPreferences.OwnerLoginType, model.loginType.toString()).apply();
+                        mainActivity.sharedPreferences.edit().putString(QuickstartPreferences.OwnerUserName, model.UserName).apply();
+                        mainActivity.replaceWithPrayerListFragment();
+                    }
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    new AlertDialog.Builder(mainActivity)
+                            .setTitle("Login Fail!")
+                            .setMessage("Invalid Credentials.")
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    showLoginComponent(View.VISIBLE);
+                                    loginProgressbar.setVisibility(View.GONE);
+                                }
+                            })
+                            .show();
                 }
             });
 
+
+
         }
+    }
+
+    private void ResendAccountActivation(){
+
+        showLoginComponent(View.VISIBLE);
+        loginProgressbar.setVisibility(View.GONE);
+
+        UserAccountInterface userInterface = adapter.create(UserAccountInterface.class);
+        userInterface.ResendAccountActivation("Email", email.getText().toString(), "", new retrofit.Callback<SimpleJsonResponse>() {
+            @Override
+            public void success(SimpleJsonResponse model, Response response) {
+                Toast.makeText(mainActivity, "Activation Email Resent", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+        });
+
     }
 
     private void showLoginComponent(int show){

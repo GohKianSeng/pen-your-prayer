@@ -3,6 +3,9 @@ package com.penyourprayer.penyourprayer.UI;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.AvoidXfermode;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -10,33 +13,47 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.GridView;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.onegravity.rteditor.RTEditText;
 import com.onegravity.rteditor.RTManager;
 import com.onegravity.rteditor.api.RTApi;
 import com.onegravity.rteditor.api.RTMediaFactoryImpl;
 import com.onegravity.rteditor.api.RTProxyImpl;
 import com.onegravity.rteditor.api.format.RTFormat;
+import com.onegravity.rteditor.api.media.RTImage;
 import com.onegravity.rteditor.toolbar.HorizontalRTToolbar;
-import com.penyourprayer.penyourprayer.Common.FragmentBackHandlerInterface;
+import com.penyourprayer.penyourprayer.Common.AdapterThumbnailGridView;
+import com.penyourprayer.penyourprayer.Common.Interface.FragmentBackHandlerInterface;
 import com.penyourprayer.penyourprayer.Common.FriendProfileModel;
+import com.penyourprayer.penyourprayer.Common.ModelPrayerAttachement;
 import com.penyourprayer.penyourprayer.Database.Database;
+import com.penyourprayer.penyourprayer.QuickstartPreferences;
 import com.penyourprayer.penyourprayer.R;
+import com.penyourprayer.penyourprayer.WebAPI.InterfaceUploadFile;
+import com.penyourprayer.penyourprayer.WebAPI.Model.SimpleJsonResponse;
+import com.penyourprayer.penyourprayer.WebAPI.httpClient;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import retrofit.RestAdapter;
+import retrofit.client.OkClient;
+import retrofit.converter.GsonConverter;
+import retrofit.mime.TypedFile;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link FragmentCreateNewPrayer#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class FragmentCreateNewPrayer extends Fragment implements FragmentBackHandlerInterface{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -51,23 +68,13 @@ public class FragmentCreateNewPrayer extends Fragment implements FragmentBackHan
     RTEditText mRTMessageField;
     private ImageButton createnew_prayer_tag_friend_ImageButton;
     private boolean publicView = false;
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FragmentCreateNewPrayer.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static FragmentCreateNewPrayer newInstance(String param1, String param2) {
-        FragmentCreateNewPrayer fragment = new FragmentCreateNewPrayer();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    private RestAdapter adapter;
+    private GridView thumbnail_gridview;
+    private AdapterThumbnailGridView gridviewAdapter;
+    private HorizontalScrollView thumbnailScrollView;
+    private String OwnerLoginType;
+    private String OwnerUserName;
+    private String HMACKey;
 
     public FragmentCreateNewPrayer() {
         // Required empty public constructor
@@ -82,7 +89,19 @@ public class FragmentCreateNewPrayer extends Fragment implements FragmentBackHan
         }
 
         mainActivity = ((MainActivity) getActivity());
+        mainActivity.attachment = new  ArrayList<ModelPrayerAttachement>();
         this.getActivity().setTheme(R.style.ThemeLight);
+
+        OwnerLoginType = mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerLoginType, "");
+        OwnerUserName = mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerUserName, "");
+        HMACKey = mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerHMACKey, "");
+
+        Gson gson = new GsonBuilder().setDateFormat(QuickstartPreferences.DefaultTimeFormat).create();
+        adapter = new RestAdapter.Builder()
+                .setConverter(new GsonConverter(gson))
+                .setEndpoint(QuickstartPreferences.api_server)
+                .setClient(new OkClient(new httpClient(OwnerLoginType, OwnerUserName, HMACKey)))
+                .build();
     }
 
     @Override
@@ -129,6 +148,13 @@ public class FragmentCreateNewPrayer extends Fragment implements FragmentBackHan
         });
 
         actionbar_done = (ImageButton)mCustomView.findViewById(R.id.createnewprayer_done_ImageButton);
+        actionbar_done.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveNewPrayer();
+            }
+        });
+
 
         return inflater.inflate(R.layout.fragment_create_new_prayer, container, false);
 
@@ -187,6 +213,23 @@ public class FragmentCreateNewPrayer extends Fragment implements FragmentBackHan
             }
         });
 
+        thumbnailScrollView = (HorizontalScrollView) view.findViewById(R.id.newprayer_thumbnail_horizontalScrollView);
+
+        if(mainActivity.attachment.size() > 0)
+            thumbnailScrollView.setVisibility(View.VISIBLE);
+        else
+            thumbnailScrollView.setVisibility(View.INVISIBLE);
+
+        thumbnail_gridview = (GridView)view.findViewById(R.id.newprayer_thumbnailGridView);
+
+        gridviewAdapter = new AdapterThumbnailGridView(mainActivity, mainActivity.attachment);
+
+        thumbnail_gridview.setNumColumns(mainActivity.attachment.size());
+        LinearLayout.LayoutParams linearParams = (LinearLayout.LayoutParams)thumbnail_gridview.getLayoutParams();
+        linearParams.width = mainActivity.attachment.size() * 220;
+        thumbnail_gridview.setLayoutParams(linearParams);
+        thumbnail_gridview.setAdapter(gridviewAdapter);
+
         InputMethodManager imm = (InputMethodManager) this.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(mRTMessageField, InputMethodManager.SHOW_IMPLICIT);
     }
@@ -244,10 +287,40 @@ public class FragmentCreateNewPrayer extends Fragment implements FragmentBackHan
 
     private void saveNewPrayer(){
         String prayer = mRTMessageField.getText(RTFormat.HTML);
-        Database db = new Database(mainActivity);
-        db.AddNewPrayer(mainActivity, prayer, publicView, mainActivity.selectedFriends);
 
+        Database db = new Database(mainActivity);
+        db.AddNewPrayer(mainActivity, prayer, publicView, mainActivity.selectedFriends, mainActivity.attachment);
+
+        mainActivity.attachment = new ArrayList<ModelPrayerAttachement>();
         mainActivity.selectedFriends = new ArrayList<FriendProfileModel>();
         mainActivity.popBackFragmentStack();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        //mRTManager.onActivityResult(requestCode, resultCode, data);
+        if(data != null) {
+            RTImage image = (RTImage) data.getSerializableExtra("RTE_RESULT_MEDIA");
+            ModelPrayerAttachement o = new ModelPrayerAttachement();
+            o.URLPath = image.getFilePath(RTFormat.HTML);
+            o.OriginalFilePath = image.getFilePath(RTFormat.HTML);
+            o.GUID = UUID.randomUUID().toString().replace("-", "");
+            o.FileName = image.getFileName();
+            mainActivity.attachment.add(o);
+
+            thumbnail_gridview.setNumColumns(mainActivity.attachment.size());
+            LinearLayout.LayoutParams linearParams = (LinearLayout.LayoutParams)thumbnail_gridview.getLayoutParams();
+            linearParams.width = mainActivity.attachment.size() * 220;
+            thumbnail_gridview.setLayoutParams(linearParams);
+            thumbnail_gridview.setAdapter(gridviewAdapter);
+
+            gridviewAdapter.updateAttachment(mainActivity.attachment);
+            if(mainActivity.attachment.size() > 0)
+                thumbnailScrollView.setVisibility(View.VISIBLE);
+            else
+                thumbnailScrollView .setVisibility(View.INVISIBLE);
+
+        }
     }
 }

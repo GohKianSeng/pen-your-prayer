@@ -11,15 +11,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-            <ScrollView
+        <ScrollView
                 android:id="@+id/rte_content"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_margin="4dp"
                 android:fillViewport="true"
                 android:scrollbarStyle="insideOverlay"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+            android:visibility="visible">
 
                 <com.onegravity.rteditor.RTEditText
                     android:id="@+id/rtEditText_1"
@@ -33,16 +34,46 @@
 
             </ScrollView>
 
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
+        <HorizontalScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/newprayer_thumbnail_horizontalScrollView"
+            android:fillViewport="true"
+            android:scrollbars="horizontal"
+            android:visibility="gone"
+            android:layout_weight="1">
 
-            <HorizontalScrollView
-                xmlns:android="http://schemas.android.com/apk/res/android"
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:id="@+id/rte_toolbar_container"
-                android:background="#800080"
-                android:scrollbarStyle="outsideOverlay">
+                android:layout_height="wrap_content">
+
+                <GridView xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/newprayer_thumbnailGridView"
+                    android:gravity="center"
+                    android:columnWidth="50dp"
+                    android:stretchMode="columnWidth"
+                    android:layout_width="fill_parent"
+                    android:layout_height="75dp"
+                    tools:listitem="@layout/card_ui_image"
+                    android:visibility="visible" />
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <HorizontalScrollView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/rte_toolbar_container"
+            android:background="#800080"
+            android:scrollbarStyle="outsideOverlay"
+            android:layout_weight="1">
 
                 <com.onegravity.rteditor.toolbar.HorizontalRTToolbar
                     android:id="@+id/rte_toolbar"
@@ -77,6 +108,11 @@
                         android:background="?attr/rte_icToolbarBullet" />
 
                     <com.onegravity.rteditor.toolbar.RTToolbarImageButton
+                        android:id="@+id/toolbar_image"
+                        style="@style/RTE_ToolbarButton"
+                        android:background="?attr/rte_icToolbarImage"/>
+
+                    <com.onegravity.rteditor.toolbar.RTToolbarImageButton
                         android:id="@+id/toolbar_undo"
                         style="@style/RTE_ToolbarButton"
                         android:background="?attr/rte_icToolbarUndo"/>
@@ -85,10 +121,19 @@
                         android:id="@+id/toolbar_redo"
                         style="@style/RTE_ToolbarButton"
                         android:background="?attr/rte_icToolbarRedo"/>
-
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="New Button"
+                        android:id="@+id/button"
+                        android:visibility="invisible" />
                 </com.onegravity.rteditor.toolbar.HorizontalRTToolbar>
 
             </HorizontalScrollView>
+
+
+
+        </LinearLayout>
 
     </LinearLayout>
 

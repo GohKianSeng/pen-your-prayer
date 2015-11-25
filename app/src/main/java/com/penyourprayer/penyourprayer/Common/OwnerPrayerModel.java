@@ -9,7 +9,7 @@ import java.util.Date;
  */
 public class OwnerPrayerModel {
 
-    public String GUID = "";
+    public String PrayerID = "";
     public Date CreatedWhen = null;
     public Date TouchedWhen = null;
     public String Content = "";
@@ -20,9 +20,9 @@ public class OwnerPrayerModel {
     public long numberOfAmen = 0;
     public long numberOfComment = 0;
     public boolean ownerAmen = false;
-
+    public ArrayList<ModelPrayerAttachement> attachments = new ArrayList<ModelPrayerAttachement>();
     public ArrayList<FriendProfileModel> selectedFriends = new ArrayList<FriendProfileModel>();
-
+    public String IfExecutedGUID;
     public OwnerPrayerModel(){}
 
     public String formattedCreatedWhen(){

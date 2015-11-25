@@ -20,6 +20,7 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -77,6 +78,30 @@
                 android:paddingRight="5dp"
             android:layout_weight="1" />
     </LinearLayout>
+
+    <HorizontalScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/thumbnail_horizontalScrollView"
+        android:fillViewport="true"
+        android:scrollbars="horizontal"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <GridView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/thumbnailGridView"
+                android:gravity="center"
+                android:columnWidth="50dp"
+                android:stretchMode="columnWidth"
+                android:layout_width="fill_parent"
+                android:layout_height="75dp"
+                tools:listitem="@layout/card_ui_image" />
+        </LinearLayout>
+    </HorizontalScrollView>
 
     <LinearLayout
             android:id="@+id/card_thumb_and_content_layout"
@@ -157,6 +182,7 @@
                 android:scaleType="fitCenter"
                 android:layout_weight="1" />
         </LinearLayout>
+
 
     <!-- Expand layout. You can customize this element with your CardExpand class -->
 

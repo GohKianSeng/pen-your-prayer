@@ -1,4 +1,4 @@
-package com.penyourprayer.penyourprayer.Common;
+package com.penyourprayer.penyourprayer.Common.Interface;
 
 /**
  * Created by sisgks on 14/10/2015.

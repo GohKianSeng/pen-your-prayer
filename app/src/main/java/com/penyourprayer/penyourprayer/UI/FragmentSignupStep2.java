@@ -1,6 +1,7 @@
 package com.penyourprayer.penyourprayer.UI;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -10,6 +11,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -91,7 +93,7 @@ public class FragmentSignupStep2 extends Fragment {
         email_edittext = (EditText)view.findViewById(R.id.email_editText);
         email_edittext.addTextChangedListener(new TextWatcher() {
             private Timer timer = new Timer();
-            private final long DELAY = 2000; // milliseconds
+            private final long DELAY = 1000; // milliseconds
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -118,7 +120,7 @@ public class FragmentSignupStep2 extends Fragment {
                                         .setClient(new OkClient(new httpClient("ANONYMOUS", Utils.TempUserID(mainActivity), QuickstartPreferences.AnonymousHMACKey)))
                                         .build();
                                 UserAccountInterface useracctInt = adapter.create(UserAccountInterface.class);
-                                useracctInt.CheckUserNameExists("Email", email_edittext.getText().toString().trim(), true, new Callback<SimpleJsonResponse>() {
+                                useracctInt.CheckUserNameExists("Email", email_edittext.getText().toString().trim(), "", new Callback<SimpleJsonResponse>() {
                                     @Override
                                     public void success(SimpleJsonResponse model, Response response) {
                                         if(model.Description.compareToIgnoreCase("NOT EXIST")==0){
@@ -151,6 +153,10 @@ public class FragmentSignupStep2 extends Fragment {
 
             }
         });
+
+        email_edittext.requestFocus();
+        InputMethodManager imm = (InputMethodManager) this.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(email_edittext, InputMethodManager.SHOW_IMPLICIT);
     }
 
     public Handler mHandler = new Handler() {
