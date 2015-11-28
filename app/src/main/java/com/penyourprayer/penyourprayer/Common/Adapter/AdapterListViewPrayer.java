@@ -1,4 +1,4 @@
-package com.penyourprayer.penyourprayer.Common;
+package com.penyourprayer.penyourprayer.Common.Adapter;
 
 /**
  * Created by sisgks on 06/10/2015.
@@ -6,10 +6,6 @@ package com.penyourprayer.penyourprayer.Common;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,40 +17,39 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.penyourprayer.penyourprayer.Common.ImageLoad.ImageLoader;
+import com.penyourprayer.penyourprayer.Common.Model.ModelOwnerPrayer;
+import com.penyourprayer.penyourprayer.Common.Model.ViewHolder.ViewHolderPrayerModel;
 import com.penyourprayer.penyourprayer.Database.Database;
 import com.penyourprayer.penyourprayer.R;
 import com.penyourprayer.penyourprayer.UI.MainActivity;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 
-public class ListViewAdapterPrayer extends ArrayAdapter {
+public class AdapterListViewPrayer extends ArrayAdapter {
         private MainActivity mainactivity;
-        private ArrayList<OwnerPrayerModel> resources;
-
+        private ArrayList<ModelOwnerPrayer> resources;
+        private Database db;
         private Html.ImageGetter imgGetter;
-
-        public ListViewAdapterPrayer(Context context, int resourcesID, ArrayList<OwnerPrayerModel> allprayers) {
+        private ImageLoader imageLoader;
+        public AdapterListViewPrayer(Context context, int resourcesID, ArrayList<ModelOwnerPrayer> allprayers) {
                 super(context, resourcesID, allprayers);
                 // TODO Auto-generated constructor stub
                 this.mainactivity = (MainActivity)context;
                 resources = allprayers;
+                db = new Database(mainactivity);
+                imageLoader = new ImageLoader(mainactivity);
         }
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
 
-                PrayerModelViewHolder p = new PrayerModelViewHolder();
+                ViewHolderPrayerModel p = new ViewHolderPrayerModel();
 
                 LayoutInflater inflater = ((Activity)mainactivity).getLayoutInflater();
                 if(convertView == null) {
                         convertView = inflater.inflate(R.layout.card_ui_owner_layout, parent, false);
-                        p.thumbnailScrollView = (HorizontalScrollView) convertView.findViewById(R.id.thumbnail_horizontalScrollView);
-                        p.gridview = (GridView) convertView.findViewById(R.id.thumbnailGridView);
+                        p.thumbnailHorizontalView = (LinearLayout) convertView.findViewById(R.id.attachment_linearlayout);
                         p.prayer_textView = (TextView) convertView.findViewById(R.id.card_ui_prayer_textView);
                         p.amen_imageButton = (ImageButton) convertView.findViewById(R.id.card_ui_amen_imageButton);
                         p.comment_imageButton = (ImageButton) convertView.findViewById(R.id.card_ui_comment_imageButton);
@@ -64,11 +59,22 @@ public class ListViewAdapterPrayer extends ArrayAdapter {
                         p.delete_imageButton = (ImageButton) convertView.findViewById(R.id.card_ui_delete_imageButton);
                         p.serversent_textview = (TextView) convertView.findViewById(R.id.card_ui_serversent_textview);
                         p.createdwhen_textview = (TextView) convertView.findViewById(R.id.card_ui_createdwhen);
+
                         p.amen_count_textview = (TextView) convertView.findViewById(R.id.card_ui_amen_count_textview);
+                        p.att  = db.getAllOwnerPrayerAttachment(resources.get(position).PrayerID);
+                        p.image1 = (ImageButton) convertView.findViewById(R.id.prayerlist_imageButton1);
+                        p.image2 = (ImageButton) convertView.findViewById(R.id.prayerlist_imageButton2);
+                        p.image3 = (ImageButton) convertView.findViewById(R.id.prayerlist_imageButton3);
+                        p.image4 = (ImageButton) convertView.findViewById(R.id.prayerlist_imageButton4);
+                        p.image5 = (ImageButton) convertView.findViewById(R.id.prayerlist_imageButton5);
+                        if(p.att.size() > 0)
+                                p.thumbnailHorizontalView.setVisibility(View.VISIBLE);
+                        else
+                                p.thumbnailHorizontalView.setVisibility(View.GONE);
                         convertView.setTag(p);
                 }
                 else{
-                        p = (PrayerModelViewHolder)convertView.getTag();
+                        p = (ViewHolderPrayerModel)convertView.getTag();
                 }
 
                 p.publicView_imageButton.setOnClickListener(new View.OnClickListener() {
@@ -123,23 +129,21 @@ public class ListViewAdapterPrayer extends ArrayAdapter {
                 * Set Data
                 *
                 * ****************************************************************/
-                p.amen_count_textview.setText(String.valueOf(resources.get(position).numberOfAmen));
-                p.prayer_textView.setText(Html.fromHtml(resources.get(position).Content));
-
-
-                Database db = new Database(mainactivity);
-                ArrayList<ModelPrayerAttachement> att  = db.getAllOwnerPrayerAttachment(resources.get(position).PrayerID);
-                if(att.size() > 0)
-                {
-                        p.thumbnailScrollView.setVisibility(View.VISIBLE);
-                        AdapterThumbnailGridView asd = new AdapterThumbnailGridView(mainactivity, att);
-                        p.gridview.setNumColumns(att.size());
-                        LinearLayout.LayoutParams linearParams = (LinearLayout.LayoutParams)p.gridview.getLayoutParams();
-                        linearParams.width=att.size() * 220;
-                        p.gridview.setLayoutParams(linearParams);
-                        p.gridview.setAdapter(asd);
+                for(int x=0; x<p.att.size(); x++){
+                        if(x==0)
+                                imageLoader.DisplayImage(p.att.get(x).URLPath, p.image1, false);
+                        if(x==1)
+                                imageLoader.DisplayImage(p.att.get(x).URLPath, p.image2, false);
+                        if(x==2)
+                                imageLoader.DisplayImage(p.att.get(x).URLPath, p.image3, false);
+                        if(x==3)
+                                imageLoader.DisplayImage(p.att.get(x).URLPath, p.image4, false);
+                        if(x==4)
+                                imageLoader.DisplayImage(p.att.get(x).URLPath, p.image5, false);
                 }
 
+                p.amen_count_textview.setText(String.valueOf(resources.get(position).numberOfAmen));
+                p.prayer_textView.setText(Html.fromHtml(resources.get(position).Content));
                 p.createdwhen_textview.setText("Pen Date: " + resources.get(position).formattedCreatedWhen());
                 if(resources.get(position).ServerSent)
                         p.serversent_textview.setText("Synced.");
@@ -169,7 +173,7 @@ public class ListViewAdapterPrayer extends ArrayAdapter {
                 return convertView;
         }
 
-        public void updatePrayerList(ArrayList<OwnerPrayerModel> allprayers){
+        public void updatePrayerList(ArrayList<ModelOwnerPrayer> allprayers){
                 this.resources = allprayers;
                 this.notifyDataSetChanged();
         }

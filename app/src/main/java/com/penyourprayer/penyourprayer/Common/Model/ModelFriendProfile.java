@@ -1,8 +1,8 @@
-package com.penyourprayer.penyourprayer.Common;
+package com.penyourprayer.penyourprayer.Common.Model;
 
 import android.graphics.Bitmap;
 
-public class FriendProfileModel{
+public class ModelFriendProfile {
 
     public enum ActionName {
         Logout, Settings
@@ -14,14 +14,14 @@ public class FriendProfileModel{
     public boolean selected = false;
     public String UserID = "";
 
-    public FriendProfileModel(String UserID, String name, String img_url, boolean selected){
+    public ModelFriendProfile(String UserID, String name, String img_url, boolean selected){
         this.UserID = UserID;
         this.DisplayName = name;
         this.selected = selected;
         this.ProfilePictureURL = img_url;
     }
 
-    public FriendProfileModel(ActionName actionName){
+    public ModelFriendProfile(ActionName actionName){
         this.actionName = actionName;
         this.isAction = true;
     }

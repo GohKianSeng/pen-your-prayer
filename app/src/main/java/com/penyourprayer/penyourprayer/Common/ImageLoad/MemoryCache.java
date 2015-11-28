@@ -1,4 +1,4 @@
-package com.penyourprayer.penyourprayer.Common;
+package com.penyourprayer.penyourprayer.Common.ImageLoad;
 
         import java.util.Collections;
         import java.util.Iterator;

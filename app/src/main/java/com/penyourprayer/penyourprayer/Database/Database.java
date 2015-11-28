@@ -5,13 +5,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.net.ParseException;
 
-import com.penyourprayer.penyourprayer.Common.FriendProfileModel;
-import com.penyourprayer.penyourprayer.Common.ModelPrayerAttachement;
-import com.penyourprayer.penyourprayer.Common.OwnerPrayerModel;
+import com.penyourprayer.penyourprayer.Common.Model.ModelFriendProfile;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAttachement;
+import com.penyourprayer.penyourprayer.Common.Model.ModelOwnerPrayer;
+import com.penyourprayer.penyourprayer.Common.Model.ModelQueueAction;
 
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,7 +23,7 @@ public class Database extends SQLiteOpenHelper {
 
     // All Static variables
     // Database Version
-    private static final int DATABASE_VERSION = 18;
+    private static final int DATABASE_VERSION = 20;
 
     // Database Name
     private static final String DATABASE_NAME = "PenYourPrayerSQLite";
@@ -93,13 +92,13 @@ public class Database extends SQLiteOpenHelper {
         this.getWritableDatabase();
     }
 
-    public ArrayList<FriendProfileModel> getAllFriends(){
-        ArrayList<FriendProfileModel> friend = new ArrayList<FriendProfileModel>();
+    public ArrayList<ModelFriendProfile> getAllFriends(){
+        ArrayList<ModelFriendProfile> friend = new ArrayList<ModelFriendProfile>();
         SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.rawQuery("SELECT UserID, DisplayName, ProfilePictureURL FROM tb_Friends", null);
 
         while (c.moveToNext()) {
-            FriendProfileModel p = new FriendProfileModel(c.getString(c.getColumnIndex("UserID")), c.getString(c.getColumnIndex("DisplayName")), c.getString(c.getColumnIndex("ProfilePictureURL")), false);
+            ModelFriendProfile p = new ModelFriendProfile(c.getString(c.getColumnIndex("UserID")), c.getString(c.getColumnIndex("DisplayName")), c.getString(c.getColumnIndex("ProfilePictureURL")), false);
             friend.add(p);
         }
         if(c != null)
@@ -107,7 +106,7 @@ public class Database extends SQLiteOpenHelper {
         return friend;
     }
 
-    public void AddNewPrayer(Context ctx, String prayer, boolean publicView, ArrayList<FriendProfileModel> selectedFriends, ArrayList<ModelPrayerAttachement> attachment){
+    public void AddNewPrayer(Context ctx, String prayer, boolean publicView, ArrayList<ModelFriendProfile> selectedFriends, ArrayList<ModelPrayerAttachement> attachment){
         SQLiteDatabase db = getWritableDatabase();
         long id = -1;
         String tUUID = "";
@@ -121,7 +120,7 @@ public class Database extends SQLiteOpenHelper {
             id = db.insert("tb_ownerPrayer", null, cv);
         }
         for(int x=0; x<selectedFriends.size(); x++){
-            FriendProfileModel f = selectedFriends.get(x);
+            ModelFriendProfile f = selectedFriends.get(x);
             long id2 = -1;
             while(id2 == -1) {
                 ContentValues cv = new ContentValues();
@@ -147,15 +146,15 @@ public class Database extends SQLiteOpenHelper {
         }
 
         ContentValues cv = new ContentValues();
-        cv.put("Action", QueueAction.ActionType.Insert.toString());
-        cv.put("Item", QueueAction.ItemType.Prayer.toString());
+        cv.put("Action", ModelQueueAction.ActionType.Insert.toString());
+        cv.put("Item", ModelQueueAction.ItemType.Prayer.toString());
         cv.put("ItemID", tUUID);
         cv.put("IfExecutedGUID", UUID.randomUUID().toString());
         db.insert("tb_QueueAction", null, cv);
     }
 
-    public ArrayList<OwnerPrayerModel> getAllOwnerPrayer(String OwnerID){
-        ArrayList<OwnerPrayerModel> prayer = new ArrayList<OwnerPrayerModel>();
+    public ArrayList<ModelOwnerPrayer> getAllOwnerPrayer(String OwnerID){
+        ArrayList<ModelOwnerPrayer> prayer = new ArrayList<ModelOwnerPrayer>();
 
         SQLiteDatabase db = getReadableDatabase();
         String query = "SELECT PrayerID, CreatedWhen, TouchedWhen, Content, PublicView, ServerSent, Deleted, " +
@@ -167,7 +166,7 @@ public class Database extends SQLiteOpenHelper {
 
         Cursor c = db.rawQuery(query, new String[]{});
         while (c.moveToNext()) {
-            OwnerPrayerModel o = new OwnerPrayerModel();
+            ModelOwnerPrayer o = new ModelOwnerPrayer();
             o.PrayerID = c.getString(c.getColumnIndex("PrayerID"));
             //2015-10-18 23:28:21
             o.CreatedWhen = convertToDateTime(c.getString(c.getColumnIndex("CreatedWhen")));
@@ -187,16 +186,16 @@ public class Database extends SQLiteOpenHelper {
         return prayer;
     }
 
-    public ArrayList<QueueAction> getAllQueueItems(){
-        ArrayList<QueueAction> queue = new ArrayList<QueueAction>();
+    public ArrayList<ModelQueueAction> getAllQueueItems(){
+        ArrayList<ModelQueueAction> queue = new ArrayList<ModelQueueAction>();
         SQLiteDatabase db = getReadableDatabase();
         String query = "SELECT ID, Action, Item, ItemID, IfExecutedGUID FROM tb_QueueAction ORDER BY ID ASC";
         Cursor c = db.rawQuery(query, new String[]{});
         while (c.moveToNext()) {
-            QueueAction o = new QueueAction();
+            ModelQueueAction o = new ModelQueueAction();
             o.ID = c.getInt(c.getColumnIndex("ID"));
-            o.Action = QueueAction.ActionType.valueOf(c.getString(c.getColumnIndex("Action")));
-            o.Item = QueueAction.ItemType.valueOf(c.getString(c.getColumnIndex("Item")));
+            o.Action = ModelQueueAction.ActionType.valueOf(c.getString(c.getColumnIndex("Action")));
+            o.Item = ModelQueueAction.ItemType.valueOf(c.getString(c.getColumnIndex("Item")));
             o.ItemID = c.getString(c.getColumnIndex("ItemID"));
             o.IfExecutedGUID = c.getString(c.getColumnIndex("IfExecutedGUID"));
             queue.add(o);
@@ -211,14 +210,14 @@ public class Database extends SQLiteOpenHelper {
         db.delete("tb_QueueAction", "ID = " + String.valueOf(QueueID) , null);
     }
 
-    public OwnerPrayerModel GetPrayer(String PrayerID){
+    public ModelOwnerPrayer GetPrayer(String PrayerID){
         SQLiteDatabase db = getReadableDatabase();
         String query = "SELECT PrayerID, CreatedWhen, TouchedWhen, Content, PublicView, ServerSent, Deleted " +
                        "FROM tb_ownerPrayer AS A " +
-                       "WHERE ServerSent = 0 AND Deleted = 0 AND PrayerID = '" + PrayerID + "'";
+                       "WHERE PrayerID = '" + PrayerID + "'";
 
         Cursor c = db.rawQuery(query, new String[]{});
-        OwnerPrayerModel o = new OwnerPrayerModel();
+        ModelOwnerPrayer o = new ModelOwnerPrayer();
         if(c.moveToNext()) {
             o.PrayerID = c.getString(c.getColumnIndex("PrayerID"));
             o.CreatedWhen = convertToDateTime(c.getString(c.getColumnIndex("CreatedWhen")));
@@ -233,15 +232,15 @@ public class Database extends SQLiteOpenHelper {
         return o;
     }
 
-    public ArrayList<FriendProfileModel> getSelectedTagFriend(String PrayerID){
+    public ArrayList<ModelFriendProfile> getSelectedTagFriend(String PrayerID){
         String query = "SELECT C.UserID, C.DisplayName, C.ProfilePictureURL FROM tb_ownerPrayer AS A INNER JOIN tb_OwnerPrayerTagFriends AS B ON A.PrayerID = B.OwnerPrayerID INNER JOIN tb_Friends AS C ON C.UserID = B.WhoID WHERE A.PrayerID = '" + PrayerID + "'";
-        ArrayList<FriendProfileModel> selectedFriends = new ArrayList<FriendProfileModel>();
+        ArrayList<ModelFriendProfile> selectedFriends = new ArrayList<ModelFriendProfile>();
 
         SQLiteDatabase db = getReadableDatabase();
 
         Cursor c = db.rawQuery(query, new String[]{});
         while (c.moveToNext()) {
-            FriendProfileModel f = new FriendProfileModel(c.getString(c.getColumnIndex("UserID")),
+            ModelFriendProfile f = new ModelFriendProfile(c.getString(c.getColumnIndex("UserID")),
                     c.getString(c.getColumnIndex("DisplayName")),
                     c.getString(c.getColumnIndex("ProfilePictureURL")),
                     true);
@@ -252,7 +251,7 @@ public class Database extends SQLiteOpenHelper {
         return selectedFriends;
     }
 
-    public void updateOwnerPrayerTagFriends(String OwnerPrayerID, ArrayList<FriendProfileModel> selectedFriends){
+    public void updateOwnerPrayerTagFriends(String OwnerPrayerID, ArrayList<ModelFriendProfile> selectedFriends){
         SQLiteDatabase db = getWritableDatabase();
         db.delete("tb_OwnerPrayerTagFriends", "OwnerPrayerID" + "= '" + OwnerPrayerID + "'", null);
         for(int x=0; x<selectedFriends.size(); x++){
@@ -263,8 +262,8 @@ public class Database extends SQLiteOpenHelper {
         }
 
         ContentValues cv = new ContentValues();
-        cv.put("Action", QueueAction.ActionType.Update.toString());
-        cv.put("Item", QueueAction.ItemType.PrayerTagFriends.toString());
+        cv.put("Action", ModelQueueAction.ActionType.Update.toString());
+        cv.put("Item", ModelQueueAction.ItemType.PrayerTagFriends.toString());
         cv.put("ItemID", OwnerPrayerID);
         cv.put("IfExecutedGUID", UUID.randomUUID().toString());
         db.insert("tb_QueueAction", null, cv);
@@ -277,8 +276,8 @@ public class Database extends SQLiteOpenHelper {
         db.update("tb_ownerPrayer", cv, "PrayerID = '" + PrayerID + "'", null);
 
         cv = new ContentValues();
-        cv.put("Action", QueueAction.ActionType.Update.toString());
-        cv.put("Item", QueueAction.ItemType.PrayerPublicView.toString());
+        cv.put("Action", ModelQueueAction.ActionType.Update.toString());
+        cv.put("Item", ModelQueueAction.ItemType.PrayerPublicView.toString());
         cv.put("ItemID", PrayerID);
         cv.put("IfExecutedGUID", UUID.randomUUID().toString());
         db.insert("tb_QueueAction", null, cv);

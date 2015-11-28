@@ -1,4 +1,4 @@
-package com.penyourprayer.penyourprayer.Common;
+package com.penyourprayer.penyourprayer.Common.Model;
 
 public class ModelPrayerAttachement {
 

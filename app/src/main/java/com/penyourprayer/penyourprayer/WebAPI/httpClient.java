@@ -59,13 +59,15 @@ public class httpClient extends OkHttpClient {
             public com.squareup.okhttp.Response intercept(Interceptor.Chain chain) throws IOException {
                 Request original = chain.request();
                 try {
-                    String contentMD5 = md5CheckSum(bodyToBytes(original.body())).toUpperCase();
-                    //String bodyContent = bodyToString(original.body());
+                    String method = original.method();
+                    String contentMD5 = "";
+                    if(method.toUpperCase() != "GET")
+                        contentMD5 = md5CheckSum(bodyToBytes(original.body())).toUpperCase();
                     String queryContent = original.uri().getQuery();
                     if(queryContent == null)
                         queryContent = "";
                     String now = getHttpFormatTime();
-                    String method = original.method();
+
                     Random rand = new Random();
                     String Nonce = String.valueOf(rand.nextInt(32700));
 

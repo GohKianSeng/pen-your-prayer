@@ -1,4 +1,4 @@
-package com.penyourprayer.penyourprayer.Common;
+package com.penyourprayer.penyourprayer.Common.ImageLoad;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -39,6 +39,9 @@ public class ImageProcessor {
     }
 
     public static Bitmap getRoundedCornerBitmap(Bitmap bitmap) {
+
+        bitmap = cropImageToSquare(bitmap);
+
         Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
                 bitmap.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(output);

@@ -39,33 +39,62 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-        <HorizontalScrollView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/newprayer_thumbnail_horizontalScrollView"
-            android:fillViewport="true"
-            android:scrollbars="horizontal"
-            android:visibility="gone"
-            android:layout_weight="1">
-
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:id="@+id/create_prayer_attachment_layout">
 
-                <GridView xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:id="@+id/newprayer_thumbnailGridView"
-                    android:gravity="center"
-                    android:columnWidth="50dp"
-                    android:stretchMode="columnWidth"
-                    android:layout_width="fill_parent"
-                    android:layout_height="75dp"
-                    tools:listitem="@layout/card_ui_image"
-                    android:visibility="visible" />
+                <ImageButton
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:id="@+id/create_prayer_attachment_imageButton1"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="5dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/aaa"
+                    android:background="#ffffff" />
+
+                <ImageButton
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:id="@+id/create_prayer_attachment_imageButton2"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="5dp"
+                    android:scaleType="fitCenter"
+                    android:background="#ffffff" />
+
+                <ImageButton
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:id="@+id/create_prayer_attachment_imageButton3"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="5dp"
+                    android:scaleType="fitCenter"
+                    android:background="#ffffff" />
+
+                <ImageButton
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:id="@+id/create_prayer_attachment_imageButton4"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="5dp"
+                    android:scaleType="fitCenter"
+                    android:background="#ffffff" />
+
+                <ImageButton
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:id="@+id/create_prayer_attachment_imageButton5"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:scaleType="fitCenter"
+                    android:background="#ffffff" />
             </LinearLayout>
-        </HorizontalScrollView>
 
-        <HorizontalScrollView
+            <HorizontalScrollView
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

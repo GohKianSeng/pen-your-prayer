@@ -1,4 +1,4 @@
-package com.penyourprayer.penyourprayer.Common;
+package com.penyourprayer.penyourprayer.Common.ImageLoad;
 
         import java.io.File;
         import java.io.FileInputStream;
@@ -22,6 +22,8 @@ package com.penyourprayer.penyourprayer.Common;
         import android.graphics.Bitmap;
         import android.graphics.BitmapFactory;
         import android.widget.ImageView;
+
+        import com.penyourprayer.penyourprayer.Common.Utils;
         import com.penyourprayer.penyourprayer.R;
 public class ImageLoader {
 
@@ -67,10 +69,10 @@ public class ImageLoader {
         }
 
         try {
-            f = new File(url);
-            if (f.exists()) {
+            File tf = new File(url);
+            if (tf.exists()) {
 
-                b = decodeFile(f);
+                b = decodeFile(tf);
                 if (b != null) {
                     ExifInterface exif = new ExifInterface(url);
                     int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);

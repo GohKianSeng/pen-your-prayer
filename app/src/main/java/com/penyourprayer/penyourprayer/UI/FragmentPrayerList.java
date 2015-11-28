@@ -16,8 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
-import android.widget.ArrayAdapter;
-import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -25,10 +23,9 @@ import android.widget.TextView;
 
 import com.melnykov.fab.FloatingActionButton;
 import com.penyourprayer.penyourprayer.Common.Interface.InterfacePrayerListUpdated;
-import com.penyourprayer.penyourprayer.Common.ListViewAdapterPrayer;
-import com.penyourprayer.penyourprayer.Common.OwnerPrayerModel;
+import com.penyourprayer.penyourprayer.Common.Adapter.AdapterListViewPrayer;
+import com.penyourprayer.penyourprayer.Common.Model.ModelOwnerPrayer;
 import com.penyourprayer.penyourprayer.Database.Database;
-import com.penyourprayer.penyourprayer.QuickstartPreferences;
 import com.penyourprayer.penyourprayer.R;
 
 import java.util.ArrayList;
@@ -46,11 +43,11 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
     private ImageButton delete_ImageButton;
     private SwipeRefreshLayout prayer_list_swiperefresh;
     private View previousPrayerListCategory = null;
-    private ListViewAdapterPrayer prayerArrayAdapter;
+    private AdapterListViewPrayer prayerArrayAdapter;
     public FragmentPrayerList() {
         // Required empty public constructor
     }
-    private ArrayList<OwnerPrayerModel> allprayers;
+    private ArrayList<ModelOwnerPrayer> allprayers;
     private ListView listView;
 
     @Override
@@ -143,7 +140,7 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
         Database db = new Database(mainActivity);
         allprayers = db.getAllOwnerPrayer(mainActivity.OwnerID);
 
-        prayerArrayAdapter = new ListViewAdapterPrayer(this.getActivity(), R.layout.card_ui_owner_layout, allprayers);
+        prayerArrayAdapter = new AdapterListViewPrayer(this.getActivity(), R.layout.card_ui_owner_layout, allprayers);
 
         listView = (ListView) view.findViewById(R.id.prayer_listView);
         listView.setFastScrollEnabled(true);
@@ -212,7 +209,7 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
     }
 
     @Override
-    public void onListUpdate(final ArrayList<OwnerPrayerModel> allprayers){
+    public void onListUpdate(final ArrayList<ModelOwnerPrayer> allprayers){
         Runnable run = new Runnable(){
             public void run(){
                 prayerArrayAdapter.updatePrayerList(allprayers);

@@ -9,8 +9,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
-import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -29,40 +27,23 @@ import android.widget.ListView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.penyourprayer.penyourprayer.Common.Interface.FragmentBackHandlerInterface;
-import com.penyourprayer.penyourprayer.Common.FriendProfileModel;
-import com.penyourprayer.penyourprayer.Common.ImageProcessor;
-import com.penyourprayer.penyourprayer.Common.Interface.InterfacePrayerListUpdated;
-import com.penyourprayer.penyourprayer.Common.ListViewAdapterDrawerProfileFriend;
-import com.penyourprayer.penyourprayer.Common.ModelPrayerAttachement;
-import com.penyourprayer.penyourprayer.Common.OwnerPrayerModel;
-import com.penyourprayer.penyourprayer.Database.Database;
-import com.penyourprayer.penyourprayer.Database.QueueAction;
+import com.penyourprayer.penyourprayer.Common.Interface.InterfaceFragmentBackHandler;
+import com.penyourprayer.penyourprayer.Common.Model.ModelFriendProfile;
+import com.penyourprayer.penyourprayer.Common.ImageLoad.ImageProcessor;
+import com.penyourprayer.penyourprayer.Common.Adapter.AdapterListViewDrawerProfileFriend;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAttachement;
 import com.penyourprayer.penyourprayer.GoogleCloudMessaging.RegistrationIntentService;
+import com.penyourprayer.penyourprayer.QueueAction.QueueAction;
 import com.penyourprayer.penyourprayer.QuickstartPreferences;
 import com.penyourprayer.penyourprayer.R;
 
-import com.penyourprayer.penyourprayer.WebAPI.InterfaceUploadFile;
-import com.penyourprayer.penyourprayer.WebAPI.Model.SimpleJsonResponse;
-import com.penyourprayer.penyourprayer.WebAPI.PrayerInterface;
-import com.penyourprayer.penyourprayer.WebAPI.httpClient;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import io.fabric.sdk.android.Fabric;
-import retrofit.RestAdapter;
-import retrofit.client.OkClient;
-import retrofit.converter.GsonConverter;
-import retrofit.mime.TypedFile;
 
-import java.io.File;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -70,14 +51,15 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private String TWITTER_KEY = "jSBnTpknelOuZX6e4Cg101oue", TWITTER_SECRET = "w5j7WPwHWwY4DSfJ82tRVZF7SBogZJ6XABptVt431uOowvwFKC";
     private boolean drawerCurrentFriendMode = true;
-    public ArrayList<FriendProfileModel> friends;
-    public ArrayList<FriendProfileModel> selectedFriends = new ArrayList<FriendProfileModel>();
+    public ArrayList<ModelFriendProfile> friends;
+    public ArrayList<ModelFriendProfile> selectedFriends = new ArrayList<ModelFriendProfile>();
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     public String OwnerID;
     public String OwnerDisplayName;
     public String OwnerProfilePictureURL;
     public SharedPreferences sharedPreferences;
     public ArrayList<ModelPrayerAttachement> attachment;
+    private QueueAction qa;
     private boolean paused = false;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -94,8 +76,8 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed(){
 
         Fragment f = getSupportFragmentManager().findFragmentById(R.id.fragment);
-        if (f instanceof FragmentBackHandlerInterface) {
-            ((FragmentBackHandlerInterface) f).onBackPressed();
+        if (f instanceof InterfaceFragmentBackHandler) {
+            ((InterfaceFragmentBackHandler) f).onBackPressed();
         }
         else {
             super.onBackPressed();
@@ -106,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        InitialiseHttpTranmissionQueue();
+        qa = new QueueAction(this);
 
         sharedPreferences = this.getSharedPreferences("PenYourPrayer.SharePreference", Context.MODE_PRIVATE);
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
@@ -152,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        StartHttpTranmissionQueue();
+        qa.StartHttpTranmissionQueue();
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                 new IntentFilter(QuickstartPreferences.BroadcastMessage));
     }
@@ -200,18 +182,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void loadDrawerContent(boolean drawerCurrentFriendMode){
-        ArrayList<FriendProfileModel> settings = new ArrayList<FriendProfileModel>();
+        ArrayList<ModelFriendProfile> settings = new ArrayList<ModelFriendProfile>();
 
-        FriendProfileModel set = new FriendProfileModel(FriendProfileModel.ActionName.Logout);
+        ModelFriendProfile set = new ModelFriendProfile(ModelFriendProfile.ActionName.Logout);
         settings.add(set);
-        set = new FriendProfileModel(FriendProfileModel.ActionName.Settings);
+        set = new ModelFriendProfile(ModelFriendProfile.ActionName.Settings);
         settings.add(set);
 
 
         if(drawerCurrentFriendMode){
             ListView list = (ListView)findViewById(R.id.drawer_listview);
 
-            ListViewAdapterDrawerProfileFriend adapter = new ListViewAdapterDrawerProfileFriend(this, R.layout.list_view_row_friends_drawer, friends);
+            AdapterListViewDrawerProfileFriend adapter = new AdapterListViewDrawerProfileFriend(this, R.layout.list_view_row_friends_drawer, friends);
             list.setAdapter(adapter);
 
             list.setItemsCanFocus(false);
@@ -226,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else{
             ListView list = (ListView)findViewById(R.id.drawer_listview);
-            ListViewAdapterDrawerProfileFriend adapter = new ListViewAdapterDrawerProfileFriend(this, R.layout.list_view_row_friends_drawer, settings);
+            AdapterListViewDrawerProfileFriend adapter = new AdapterListViewDrawerProfileFriend(this, R.layout.list_view_row_friends_drawer, settings);
             list.setAdapter(adapter);
 
             list.setItemsCanFocus(false);
@@ -264,6 +246,20 @@ public class MainActivity extends AppCompatActivity {
             mDrawerLayout.openDrawer(Gravity.LEFT);
         else
             mDrawerLayout.closeDrawer(Gravity.LEFT);
+    }
+
+    public void replaceWithPrayerComment(){
+
+        // Create fragment and give it an argument specifying the article it should show
+        Fragment newFragment = new FragmentPrayerComment();
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
+
+        transaction.replace(R.id.fragment, newFragment);
+        transaction.addToBackStack(null);
+
+        transaction.commit();
     }
 
     public void replaceWithLoginFragment(){
@@ -394,115 +390,5 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().popBackStack("fragment_login", FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
 
-    private AsyncTask<String, Void, String> tQueue;
 
-    private void InitialiseHttpTranmissionQueue(){
-        tQueue = new AsyncTask<String, Void, String>() {
-            @Override
-            protected String doInBackground(String... params) {
-
-                Gson gson = new GsonBuilder().setDateFormat(QuickstartPreferences.DefaultTimeFormat).create();
-                RestAdapter adapter = new RestAdapter.Builder()
-                        .setConverter(new GsonConverter(gson))
-                        .setEndpoint(QuickstartPreferences.api_server)
-                        .setClient(new OkClient(new httpClient(params[0], params[1], params[2])))
-                        .build();
-
-                while(true){
-                    if(paused)
-                        break;
-                    ProcessMessageQueue(adapter);
-                    SystemClock.sleep(2000);
-                }
-                return "";
-            }
-
-            @Override
-            protected void onPostExecute(String msg) {
-
-            }
-
-        };
-    }
-
-    public void StartHttpTranmissionQueue(){
-        paused = false;
-        tQueue = null;
-        if(tQueue == null) {
-            InitialiseHttpTranmissionQueue();
-        }
-        if(tQueue.getStatus() != AsyncTask.Status.RUNNING)
-            tQueue.execute(this.sharedPreferences.getString(QuickstartPreferences.OwnerLoginType, ""),
-                           this.sharedPreferences.getString(QuickstartPreferences.OwnerUserName, ""),
-                           this.sharedPreferences.getString(QuickstartPreferences.OwnerHMACKey, ""));
-    }
-
-    private void ProcessMessageQueue(RestAdapter adapter){
-        try {
-            Database db = new Database(this);
-            ArrayList<QueueAction> queue = db.getAllQueueItems();
-            for (int x = 0; x < queue.size(); x++) {
-                QueueAction p = queue.get(x);
-
-                if (p.Item == QueueAction.ItemType.Prayer && p.Action == QueueAction.ActionType.Insert) {
-                    submitNewPrayer(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
-                }
-            }
-            db.close();
-        }
-        catch(Exception e){
-            String sdf = e.toString();
-            sdf.toString();
-        }
-    }
-
-    private void submitNewPrayer(Database db, RestAdapter adapter, String PrayerID, int QueueID, String IfExecutedGUID){
-
-        OwnerPrayerModel p = db.GetPrayer(PrayerID);
-        if(p == null)
-            return;
-        p.selectedFriends = db.getSelectedTagFriend(p.PrayerID);
-        p.attachments = db.getAllOwnerPrayerAttachment(p.PrayerID);
-        try {
-                for(int x=0; x<p.attachments.size(); x++) {
-                    ModelPrayerAttachement att = p.attachments.get(x);
-                    SimpleJsonResponse response = uploadPrayerImage(att, adapter);
-                    if (response.StatusCode == 202) {
-                        //att.FileName = response.Description;
-                        //p.attachments.add(att);
-                    }
-                }
-
-
-            PrayerInterface prayerInterface = adapter.create(PrayerInterface.class);
-            p.IfExecutedGUID = UUID.randomUUID().toString();
-            SimpleJsonResponse response = prayerInterface.AddNewPrayer(p);
-            if (response.StatusCode == 200) {
-
-                db.deleteQueue(QueueID);
-            }
-            else if (response.StatusCode == 201) {
-                long newPrayerID = Long.parseLong(response.Description);
-                db.updateOwnerPrayerSent(p.PrayerID, newPrayerID);
-
-                Fragment f = getSupportFragmentManager().findFragmentById(R.id.fragment);
-                if (f instanceof InterfacePrayerListUpdated) {
-                    ((InterfacePrayerListUpdated) f).onListUpdate(db.getAllOwnerPrayer(OwnerID));
-                }
-
-                db.deleteQueue(QueueID);
-            }
-        } catch (Exception e) {
-            String sdf = e.getMessage();
-        }
-    }
-
-    private SimpleJsonResponse uploadPrayerImage(ModelPrayerAttachement att, RestAdapter tadapter){
-        TypedFile attachmentImg = new TypedFile("multipart/form-data", new File(att.OriginalFilePath));
-        InterfaceUploadFile interfaceUploadFile = tadapter.create(InterfaceUploadFile.class);
-        SimpleJsonResponse json = interfaceUploadFile.CheckImageUploaded(att.GUID, att.FileName);
-        if(json.StatusCode == 202 && json.Description.toUpperCase() == "NOTEXISTS")
-            json = interfaceUploadFile.AddPrayerImage(att.GUID, attachmentImg);
-        return json;
-    }
 }

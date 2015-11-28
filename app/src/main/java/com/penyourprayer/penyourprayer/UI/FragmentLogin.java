@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
@@ -31,12 +30,10 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
-import com.penyourprayer.penyourprayer.Common.UserLoginModel;
+import com.penyourprayer.penyourprayer.Common.Model.ModelUserLogin;
 import com.penyourprayer.penyourprayer.Common.Utils;
 import com.penyourprayer.penyourprayer.QuickstartPreferences;
 import com.penyourprayer.penyourprayer.R;
-import com.penyourprayer.penyourprayer.WebAPI.AsyncWebApi;
-import com.penyourprayer.penyourprayer.WebAPI.AsyncWebApiResponse;
 import com.penyourprayer.penyourprayer.WebAPI.Model.SimpleJsonResponse;
 import com.penyourprayer.penyourprayer.WebAPI.UserAccountInterface;
 import com.penyourprayer.penyourprayer.WebAPI.httpClient;
@@ -50,7 +47,6 @@ import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 import com.twitter.sdk.android.core.models.User;
 
 
-import android.net.Uri;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -92,7 +88,7 @@ public class FragmentLogin extends Fragment implements
             //access the api on behalf of user. https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=1643913965854375&client_secret=c452f73b77ad32cb7ce20aa7b2eb9c2c&fb_exchange_token=CAAXXIYv53qcBAGz20x10buKcCgUq1YgrZB36mMKhqtFRN7vtjaxK84ZBZBocMXvlgkQTwySPVTCXxCREVJZCHX2riODZAof9K7wV7Do1VVoElJw2YvD4OYhN0wDIjBZCEAz4NvjM5yfYa2W8r3Uf4pWh36RmkHXBXeDV6vPUlDOsqpNBeHyUKkZCmZC0ZCas7lB8RuXRagX5NCqd48QkmuOZCbZBf9L8xBwpN5tUHscWjOe2QZDZD
             if(profile != null){
 
-                UserLoginModel user = new UserLoginModel();
+                ModelUserLogin user = new ModelUserLogin();
                 user.accessToken = loginResult.getAccessToken().getToken();
                 user.UserName = profile.getId();
                 user.Name = profile.getName();
@@ -206,8 +202,8 @@ public class FragmentLogin extends Fragment implements
                     @Override
                     public void success(Result<TwitterSession> twitterSessionResult) {
 
-                        final UserLoginModel user = new UserLoginModel();
-                        user.loginType = UserLoginModel.LoginType.Twitter;
+                        final ModelUserLogin user = new ModelUserLogin();
+                        user.loginType = ModelUserLogin.LoginType.Twitter;
                         user.UserName = String.valueOf(twitterSessionResult.data.getId());
                         user.accessToken = twitterSessionResult.data.getAuthToken().token;
                         user.password_secret = twitterSessionResult.data.getAuthToken().secret;
@@ -249,10 +245,10 @@ public class FragmentLogin extends Fragment implements
                     showLoginComponent(View.GONE);
                     loginProgressbar.setVisibility(View.VISIBLE);
 
-                    UserLoginModel user = new UserLoginModel();
+                    ModelUserLogin user = new ModelUserLogin();
                     user.UserName = email.getText().toString();
                     user.password_secret = password.getText().toString();
-                    user.loginType = UserLoginModel.LoginType.Email;
+                    user.loginType = ModelUserLogin.LoginType.Email;
 
                     startLoginProcess(user);
                 }
@@ -316,8 +312,8 @@ public class FragmentLogin extends Fragment implements
             String personGooglePlusProfile = currentPerson.getUrl();
 
 
-            UserLoginModel user = new UserLoginModel();
-            user.loginType = UserLoginModel.LoginType.GooglePlus;
+            ModelUserLogin user = new ModelUserLogin();
+            user.loginType = ModelUserLogin.LoginType.GooglePlus;
             user.UserName = currentPerson.getId();
             user.Name = currentPerson.getDisplayName();
             user.URLPictureProfile = currentPerson.getUrl();
@@ -325,11 +321,11 @@ public class FragmentLogin extends Fragment implements
 
             final Context c = this.getContext();
 
-            AsyncTask<UserLoginModel, Void, UserLoginModel> task = new AsyncTask<UserLoginModel, Void, UserLoginModel>() {
+            AsyncTask<ModelUserLogin, Void, ModelUserLogin> task = new AsyncTask<ModelUserLogin, Void, ModelUserLogin>() {
                 @Override
-                protected UserLoginModel doInBackground(UserLoginModel... params) {
+                protected ModelUserLogin doInBackground(ModelUserLogin... params) {
                     String token = "";
-                    UserLoginModel user = params[0];
+                    ModelUserLogin user = params[0];
                     String accountName = Plus.AccountApi.getAccountName(mGoogleApiClient);
                     Account account = new Account(accountName, GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
                     String scopes = "audience:server:client_id:" + "1036182018589-qq5e49a73sc4p0q9f02isfin56snbcsd.apps.googleusercontent.com"; // Not the app's client ID.
@@ -372,7 +368,7 @@ public class FragmentLogin extends Fragment implements
                 }
 
                 @Override
-                protected void onPostExecute(UserLoginModel user) {
+                protected void onPostExecute(ModelUserLogin user) {
                     startLoginProcess(user);
                 }
 
@@ -403,7 +399,7 @@ public class FragmentLogin extends Fragment implements
 
 
 
-    private void startLoginProcess(UserLoginModel user){
+    private void startLoginProcess(ModelUserLogin user){
         SharedPreferences sharedPreferences = mainActivity.getSharedPreferences("PenYourPrayer.SharePreference", Context.MODE_PRIVATE);
         user.GoogleCloudMessagingDeviceID = sharedPreferences.getString(QuickstartPreferences.DeviceRegistrationToken, "");
 
@@ -414,9 +410,9 @@ public class FragmentLogin extends Fragment implements
         }
         else{
             UserAccountInterface useracctInt = adapter.create(UserAccountInterface.class);
-            useracctInt.Login(user.loginType.toString(), user.UserName, user.accessToken, user.password_secret, "", new retrofit.Callback<UserLoginModel>() {
+            useracctInt.Login(user.loginType.toString(), user.UserName, user.accessToken, user.password_secret, "", new retrofit.Callback<ModelUserLogin>() {
                 @Override
-                public void success(UserLoginModel model, Response response) {
+                public void success(ModelUserLogin model, Response response) {
                     if(!model.EmailVerification){
                         new AlertDialog.Builder(mainActivity)
                                 .setTitle("Account not activated!")
@@ -459,7 +455,7 @@ public class FragmentLogin extends Fragment implements
                         mainActivity.sharedPreferences.edit().putString(QuickstartPreferences.OwnerHMACKey, model.HMACHashKey).apply();
                         mainActivity.sharedPreferences.edit().putString(QuickstartPreferences.OwnerLoginType, model.loginType.toString()).apply();
                         mainActivity.sharedPreferences.edit().putString(QuickstartPreferences.OwnerUserName, model.UserName).apply();
-                        mainActivity.replaceWithPrayerListFragment();
+                        mainActivity.replaceWithPrayerComment();
                     }
                 }
 

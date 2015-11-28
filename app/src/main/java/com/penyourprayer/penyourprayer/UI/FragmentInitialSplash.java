@@ -12,7 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.penyourprayer.penyourprayer.Common.FriendProfileModel;
+import com.penyourprayer.penyourprayer.Common.Model.ModelFriendProfile;
 import com.penyourprayer.penyourprayer.Database.Database;
 import com.penyourprayer.penyourprayer.R;
 
@@ -32,7 +32,7 @@ public class FragmentInitialSplash extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private ArrayList<FriendProfileModel> friends;
+    private ArrayList<ModelFriendProfile> friends;
 
     private MainActivity mainActivity;
 

@@ -1,6 +1,6 @@
 package com.penyourprayer.penyourprayer.Common.Interface;
 
-import com.penyourprayer.penyourprayer.Common.OwnerPrayerModel;
+import com.penyourprayer.penyourprayer.Common.Model.ModelOwnerPrayer;
 
 import java.util.ArrayList;
 
@@ -9,5 +9,5 @@ import java.util.ArrayList;
  */
 
 public interface InterfacePrayerListUpdated {
-    public void onListUpdate(ArrayList<OwnerPrayerModel> allprayers);
+    public void onListUpdate(ArrayList<ModelOwnerPrayer> allprayers);
 }

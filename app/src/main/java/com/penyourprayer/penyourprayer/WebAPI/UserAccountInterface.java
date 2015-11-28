@@ -1,12 +1,10 @@
 package com.penyourprayer.penyourprayer.WebAPI;
 
-import com.penyourprayer.penyourprayer.Common.UserLoginModel;
-import com.penyourprayer.penyourprayer.WebAPI.Model.IPAddressLocale;
+import com.penyourprayer.penyourprayer.Common.Model.ModelUserLogin;
 import com.penyourprayer.penyourprayer.WebAPI.Model.SimpleJsonResponse;
 
 import retrofit.Callback;
 import retrofit.http.Body;
-import retrofit.http.GET;
 import retrofit.http.POST;
 import retrofit.http.Query;
 
@@ -38,5 +36,5 @@ public interface UserAccountInterface {
     @POST("/api/useraccount/Login")
     void Login(@Query("LoginType") String LoginType, @Query("UserName") String UserName,
                @Query("AccessToken") String AccessToken, @Query("Password_Secret") String Password_Secret,
-               @Body String body, Callback<UserLoginModel> cb);
+               @Body String body, Callback<ModelUserLogin> cb);
 }

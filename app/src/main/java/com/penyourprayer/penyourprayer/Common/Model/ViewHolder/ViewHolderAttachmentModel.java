@@ -1,4 +1,4 @@
-package com.penyourprayer.penyourprayer.Common;
+package com.penyourprayer.penyourprayer.Common.Model.ViewHolder;
 
 import android.widget.GridView;
 import android.widget.HorizontalScrollView;

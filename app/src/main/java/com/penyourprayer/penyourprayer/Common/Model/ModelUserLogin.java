@@ -1,4 +1,4 @@
-package com.penyourprayer.penyourprayer.Common;
+package com.penyourprayer.penyourprayer.Common.Model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Created by sisgks on 20/10/2015.
  */
-public class UserLoginModel {
+public class ModelUserLogin {
 
     public enum LoginType {Email, Facebook, Twitter, GooglePlus};
 
@@ -57,7 +57,7 @@ public class UserLoginModel {
     public boolean EmailVerification;
 
 
-    public UserLoginModel(){}
+    public ModelUserLogin(){}
 }
 
 

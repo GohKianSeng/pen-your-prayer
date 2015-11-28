@@ -17,8 +17,8 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.penyourprayer.penyourprayer.Common.FriendProfileModel;
-import com.penyourprayer.penyourprayer.Common.ListViewAdapterProfileFriend;
+import com.penyourprayer.penyourprayer.Common.Model.ModelFriendProfile;
+import com.penyourprayer.penyourprayer.Common.Adapter.AdapterListViewProfileFriend;
 import com.penyourprayer.penyourprayer.Database.Database;
 import com.penyourprayer.penyourprayer.R;
 
@@ -35,14 +35,14 @@ public class FragmentTagAFriend extends Fragment {
     private static final String ARG_PARAM1 = "GUID";
 
     private ListView list;
-    private ArrayList<FriendProfileModel> friends;
+    private ArrayList<ModelFriendProfile> friends;
     private boolean startSearching = false;
     private String searchFor = "";
     // TODO: Rename and change types of parameters
     private String GUID;
     private MainActivity mainActivity;
     EditText searcheditText;
-    private ListViewAdapterProfileFriend adapter;
+    private AdapterListViewProfileFriend adapter;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -90,7 +90,7 @@ public class FragmentTagAFriend extends Fragment {
             @Override
             public void onClick(View v) {
                 if (GUID.length() > 0) {
-                    mainActivity.selectedFriends = new ArrayList<FriendProfileModel>();
+                    mainActivity.selectedFriends = new ArrayList<ModelFriendProfile>();
                 }
                 mainActivity.popBackFragmentStack();
             }
@@ -99,7 +99,7 @@ public class FragmentTagAFriend extends Fragment {
         ((ImageButton)mCustomView.findViewById(R.id.tagafriend_done_ImageButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ArrayList<FriendProfileModel> selectedFriends = new ArrayList<FriendProfileModel>();
+                ArrayList<ModelFriendProfile> selectedFriends = new ArrayList<ModelFriendProfile>();
                 for (int x = 0; x < friends.size(); x++) {
                     if (friends.get(x).selected)
                         selectedFriends.add(friends.get(x));
@@ -110,7 +110,7 @@ public class FragmentTagAFriend extends Fragment {
                 } else if (GUID.length() > 0) {
                     Database db = new Database(mainActivity);
                     db.updateOwnerPrayerTagFriends(GUID, selectedFriends);
-                    mainActivity.selectedFriends = new ArrayList<FriendProfileModel>();
+                    mainActivity.selectedFriends = new ArrayList<ModelFriendProfile>();
                     mainActivity.popBackFragmentStack();
                 }
             }
@@ -146,7 +146,7 @@ public class FragmentTagAFriend extends Fragment {
         list = (ListView)view.findViewById(R.id.tag_a_friend_listView);
 
 
-        adapter = new ListViewAdapterProfileFriend(this.getActivity(), R.layout.list_view_row_tag_friend, friends);
+        adapter = new AdapterListViewProfileFriend(this.getActivity(), R.layout.list_view_row_tag_friend, friends);
         list.setAdapter(adapter);
 
         list.setItemsCanFocus(false);
@@ -156,7 +156,7 @@ public class FragmentTagAFriend extends Fragment {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                FriendProfileModel f = (FriendProfileModel)parent.getItemAtPosition(position);
+                ModelFriendProfile f = (ModelFriendProfile)parent.getItemAtPosition(position);
                 f.selected = !f.selected;
 
                 ((CheckBox)view.findViewById(R.id.profile_checkBox)).setChecked(f.selected);

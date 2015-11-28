@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:orientation="vertical"
+    tools:context="com.penyourprayer.penyourprayer.UI.FragmentPrayerComment"
+    android:background="#ffffff">
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/listView"
+        android:layout_weight="1"
+        tools:listitem="@layout/rowitem_prayer_comment"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:id="@+id/editText"
+        android:hint="Write a comment..."
+        android:background="@drawable/comment_edittext" />
+</LinearLayout>

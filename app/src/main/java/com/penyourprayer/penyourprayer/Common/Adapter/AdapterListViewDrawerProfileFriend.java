@@ -1,4 +1,4 @@
-package com.penyourprayer.penyourprayer.Common;
+package com.penyourprayer.penyourprayer.Common.Adapter;
 
 /**
  * Created by sisgks on 06/10/2015.
@@ -10,21 +10,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.penyourprayer.penyourprayer.Common.Model.ModelFriendProfile;
+import com.penyourprayer.penyourprayer.Common.ImageLoad.ImageLoader;
+import com.penyourprayer.penyourprayer.Common.Model.ViewHolder.ViewHolderTagFriendModel;
 import com.penyourprayer.penyourprayer.R;
 
 import java.util.ArrayList;
 
-public class ListViewAdapterDrawerProfileFriend extends ArrayAdapter {
-        public ArrayList<FriendProfileModel> friends = null;
+public class AdapterListViewDrawerProfileFriend extends ArrayAdapter {
+        public ArrayList<ModelFriendProfile> friends = null;
         public Context context;
         private ImageLoader imageLoader;
 
-        public ListViewAdapterDrawerProfileFriend(Context context, int resourcesID, ArrayList<FriendProfileModel> resource) {
+        public AdapterListViewDrawerProfileFriend(Context context, int resourcesID, ArrayList<ModelFriendProfile> resource) {
                 super(context, resourcesID, resource);
                 // TODO Auto-generated constructor stub
                 this.context = context;
@@ -35,7 +36,7 @@ public class ListViewAdapterDrawerProfileFriend extends ArrayAdapter {
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
 
-                TagFriendModelViewHolder p = new TagFriendModelViewHolder();
+                ViewHolderTagFriendModel p = new ViewHolderTagFriendModel();
 
                 LayoutInflater inflater = ((Activity) context).getLayoutInflater();
                 if (convertView == null) {
@@ -45,7 +46,7 @@ public class ListViewAdapterDrawerProfileFriend extends ArrayAdapter {
                         p.profile_ImageView = (ImageView) convertView.findViewById(R.id.drawer_profile_friend_image_imageView);
                         convertView.setTag(p);
                 } else {
-                        p = (TagFriendModelViewHolder) convertView.getTag();
+                        p = (ViewHolderTagFriendModel) convertView.getTag();
                 }
 
                 if(!friends.get(position).isAction) {

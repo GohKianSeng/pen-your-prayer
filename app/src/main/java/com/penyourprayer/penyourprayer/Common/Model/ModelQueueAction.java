@@ -1,9 +1,9 @@
-package com.penyourprayer.penyourprayer.Database;
+package com.penyourprayer.penyourprayer.Common.Model;
 
 /**
  * Created by sisgks on 20/11/2015.
  */
-public class QueueAction {
+public class ModelQueueAction {
 
     public enum ItemType {Prayer, PrayerPublicView, PrayerTagFriends, PrayerContent };
 
@@ -14,5 +14,5 @@ public class QueueAction {
     public ItemType Item;
     public String ItemID;
     public String IfExecutedGUID;
-    public QueueAction(){}
+    public ModelQueueAction(){}
 }

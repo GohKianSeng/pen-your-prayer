@@ -1,4 +1,4 @@
-package com.penyourprayer.penyourprayer.Common;
+package com.penyourprayer.penyourprayer.Common.Adapter;
 
 /**
  * Created by sisgks on 06/10/2015.
@@ -14,16 +14,20 @@ import android.widget.CheckBox;
 import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.penyourprayer.penyourprayer.Common.Model.ModelFriendProfile;
+import com.penyourprayer.penyourprayer.Common.ImageLoad.ImageLoader;
+import com.penyourprayer.penyourprayer.Common.Model.ViewHolder.ViewHolderTagFriendModel;
 import com.penyourprayer.penyourprayer.R;
 
 import java.util.ArrayList;
 
-public class ListViewAdapterProfileFriend extends ArrayAdapter {
-        public ArrayList<FriendProfileModel> friends = null;
+public class AdapterListViewProfileFriend extends ArrayAdapter {
+        public ArrayList<ModelFriendProfile> friends = null;
         public Context context;
         private ImageLoader imageLoader;
 
-        public ListViewAdapterProfileFriend(Context context, int resourcesID, ArrayList<FriendProfileModel> resource) {
+        public AdapterListViewProfileFriend(Context context, int resourcesID, ArrayList<ModelFriendProfile> resource) {
                 super(context, resourcesID, resource);
                 // TODO Auto-generated constructor stub
                 this.context = context;
@@ -34,7 +38,7 @@ public class ListViewAdapterProfileFriend extends ArrayAdapter {
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
 
-                TagFriendModelViewHolder p = new TagFriendModelViewHolder();
+                ViewHolderTagFriendModel p = new ViewHolderTagFriendModel();
 
                 LayoutInflater inflater = ((Activity) context).getLayoutInflater();
                 if (convertView == null) {
@@ -47,7 +51,7 @@ public class ListViewAdapterProfileFriend extends ArrayAdapter {
                         convertView.setTag(p);
                 }
                 else{
-                        p = (TagFriendModelViewHolder) convertView.getTag();
+                        p = (ViewHolderTagFriendModel) convertView.getTag();
                 }
 
 
@@ -75,14 +79,14 @@ public class ListViewAdapterProfileFriend extends ArrayAdapter {
                         @Override
                         protected void publishResults(CharSequence constraint, FilterResults results) {
                                 //Log.d(Constants.TAG, "**** PUBLISHING RESULTS for: " + constraint);
-                                friends = (ArrayList<FriendProfileModel>) results.values;
+                                friends = (ArrayList<ModelFriendProfile>) results.values;
                                 notifyDataSetChanged();
                         }
 
                         @Override
                         protected FilterResults performFiltering(CharSequence constraint) {
                                 //Log.d(Constants.TAG, "**** PERFORM FILTERING for: " + constraint);
-                                ArrayList<FriendProfileModel> filteredResults = getFilteredResults(constraint);
+                                ArrayList<ModelFriendProfile> filteredResults = getFilteredResults(constraint);
 
                                 FilterResults results = new FilterResults();
                                 results.values = filteredResults;
@@ -92,11 +96,11 @@ public class ListViewAdapterProfileFriend extends ArrayAdapter {
                 };
         }
 
-        private ArrayList<FriendProfileModel> getFilteredResults(CharSequence constraint) {
+        private ArrayList<ModelFriendProfile> getFilteredResults(CharSequence constraint) {
 
-                ArrayList<FriendProfileModel> test = new ArrayList<FriendProfileModel>();
+                ArrayList<ModelFriendProfile> test = new ArrayList<ModelFriendProfile>();
                 for(int x=0; x<10; x++) {
-                        //FriendProfileModel f = new FriendProfileModel("Siewlin No" + String.valueOf(x), "http://images.pajezy.com/notes/profile.png", false);
+                        //ModelFriendProfile f = new ModelFriendProfile("Siewlin No" + String.valueOf(x), "http://images.pajezy.com/notes/profile.png", false);
                         //test.add(f);
                 }
                 return test;

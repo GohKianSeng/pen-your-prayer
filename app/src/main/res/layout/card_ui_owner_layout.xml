@@ -79,29 +79,60 @@
             android:layout_weight="1" />
     </LinearLayout>
 
-    <HorizontalScrollView
-        android:layout_width="fill_parent"
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/thumbnail_horizontalScrollView"
-        android:fillViewport="true"
-        android:scrollbars="horizontal"
-        android:visibility="gone">
+        android:background="#ffffff"
+        android:id="@+id/attachment_linearlayout">
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <ImageButton
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:id="@+id/prayerlist_imageButton1"
+            android:layout_weight="1"
+            android:scaleType="fitCenter"
+            android:src="@drawable/bbb"
+            android:background="#ffffff"
+            android:layout_marginLeft="5dp" />
 
-            <GridView xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/thumbnailGridView"
-                android:gravity="center"
-                android:columnWidth="50dp"
-                android:stretchMode="columnWidth"
-                android:layout_width="fill_parent"
-                android:layout_height="75dp"
-                tools:listitem="@layout/card_ui_image" />
-        </LinearLayout>
-    </HorizontalScrollView>
+        <ImageButton
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:id="@+id/prayerlist_imageButton2"
+            android:layout_weight="1"
+            android:scaleType="fitCenter"
+            android:background="#ffffff"
+            android:layout_marginLeft="5dp" />
+
+        <ImageButton
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:id="@+id/prayerlist_imageButton3"
+            android:layout_weight="1"
+            android:scaleType="fitCenter"
+            android:background="#ffffff"
+            android:layout_marginLeft="5dp" />
+
+        <ImageButton
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:id="@+id/prayerlist_imageButton4"
+            android:layout_weight="1"
+            android:scaleType="fitCenter"
+            android:background="#ffffff"
+            android:layout_marginLeft="5dp" />
+
+        <ImageButton
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:id="@+id/prayerlist_imageButton5"
+            android:layout_weight="1"
+            android:scaleType="fitCenter"
+            android:background="#ffffff"
+            android:layout_marginRight="5dp"
+            android:layout_marginLeft="5dp" />
+    </LinearLayout>
 
     <LinearLayout
             android:id="@+id/card_thumb_and_content_layout"

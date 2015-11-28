@@ -4,8 +4,6 @@ package com.penyourprayer.penyourprayer.UI;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.AvoidXfermode;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -32,29 +30,23 @@ import com.onegravity.rteditor.api.RTProxyImpl;
 import com.onegravity.rteditor.api.format.RTFormat;
 import com.onegravity.rteditor.api.media.RTImage;
 import com.onegravity.rteditor.toolbar.HorizontalRTToolbar;
-import com.penyourprayer.penyourprayer.Common.AdapterThumbnailGridView;
-import com.penyourprayer.penyourprayer.Common.Interface.FragmentBackHandlerInterface;
-import com.penyourprayer.penyourprayer.Common.FriendProfileModel;
-import com.penyourprayer.penyourprayer.Common.ModelPrayerAttachement;
+import com.penyourprayer.penyourprayer.Common.ImageLoad.ImageLoader;
+import com.penyourprayer.penyourprayer.Common.Interface.InterfaceFragmentBackHandler;
+import com.penyourprayer.penyourprayer.Common.Model.ModelFriendProfile;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAttachement;
 import com.penyourprayer.penyourprayer.Database.Database;
 import com.penyourprayer.penyourprayer.QuickstartPreferences;
 import com.penyourprayer.penyourprayer.R;
-import com.penyourprayer.penyourprayer.WebAPI.InterfaceUploadFile;
-import com.penyourprayer.penyourprayer.WebAPI.Model.SimpleJsonResponse;
 import com.penyourprayer.penyourprayer.WebAPI.httpClient;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import retrofit.RestAdapter;
 import retrofit.client.OkClient;
 import retrofit.converter.GsonConverter;
-import retrofit.mime.TypedFile;
 
-public class FragmentCreateNewPrayer extends Fragment implements FragmentBackHandlerInterface{
+public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragmentBackHandler {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -69,9 +61,9 @@ public class FragmentCreateNewPrayer extends Fragment implements FragmentBackHan
     private ImageButton createnew_prayer_tag_friend_ImageButton;
     private boolean publicView = false;
     private RestAdapter adapter;
-    private GridView thumbnail_gridview;
-    private AdapterThumbnailGridView gridviewAdapter;
-    private HorizontalScrollView thumbnailScrollView;
+    private ImageButton imageButton1, imageButton2, imageButton3, imageButton4, imageButton5;
+    private ImageLoader imageLoader;
+    private LinearLayout attachment_layout;
     private String OwnerLoginType;
     private String OwnerUserName;
     private String HMACKey;
@@ -90,6 +82,9 @@ public class FragmentCreateNewPrayer extends Fragment implements FragmentBackHan
 
         mainActivity = ((MainActivity) getActivity());
         mainActivity.attachment = new  ArrayList<ModelPrayerAttachement>();
+
+        imageLoader = new ImageLoader(mainActivity);
+
         this.getActivity().setTheme(R.style.ThemeLight);
 
         OwnerLoginType = mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerLoginType, "");
@@ -166,6 +161,13 @@ public class FragmentCreateNewPrayer extends Fragment implements FragmentBackHan
 
         mainActivity.lockDrawer(true);
 
+        attachment_layout = (LinearLayout)view.findViewById(R.id.create_prayer_attachment_layout);
+        imageButton1 = (ImageButton)view.findViewById(R.id.create_prayer_attachment_imageButton1);
+        imageButton2 = (ImageButton)view.findViewById(R.id.create_prayer_attachment_imageButton2);
+        imageButton3 = (ImageButton)view.findViewById(R.id.create_prayer_attachment_imageButton3);
+        imageButton4 = (ImageButton)view.findViewById(R.id.create_prayer_attachment_imageButton4);
+        imageButton5 = (ImageButton)view.findViewById(R.id.create_prayer_attachment_imageButton5);
+
         // initialize rich text manager
         RTMediaFactoryImpl sfd = new RTMediaFactoryImpl(this.getActivity().getApplicationContext());
         RTApi rtApi = new RTApi(this.getActivity(), new RTProxyImpl(this.getActivity()), new RTMediaFactoryImpl(this.getActivity().getApplicationContext(), true));
@@ -212,23 +214,6 @@ public class FragmentCreateNewPrayer extends Fragment implements FragmentBackHan
 
             }
         });
-
-        thumbnailScrollView = (HorizontalScrollView) view.findViewById(R.id.newprayer_thumbnail_horizontalScrollView);
-
-        if(mainActivity.attachment.size() > 0)
-            thumbnailScrollView.setVisibility(View.VISIBLE);
-        else
-            thumbnailScrollView.setVisibility(View.INVISIBLE);
-
-        thumbnail_gridview = (GridView)view.findViewById(R.id.newprayer_thumbnailGridView);
-
-        gridviewAdapter = new AdapterThumbnailGridView(mainActivity, mainActivity.attachment);
-
-        thumbnail_gridview.setNumColumns(mainActivity.attachment.size());
-        LinearLayout.LayoutParams linearParams = (LinearLayout.LayoutParams)thumbnail_gridview.getLayoutParams();
-        linearParams.width = mainActivity.attachment.size() * 220;
-        thumbnail_gridview.setLayoutParams(linearParams);
-        thumbnail_gridview.setAdapter(gridviewAdapter);
 
         InputMethodManager imm = (InputMethodManager) this.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(mRTMessageField, InputMethodManager.SHOW_IMPLICIT);
@@ -292,7 +277,7 @@ public class FragmentCreateNewPrayer extends Fragment implements FragmentBackHan
         db.AddNewPrayer(mainActivity, prayer, publicView, mainActivity.selectedFriends, mainActivity.attachment);
 
         mainActivity.attachment = new ArrayList<ModelPrayerAttachement>();
-        mainActivity.selectedFriends = new ArrayList<FriendProfileModel>();
+        mainActivity.selectedFriends = new ArrayList<ModelFriendProfile>();
         mainActivity.popBackFragmentStack();
     }
 
@@ -309,18 +294,19 @@ public class FragmentCreateNewPrayer extends Fragment implements FragmentBackHan
             o.FileName = image.getFileName();
             mainActivity.attachment.add(o);
 
-            thumbnail_gridview.setNumColumns(mainActivity.attachment.size());
-            LinearLayout.LayoutParams linearParams = (LinearLayout.LayoutParams)thumbnail_gridview.getLayoutParams();
-            linearParams.width = mainActivity.attachment.size() * 220;
-            thumbnail_gridview.setLayoutParams(linearParams);
-            thumbnail_gridview.setAdapter(gridviewAdapter);
-
-            gridviewAdapter.updateAttachment(mainActivity.attachment);
-            if(mainActivity.attachment.size() > 0)
-                thumbnailScrollView.setVisibility(View.VISIBLE);
-            else
-                thumbnailScrollView .setVisibility(View.INVISIBLE);
-
+            for(int x=0; x<mainActivity.attachment.size(); x++){
+                attachment_layout.setVisibility(View.VISIBLE);
+                if(x==0)
+                    imageLoader.DisplayImage(mainActivity.attachment.get(x).URLPath, imageButton1, false);
+                if(x==1)
+                    imageLoader.DisplayImage(mainActivity.attachment.get(x).URLPath, imageButton2, false);
+                if(x==2)
+                    imageLoader.DisplayImage(mainActivity.attachment.get(x).URLPath, imageButton3, false);
+                if(x==3)
+                    imageLoader.DisplayImage(mainActivity.attachment.get(x).URLPath, imageButton4, false);
+                if(x==4)
+                    imageLoader.DisplayImage(mainActivity.attachment.get(x).URLPath, imageButton5, false);
+            }
         }
     }
 }

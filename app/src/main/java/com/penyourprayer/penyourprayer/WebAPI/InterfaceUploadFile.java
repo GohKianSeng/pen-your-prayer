@@ -1,11 +1,7 @@
 package com.penyourprayer.penyourprayer.WebAPI;
 
-import com.penyourprayer.penyourprayer.Common.OwnerPrayerModel;
 import com.penyourprayer.penyourprayer.WebAPI.Model.SimpleJsonResponse;
 
-import retrofit.Callback;
-import retrofit.client.Response;
-import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.Multipart;
 import retrofit.http.POST;

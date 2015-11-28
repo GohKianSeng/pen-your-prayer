@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.text.TextUtils;
 
-import com.penyourprayer.penyourprayer.Common.UserLoginModel;
 import com.penyourprayer.penyourprayer.QuickstartPreferences;
 
 import java.io.BufferedReader;

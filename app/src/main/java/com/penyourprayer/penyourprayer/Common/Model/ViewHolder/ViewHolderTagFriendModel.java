@@ -1,4 +1,4 @@
-package com.penyourprayer.penyourprayer.Common;
+package com.penyourprayer.penyourprayer.Common.Model.ViewHolder;
 
 import android.nfc.Tag;
 import android.widget.CheckBox;
@@ -8,12 +8,12 @@ import android.widget.TextView;
 /**
  * Created by sisgks on 07/10/2015.
  */
-public class TagFriendModelViewHolder {
+public class ViewHolderTagFriendModel {
     public ImageView profile_ImageView;
     public TextView name_TextView;
     public CheckBox selected_CheckBox;
 
-    public TagFriendModelViewHolder(){
+    public ViewHolderTagFriendModel(){
 
     }
 }

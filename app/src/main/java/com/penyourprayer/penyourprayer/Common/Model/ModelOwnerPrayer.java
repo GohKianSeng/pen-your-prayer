@@ -1,4 +1,4 @@
-package com.penyourprayer.penyourprayer.Common;
+package com.penyourprayer.penyourprayer.Common.Model;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -7,7 +7,7 @@ import java.util.Date;
 /**
  * Created by sisgks on 19/10/2015.
  */
-public class OwnerPrayerModel {
+public class ModelOwnerPrayer {
 
     public String PrayerID = "";
     public Date CreatedWhen = null;
@@ -21,9 +21,9 @@ public class OwnerPrayerModel {
     public long numberOfComment = 0;
     public boolean ownerAmen = false;
     public ArrayList<ModelPrayerAttachement> attachments = new ArrayList<ModelPrayerAttachement>();
-    public ArrayList<FriendProfileModel> selectedFriends = new ArrayList<FriendProfileModel>();
+    public ArrayList<ModelFriendProfile> selectedFriends = new ArrayList<ModelFriendProfile>();
     public String IfExecutedGUID;
-    public OwnerPrayerModel(){}
+    public ModelOwnerPrayer(){}
 
     public String formattedCreatedWhen(){
         SimpleDateFormat format = new SimpleDateFormat("dd MMM yyyy hh:mm:ss aa");

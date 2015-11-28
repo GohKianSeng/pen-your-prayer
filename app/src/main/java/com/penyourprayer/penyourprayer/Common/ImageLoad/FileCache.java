@@ -1,4 +1,4 @@
-package com.penyourprayer.penyourprayer.Common;
+package com.penyourprayer.penyourprayer.Common.ImageLoad;
 
         import java.io.File;
         import android.content.Context;
