@@ -5,6 +5,8 @@ package com.penyourprayer.penyourprayer;
  */
 public class QuickstartPreferences {
 
+    public static final int thumbnailDPsize = 70;
+
     public static final String DefaultTimeFormat = "yyyy-MM-dd'T'HH:mm:sszzz";
 
     //OwnerGUID

@@ -1,4 +1,6 @@
 package com.penyourprayer.penyourprayer.Common;
+import android.util.DisplayMetrics;
+
 import com.penyourprayer.penyourprayer.QuickstartPreferences;
 import com.penyourprayer.penyourprayer.UI.MainActivity;
 
@@ -51,5 +53,11 @@ public class Utils {
             isValid = true;
         }
         return isValid;
+    }
+
+    public static int dpToPx(MainActivity ma,int dp) {
+        DisplayMetrics displayMetrics = ma.getResources().getDisplayMetrics();
+        int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+        return px;
     }
 }

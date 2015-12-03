@@ -5,7 +5,7 @@ package com.penyourprayer.penyourprayer.Common.Model;
  */
 public class ModelQueueAction {
 
-    public enum ItemType {Prayer, PrayerPublicView, PrayerTagFriends, PrayerContent };
+    public enum ItemType {Prayer, PrayerPublicView, PrayerTagFriends, PrayerContent, PrayerComment };
 
     public enum ActionType {Insert, Update, Delete };
 

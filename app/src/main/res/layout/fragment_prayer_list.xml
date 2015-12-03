@@ -100,13 +100,13 @@
                 android:src="@mipmap/floating_action_button" />
 
             <ListView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:id="@+id/prayer_listView"
                 android:clipToPadding="false"
                 android:divider="#f0f0f0"
                 android:dividerHeight="10dp"
-                android:padding="10dp"
+                android:padding="5dp"
                 android:scrollbarStyle="outsideOverlay"
                 tools:listitem="@layout/card_ui_owner_layout"/>
 

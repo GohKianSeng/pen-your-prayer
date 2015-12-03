@@ -208,7 +208,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:id="@+id/card_ui_delete_imageButton"
-                android:src="@drawable/delete_1"
+                android:src="@drawable/ic_actionbar_delete_g"
                 android:background="@null"
                 android:scaleType="fitCenter"
                 android:layout_weight="1" />

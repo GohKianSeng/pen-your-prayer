@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -19,6 +20,8 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
@@ -52,6 +55,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import org.json.JSONObject;
+
 import java.io.IOException;
 
 import java.util.Arrays;
@@ -76,6 +81,8 @@ public class FragmentLogin extends Fragment implements
     private String TWITTER_KEY = "jSBnTpknelOuZX6e4Cg101oue", TWITTER_SECRET = "w5j7WPwHWwY4DSfJ82tRVZF7SBogZJ6XABptVt431uOowvwFKC";
     //private TextView mTextView;
     private CallbackManager mCallbackManager;
+    private ModelUserLogin user;
+
     private FacebookCallback<LoginResult> mCallback = new FacebookCallback<LoginResult>() {
         @Override
         public void onSuccess(LoginResult loginResult) {
@@ -88,14 +95,28 @@ public class FragmentLogin extends Fragment implements
             //access the api on behalf of user. https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=1643913965854375&client_secret=c452f73b77ad32cb7ce20aa7b2eb9c2c&fb_exchange_token=CAAXXIYv53qcBAGz20x10buKcCgUq1YgrZB36mMKhqtFRN7vtjaxK84ZBZBocMXvlgkQTwySPVTCXxCREVJZCHX2riODZAof9K7wV7Do1VVoElJw2YvD4OYhN0wDIjBZCEAz4NvjM5yfYa2W8r3Uf4pWh36RmkHXBXeDV6vPUlDOsqpNBeHyUKkZCmZC0ZCas7lB8RuXRagX5NCqd48QkmuOZCbZBf9L8xBwpN5tUHscWjOe2QZDZD
             if(profile != null){
 
-                ModelUserLogin user = new ModelUserLogin();
                 user.accessToken = loginResult.getAccessToken().getToken();
                 user.UserName = profile.getId();
                 user.Name = profile.getName();
                 user.URLPictureProfile = profile.getProfilePictureUri(50, 50).toString();
-
-                startLoginProcess(user);
             }
+
+            GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+
+                @Override
+                public void onCompleted(JSONObject object, GraphResponse response) {
+                    try {
+                        user.SocialMediaEmail = object.getString("email");
+                    }
+                    catch(Exception e){}
+
+                }
+
+            });
+            Bundle parameters = new Bundle();
+            parameters.putString("fields", "id, first_name, last_name, email,gender, birthday, location"); // Parámetros que pedimos a facebook
+            request.setParameters(parameters);
+            request.executeAsync();
         }
 
         @Override
@@ -127,12 +148,14 @@ public class FragmentLogin extends Fragment implements
         FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
         mCallbackManager = CallbackManager.Factory.create();
 
+        user = new ModelUserLogin();
+
         mGoogleApiClient = new GoogleApiClient.Builder(this.getContext())
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(Plus.API)
                 .addScope(new Scope(Scopes.PROFILE))
-                //.addScope(new Scope(Scopes.PLUS_LOGIN))
+                        //.addScope(new Scope(Scopes.PLUS_LOGIN))
                 .build();
 
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
@@ -177,7 +200,7 @@ public class FragmentLogin extends Fragment implements
             @Override
             public void onClick(View view) {
                 showLoginComponent(View.GONE);
-                LoginManager.getInstance().logInWithReadPermissions(mainActivity, Arrays.asList("public_profile"));
+                LoginManager.getInstance().logInWithReadPermissions(mainActivity, Arrays.asList("public_profile", "email", "user_friends"));
             }
         });
 
@@ -327,6 +350,7 @@ public class FragmentLogin extends Fragment implements
                     String token = "";
                     ModelUserLogin user = params[0];
                     String accountName = Plus.AccountApi.getAccountName(mGoogleApiClient);
+                    user.SocialMediaEmail = accountName;
                     Account account = new Account(accountName, GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
                     String scopes = "audience:server:client_id:" + "1036182018589-qq5e49a73sc4p0q9f02isfin56snbcsd.apps.googleusercontent.com"; // Not the app's client ID.
                     try {
@@ -369,11 +393,15 @@ public class FragmentLogin extends Fragment implements
 
                 @Override
                 protected void onPostExecute(ModelUserLogin user) {
-                    startLoginProcess(user);
+
                 }
 
             };
-            task.execute(user);
+
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, user);
+            else
+                task.execute(user);
 
         }
     }
@@ -455,7 +483,7 @@ public class FragmentLogin extends Fragment implements
                         mainActivity.sharedPreferences.edit().putString(QuickstartPreferences.OwnerHMACKey, model.HMACHashKey).apply();
                         mainActivity.sharedPreferences.edit().putString(QuickstartPreferences.OwnerLoginType, model.loginType.toString()).apply();
                         mainActivity.sharedPreferences.edit().putString(QuickstartPreferences.OwnerUserName, model.UserName).apply();
-                        mainActivity.replaceWithPrayerComment();
+                        mainActivity.replaceWithPrayerListFragment();
                     }
                 }
 

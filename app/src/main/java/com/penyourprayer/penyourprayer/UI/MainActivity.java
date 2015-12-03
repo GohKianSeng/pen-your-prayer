@@ -31,6 +31,7 @@ import com.penyourprayer.penyourprayer.Common.Interface.InterfaceFragmentBackHan
 import com.penyourprayer.penyourprayer.Common.Model.ModelFriendProfile;
 import com.penyourprayer.penyourprayer.Common.ImageLoad.ImageProcessor;
 import com.penyourprayer.penyourprayer.Common.Adapter.AdapterListViewDrawerProfileFriend;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPayerComment;
 import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAttachement;
 import com.penyourprayer.penyourprayer.GoogleCloudMessaging.RegistrationIntentService;
 import com.penyourprayer.penyourprayer.QueueAction.QueueAction;
@@ -248,10 +249,23 @@ public class MainActivity extends AppCompatActivity {
             mDrawerLayout.closeDrawer(Gravity.LEFT);
     }
 
-    public void replaceWithPrayerComment(){
+    public void replaceWithPrayerCommentModification(ModelPayerComment c){
+        // Create fragment and give it an argument specifying the article it should show
+        Fragment newFragment = FragmentPrayerCommentEdit.newInstance(c);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
+
+        transaction.replace(R.id.fragment, newFragment);
+        transaction.addToBackStack(null);
+
+        transaction.commit();
+    }
+
+    public void replaceWithPrayerComment(ArrayList<ModelPayerComment> comment, String PrayerID){
 
         // Create fragment and give it an argument specifying the article it should show
-        Fragment newFragment = new FragmentPrayerComment();
+        Fragment newFragment = FragmentPrayerComment.newInstance(comment, PrayerID);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
@@ -368,6 +382,19 @@ public class MainActivity extends AppCompatActivity {
         transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
 
         transaction.replace(R.id.fragment, createNewPrayerFragment);
+        transaction.addToBackStack(null);
+
+        transaction.commit();
+    }
+
+    public void replaceWithAttachmentViewImage(int page, ArrayList<ModelPrayerAttachement> att, boolean allowModification){
+        // Create fragment and give it an argument specifying the article it should show
+        Fragment newFragment = FragmentAttachmentViewImage.newInstance(page, att, allowModification);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
+
+        transaction.replace(R.id.fragment, newFragment);
         transaction.addToBackStack(null);
 
         transaction.commit();

@@ -19,10 +19,15 @@ import android.widget.TextView;
 
 import com.penyourprayer.penyourprayer.Common.ImageLoad.ImageLoader;
 import com.penyourprayer.penyourprayer.Common.Model.ModelOwnerPrayer;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPayerComment;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAttachement;
 import com.penyourprayer.penyourprayer.Common.Model.ViewHolder.ViewHolderPrayerModel;
+import com.penyourprayer.penyourprayer.Common.Utils;
 import com.penyourprayer.penyourprayer.Database.Database;
+import com.penyourprayer.penyourprayer.QuickstartPreferences;
 import com.penyourprayer.penyourprayer.R;
 import com.penyourprayer.penyourprayer.UI.MainActivity;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -32,6 +37,7 @@ public class AdapterListViewPrayer extends ArrayAdapter {
         private Database db;
         private Html.ImageGetter imgGetter;
         private ImageLoader imageLoader;
+        int witdthHeight = 1;
         public AdapterListViewPrayer(Context context, int resourcesID, ArrayList<ModelOwnerPrayer> allprayers) {
                 super(context, resourcesID, allprayers);
                 // TODO Auto-generated constructor stub
@@ -39,6 +45,7 @@ public class AdapterListViewPrayer extends ArrayAdapter {
                 resources = allprayers;
                 db = new Database(mainactivity);
                 imageLoader = new ImageLoader(mainactivity);
+                witdthHeight = Utils.dpToPx(mainactivity, QuickstartPreferences.thumbnailDPsize);
         }
 
         @Override
@@ -76,6 +83,15 @@ public class AdapterListViewPrayer extends ArrayAdapter {
                 else{
                         p = (ViewHolderPrayerModel)convertView.getTag();
                 }
+
+                p.comment_imageButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                                Database db = new Database(mainactivity);
+                                ArrayList<ModelPayerComment> comments = db.getAllOwnerPrayerComment(resources.get(position).PrayerID);
+                                mainactivity.replaceWithPrayerComment(comments, resources.get(position).PrayerID);
+                        }
+                });
 
                 p.publicView_imageButton.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -129,17 +145,59 @@ public class AdapterListViewPrayer extends ArrayAdapter {
                 * Set Data
                 *
                 * ****************************************************************/
+                p.image1.setOnClickListener(null);
+                p.image2.setOnClickListener(null);
+                p.image3.setOnClickListener(null);
+                p.image4.setOnClickListener(null);
+                p.image5.setOnClickListener(null);
+
+                final ArrayList<ModelPrayerAttachement> att = p.att;
                 for(int x=0; x<p.att.size(); x++){
-                        if(x==0)
-                                imageLoader.DisplayImage(p.att.get(x).URLPath, p.image1, false);
-                        if(x==1)
-                                imageLoader.DisplayImage(p.att.get(x).URLPath, p.image2, false);
-                        if(x==2)
-                                imageLoader.DisplayImage(p.att.get(x).URLPath, p.image3, false);
-                        if(x==3)
-                                imageLoader.DisplayImage(p.att.get(x).URLPath, p.image4, false);
-                        if(x==4)
-                                imageLoader.DisplayImage(p.att.get(x).URLPath, p.image5, false);
+                        if(x==0) {
+                                Picasso.with(mainactivity).load(p.att.get(x).OriginalFilePath).resize(witdthHeight, witdthHeight).centerCrop().into(p.image1);
+                                p.image1.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                                showAttachmentImage(0, att);
+                                        }
+                                });
+                        }
+                        if(x==1) {
+                                Picasso.with(mainactivity).load(p.att.get(x).OriginalFilePath).resize(witdthHeight, witdthHeight).centerCrop().into(p.image2);
+                                p.image2.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                                showAttachmentImage(1, att);
+                                        }
+                                });
+                        }
+                        if(x==2) {
+                                Picasso.with(mainactivity).load(p.att.get(x).OriginalFilePath).resize(witdthHeight, witdthHeight).centerCrop().into(p.image3);
+                                p.image3.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                                showAttachmentImage(2, att);
+                                        }
+                                });
+                        }
+                        if(x==3) {
+                                Picasso.with(mainactivity).load(p.att.get(x).OriginalFilePath).resize(witdthHeight, witdthHeight).centerCrop().into(p.image4);
+                                p.image4.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                                showAttachmentImage(3, att);
+                                        }
+                                });
+                        }
+                        if(x==4) {
+                                Picasso.with(mainactivity).load(p.att.get(x).OriginalFilePath).resize(witdthHeight, witdthHeight).centerCrop().into(p.image5);
+                                p.image5.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                                showAttachmentImage(4, att);
+                                        }
+                                });
+                        }
                 }
 
                 p.amen_count_textview.setText(String.valueOf(resources.get(position).numberOfAmen));
@@ -173,8 +231,14 @@ public class AdapterListViewPrayer extends ArrayAdapter {
                 return convertView;
         }
 
+        private void showAttachmentImage(int page, ArrayList<ModelPrayerAttachement> att){
+                mainactivity.replaceWithAttachmentViewImage(page, att, false);
+        }
+
         public void updatePrayerList(ArrayList<ModelOwnerPrayer> allprayers){
                 this.resources = allprayers;
+                this.clear();
+                this.add(allprayers);
                 this.notifyDataSetChanged();
         }
 }

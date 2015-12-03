@@ -52,6 +52,7 @@ public class FragmentSignupStep3 extends Fragment {
     private RestAdapter adapter, localeAdapter;
     private ProgressDialog progress;
     private TextView passwordNotMatch_Textview;
+
     public static FragmentSignupStep3 newInstance(String fn, String em) {
         FragmentSignupStep3 fragment = new FragmentSignupStep3();
         Bundle args = new Bundle();

@@ -10,14 +10,36 @@
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/listView"
+        android:id="@+id/comment_listView"
         android:layout_weight="1"
-        tools:listitem="@layout/rowitem_prayer_comment"/>
+        tools:listitem="@layout/list_view_row_prayer_comment"
+        android:dividerHeight="0dp"
+        android:divider="#ffffff"
+        android:longClickable="true" />
 
-    <EditText
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:id="@+id/editText"
-        android:hint="Write a comment..."
-        android:background="@drawable/comment_edittext" />
+        android:layout_height="wrap_content"
+        android:background="@drawable/comment_edittext">
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="45dp"
+            android:id="@+id/comment_editText"
+            android:hint="Write a comment..."
+            android:layout_weight="1"
+            android:backgroundTint="#ffffff" />
+
+        <ImageButton
+            android:layout_width="80dp"
+            android:layout_height="fill_parent"
+            android:id="@+id/comment_done_imageButton"
+            android:layout_weight="1"
+            android:background="@null"
+            android:src="@drawable/ic_actionbar_done_p"
+            android:scaleType="fitCenter"
+            android:visibility="gone" />
+    </LinearLayout>
+
 </LinearLayout>

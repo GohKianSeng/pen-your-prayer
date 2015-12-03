@@ -1,14 +1,18 @@
 package com.penyourprayer.penyourprayer.QueueAction;
 
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.penyourprayer.penyourprayer.Common.Interface.InterfacePrayerCommentEditUpdated;
+import com.penyourprayer.penyourprayer.Common.Interface.InterfacePrayerCommentListViewUpdated;
 import com.penyourprayer.penyourprayer.Common.Interface.InterfacePrayerListUpdated;
 import com.penyourprayer.penyourprayer.Common.Model.ModelFriendProfile;
 import com.penyourprayer.penyourprayer.Common.Model.ModelOwnerPrayer;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPayerComment;
 import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAttachement;
 import com.penyourprayer.penyourprayer.Database.Database;
 import com.penyourprayer.penyourprayer.Common.Model.ModelQueueAction;
@@ -66,10 +70,17 @@ public class QueueAction extends AsyncTask<String, Void, String> {
 
     public void StartHttpTranmissionQueue(){
         paused = false;
-        if(this.getStatus() != AsyncTask.Status.RUNNING)
-            this.execute(mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerLoginType, ""),
-                    mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerUserName, ""),
-                    mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerHMACKey, ""));
+        if(this.getStatus() != AsyncTask.Status.RUNNING) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+                this.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerLoginType, ""),
+                        mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerUserName, ""),
+                        mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerHMACKey, ""));
+            else {
+                this.execute(mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerLoginType, ""),
+                        mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerUserName, ""),
+                        mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerHMACKey, ""));
+            }
+        }
     }
 
     private void ProcessMessageQueue(RestAdapter adapter){
@@ -88,12 +99,77 @@ public class QueueAction extends AsyncTask<String, Void, String> {
                 else if(p.Item == ModelQueueAction.ItemType.PrayerTagFriends && p.Action == ModelQueueAction.ActionType.Update){
                     submitUpdatePrayerTagFriends(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
                 }
+                else if(p.Item == ModelQueueAction.ItemType.PrayerComment && p.Action == ModelQueueAction.ActionType.Insert){
+                    submitnewPrayerComment(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
+                }
+                else if(p.Item == ModelQueueAction.ItemType.PrayerComment && p.Action == ModelQueueAction.ActionType.Delete){
+                    submitDeletePrayerComment(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
+                }
+                else if(p.Item == ModelQueueAction.ItemType.PrayerComment && p.Action == ModelQueueAction.ActionType.Update){
+                    submitUpdatePrayerComment(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
+                }
             }
             db.close();
         }
         catch(Exception e){
             String sdf = e.toString();
             sdf.toString();
+        }
+    }
+
+    private void submitUpdatePrayerComment(Database db, RestAdapter adapter, String CommentID, int QueueID, String IfExecutedGUID){
+        ModelPayerComment p = db.GetPrayerComment(CommentID);
+        if(p == null)
+            return;
+
+        PrayerInterface prayerInterface = adapter.create(PrayerInterface.class);
+        SimpleJsonResponse response = prayerInterface.UpdatePrayerComment(IfExecutedGUID, p);
+        if (response.StatusCode == 200) {
+            db.deleteQueue(QueueID);
+
+            Fragment f = mainActivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
+            if (f instanceof InterfacePrayerCommentListViewUpdated && mainActivity.OwnerID.length() > 0) {
+                ((InterfacePrayerCommentListViewUpdated) f).onCommentUpdate(db.getAllOwnerPrayerComment(p.OwnerPrayerID));
+            }
+        }
+    }
+
+    private void submitDeletePrayerComment(Database db, RestAdapter adapter, String CommentID, int QueueID, String IfExecutedGUID){
+
+        PrayerInterface prayerInterface = adapter.create(PrayerInterface.class);
+        SimpleJsonResponse response = prayerInterface.DeletePrayerComment(IfExecutedGUID, CommentID);
+        if (response.StatusCode == 200) {
+            if(response.Description.toUpperCase().compareToIgnoreCase("NOTEXISTS") == 0){
+                return;
+            }
+
+            db.deleteQueue(QueueID);
+            //update the commentID from server
+        }
+    }
+
+    private void submitnewPrayerComment(Database db, RestAdapter adapter, String CommentID, int QueueID, String IfExecutedGUID){
+        ModelPayerComment p = db.GetPrayerComment(CommentID);
+        if(p == null)
+            return;
+
+        PrayerInterface prayerInterface = adapter.create(PrayerInterface.class);
+        SimpleJsonResponse response = prayerInterface.AddNewPrayerComment(IfExecutedGUID, p.OwnerPrayerID, p);
+        if (response.StatusCode == 200) {
+            if(response.Description.toUpperCase().startsWith("OK-")){
+                String newCommentID = response.Description.substring(3);
+                db.UpdatePrayerCommentID(newCommentID, p.CommentID, p.OwnerPrayerID);
+                p.CommentID = newCommentID;
+            }
+
+            Fragment f = mainActivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
+            if (f instanceof InterfacePrayerCommentListViewUpdated && mainActivity.OwnerID.length() > 0) {
+                ((InterfacePrayerCommentListViewUpdated) f).onCommentUpdate(db.getAllOwnerPrayerComment(p.OwnerPrayerID));
+            }
+            else if (f instanceof InterfacePrayerCommentEditUpdated && mainActivity.OwnerID.length() > 0) {
+                ((InterfacePrayerCommentEditUpdated) f).onCommentUpdate(p);
+            }
+            db.deleteQueue(QueueID);
         }
     }
 
@@ -133,8 +209,15 @@ public class QueueAction extends AsyncTask<String, Void, String> {
                 ModelPrayerAttachement att = p.attachments.get(x);
                 SimpleJsonResponse response = uploadPrayerImage(att, adapter);
                 if (response.StatusCode == 202) {
-                    //att.FileName = response.Description;
-                    //p.attachments.add(att);
+                    String newFilename = "";
+                    if(response.Description.toUpperCase().startsWith("EXISTS-")){
+                        newFilename = response.Description.substring(7);
+                    }
+                    else{
+                        newFilename = response.Description;
+                    }
+
+                    db.updateAttachmentFilename(newFilename, att.GUID, p.PrayerID);
                 }
             }
 
@@ -165,7 +248,7 @@ public class QueueAction extends AsyncTask<String, Void, String> {
     }
 
     private SimpleJsonResponse uploadPrayerImage(ModelPrayerAttachement att, RestAdapter tadapter){
-        TypedFile attachmentImg = new TypedFile("multipart/form-data", new File(att.OriginalFilePath));
+        TypedFile attachmentImg = new TypedFile("multipart/form-data", new File(att.OriginalFilePath.substring(7)));
         InterfaceUploadFile interfaceUploadFile = tadapter.create(InterfaceUploadFile.class);
         SimpleJsonResponse json = interfaceUploadFile.CheckImageUploaded(att.GUID, att.FileName);
         if(json.StatusCode == 202 && json.Description.compareToIgnoreCase("NOTEXISTS") ==0)

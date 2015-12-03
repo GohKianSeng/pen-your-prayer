@@ -56,6 +56,9 @@ public class ModelUserLogin {
     @Expose
     public boolean EmailVerification;
 
+    @SerializedName("SocialMediaEmail")
+    @Expose
+    public String SocialMediaEmail;
 
     public ModelUserLogin(){}
 }

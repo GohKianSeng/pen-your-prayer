@@ -1,0 +1,26 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.penyourprayer.penyourprayer.UI.FragmentAttachmentViewImage"
+    android:background="#000000"
+    android:padding="0dp">
+
+
+
+    <com.penyourprayer.penyourprayer.Common.ViewPager.HackyViewPager xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/view_pager_attachment_image"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="false"
+        android:layout_alignParentBottom="true"
+        android:layout_centerInParent="true" />
+
+    <com.viewpagerindicator.CirclePageIndicator
+        android:id="@+id/view_pager_attachment_image_indicator"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:layout_alignParentBottom="true"
+        android:padding="20dp"
+        style="@style/CustomCirclePageIndicator" />
+
+</RelativeLayout>

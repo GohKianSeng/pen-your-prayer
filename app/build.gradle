@@ -75,4 +75,7 @@ dependencies {
     compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'com.android.support:design:23.0.0'
+    compile project(':ViewPageIndicator')
+    compile 'com.commit451:PhotoView:1.2.4'
+    compile files('lib/picasso-2.5.2.jar')
 }

@@ -34,10 +34,12 @@ import com.penyourprayer.penyourprayer.Common.ImageLoad.ImageLoader;
 import com.penyourprayer.penyourprayer.Common.Interface.InterfaceFragmentBackHandler;
 import com.penyourprayer.penyourprayer.Common.Model.ModelFriendProfile;
 import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAttachement;
+import com.penyourprayer.penyourprayer.Common.Utils;
 import com.penyourprayer.penyourprayer.Database.Database;
 import com.penyourprayer.penyourprayer.QuickstartPreferences;
 import com.penyourprayer.penyourprayer.R;
 import com.penyourprayer.penyourprayer.WebAPI.httpClient;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -58,7 +60,6 @@ public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragme
     private String mParam2;
     private ImageButton actionbar_done;
     RTEditText mRTMessageField;
-    private ImageButton createnew_prayer_tag_friend_ImageButton;
     private boolean publicView = false;
     private RestAdapter adapter;
     private ImageButton imageButton1, imageButton2, imageButton3, imageButton4, imageButton5;
@@ -67,6 +68,7 @@ public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragme
     private String OwnerLoginType;
     private String OwnerUserName;
     private String HMACKey;
+    int witdthHeight = 1;
 
     public FragmentCreateNewPrayer() {
         // Required empty public constructor
@@ -82,7 +84,7 @@ public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragme
 
         mainActivity = ((MainActivity) getActivity());
         mainActivity.attachment = new  ArrayList<ModelPrayerAttachement>();
-
+        witdthHeight = Utils.dpToPx(mainActivity, QuickstartPreferences.thumbnailDPsize);
         imageLoader = new ImageLoader(mainActivity);
 
         this.getActivity().setTheme(R.style.ThemeLight);
@@ -149,7 +151,7 @@ public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragme
                 saveNewPrayer();
             }
         });
-
+        actionbar_done.setEnabled(false);
 
         return inflater.inflate(R.layout.fragment_create_new_prayer, container, false);
 
@@ -196,16 +198,10 @@ public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragme
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (mRTMessageField.getText().toString().trim().length() > 0) {
                     actionbar_done.setImageResource(R.drawable.ic_actionbar_done_w);
-                    actionbar_done.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            saveNewPrayer();
-
-                        }
-                    });
+                    actionbar_done.setEnabled(true);
                 } else {
                     actionbar_done.setImageResource(R.drawable.ic_actionbar_done_p);
-                    actionbar_done.setOnClickListener(null);
+                    actionbar_done.setEnabled(false);
                 }
             }
 
@@ -214,6 +210,8 @@ public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragme
 
             }
         });
+
+        updateAttachmentView();
 
         InputMethodManager imm = (InputMethodManager) this.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(mRTMessageField, InputMethodManager.SHOW_IMPLICIT);
@@ -281,6 +279,68 @@ public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragme
         mainActivity.popBackFragmentStack();
     }
 
+    private void showAttachmentImage(int page){
+        mainActivity.replaceWithAttachmentViewImage(page, mainActivity.attachment, true);
+    }
+
+    private void updateAttachmentView(){
+        imageButton1.setOnClickListener(null);
+        imageButton2.setOnClickListener(null);
+        imageButton3.setOnClickListener(null);
+        imageButton4.setOnClickListener(null);
+        imageButton5.setOnClickListener(null);
+
+        for(int x=0; x<mainActivity.attachment.size(); x++){
+
+            attachment_layout.setVisibility(View.VISIBLE);
+            if(x==0) {
+                Picasso.with(mainActivity).load(mainActivity.attachment.get(x).OriginalFilePath).resize(witdthHeight, witdthHeight).centerCrop().into(imageButton1);
+                imageButton1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showAttachmentImage(0);
+                    }
+                });
+            }
+            if(x==1) {
+                Picasso.with(mainActivity).load(mainActivity.attachment.get(x).OriginalFilePath).resize(witdthHeight, witdthHeight).centerCrop().into(imageButton2);
+                imageButton2.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showAttachmentImage(1);
+                    }
+                });
+            }
+            if(x==2) {
+                Picasso.with(mainActivity).load(mainActivity.attachment.get(x).OriginalFilePath).resize(witdthHeight, witdthHeight).centerCrop().into(imageButton3);
+                imageButton3.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showAttachmentImage(2);
+                    }
+                });
+            }
+            if(x==3) {
+                Picasso.with(mainActivity).load(mainActivity.attachment.get(x).OriginalFilePath).resize(witdthHeight, witdthHeight).centerCrop().into(imageButton4);
+                imageButton4.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showAttachmentImage(3);
+                    }
+                });
+            }
+            if(x==4) {
+                Picasso.with(mainActivity).load(mainActivity.attachment.get(x).OriginalFilePath).resize(witdthHeight, witdthHeight).centerCrop().into(imageButton5);
+                imageButton5.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showAttachmentImage(4);
+                    }
+                });
+            }
+        }
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -288,25 +348,12 @@ public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragme
         if(data != null) {
             RTImage image = (RTImage) data.getSerializableExtra("RTE_RESULT_MEDIA");
             ModelPrayerAttachement o = new ModelPrayerAttachement();
-            o.URLPath = image.getFilePath(RTFormat.HTML);
-            o.OriginalFilePath = image.getFilePath(RTFormat.HTML);
+            o.OriginalFilePath = "file://" + image.getFilePath(RTFormat.HTML);
             o.GUID = UUID.randomUUID().toString().replace("-", "");
             o.FileName = image.getFileName();
             mainActivity.attachment.add(o);
 
-            for(int x=0; x<mainActivity.attachment.size(); x++){
-                attachment_layout.setVisibility(View.VISIBLE);
-                if(x==0)
-                    imageLoader.DisplayImage(mainActivity.attachment.get(x).URLPath, imageButton1, false);
-                if(x==1)
-                    imageLoader.DisplayImage(mainActivity.attachment.get(x).URLPath, imageButton2, false);
-                if(x==2)
-                    imageLoader.DisplayImage(mainActivity.attachment.get(x).URLPath, imageButton3, false);
-                if(x==3)
-                    imageLoader.DisplayImage(mainActivity.attachment.get(x).URLPath, imageButton4, false);
-                if(x==4)
-                    imageLoader.DisplayImage(mainActivity.attachment.get(x).URLPath, imageButton5, false);
-            }
+            updateAttachmentView();
         }
     }
 }

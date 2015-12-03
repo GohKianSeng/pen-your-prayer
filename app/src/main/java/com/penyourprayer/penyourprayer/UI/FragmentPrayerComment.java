@@ -1,35 +1,53 @@
 package com.penyourprayer.penyourprayer.UI;
 
 
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.PopupMenu;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ListView;
 
+import com.penyourprayer.penyourprayer.Common.Adapter.AdapterListViewComment;
+import com.penyourprayer.penyourprayer.Common.Interface.InterfacePrayerCommentListViewUpdated;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPayerComment;
 import com.penyourprayer.penyourprayer.Common.Utils;
+import com.penyourprayer.penyourprayer.Database.Database;
 import com.penyourprayer.penyourprayer.QuickstartPreferences;
 import com.penyourprayer.penyourprayer.R;
-import com.penyourprayer.penyourprayer.WebAPI.Model.SimpleJsonResponse;
-import com.penyourprayer.penyourprayer.WebAPI.UserAccountInterface;
 import com.penyourprayer.penyourprayer.WebAPI.httpClient;
 
-import retrofit.Callback;
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
-import retrofit.client.OkClient;
-import retrofit.client.Response;
+import java.util.ArrayList;
 
-public class FragmentPrayerComment extends Fragment {
+import retrofit.RestAdapter;
+import retrofit.client.OkClient;
+
+public class FragmentPrayerComment extends Fragment implements InterfacePrayerCommentListViewUpdated {
     private MainActivity mainActivity;
     private RestAdapter adapter;
-
+    public ArrayList<ModelPayerComment> comment;
+    public String PrayerID;
+    private ImageButton donebutton;
+    private ListView comment_listView;
+    private EditText comment_editText;
+    private AdapterListViewComment adapterListViewComment;
     public FragmentPrayerComment() {
         // Required empty public constructor
+    }
+
+    public static FragmentPrayerComment newInstance(ArrayList<ModelPayerComment> comment, String PrayerID) {
+        FragmentPrayerComment fragment = new FragmentPrayerComment();
+        fragment.comment = comment;
+        fragment.PrayerID = PrayerID;
+        return fragment;
     }
 
     @Override
@@ -54,7 +72,89 @@ public class FragmentPrayerComment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        comment_editText = (EditText) view.findViewById(R.id.comment_editText);
+        comment_editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(comment_editText.getText().toString().length() > 0)
+                    donebutton.setVisibility(View.VISIBLE);
+                else
+                    donebutton.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        donebutton = (ImageButton) view.findViewById(R.id.comment_done_imageButton);
+        donebutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Database db = new Database(mainActivity);
+                db.addOwnerPrayerComment(PrayerID, comment_editText.getText().toString(), mainActivity.OwnerID, mainActivity.OwnerDisplayName, mainActivity.OwnerProfilePictureURL);
+                ModelPayerComment newcomment = db.getAllOwnerPrayerComment(PrayerID).get(0);
+                adapterListViewComment.addComment(newcomment);
+                comment_editText.setText("");
+                donebutton.setVisibility(View.GONE);
+            }
+        });
+
+        comment_listView = (ListView) view.findViewById(R.id.comment_listView);
+        adapterListViewComment = new AdapterListViewComment(this.getActivity(), R.layout.list_view_row_prayer_comment, comment);
+        if (comment_listView != null) {
+            comment_listView.setAdapter(adapterListViewComment);
+        }
+
+        comment_listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+
+                LayoutInflater inflater = ((Activity)mainActivity).getLayoutInflater();
+
+                PopupMenu popupMenu = new PopupMenu(mainActivity, view);
+                popupMenu.inflate(R.menu.prayer_comment_menu);
+
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    public boolean onMenuItemClick(MenuItem item) {
+                        ModelPayerComment comment = (ModelPayerComment) adapterListViewComment.getItem(position);
+
+                        if (item.toString().compareToIgnoreCase("Edit") == 0) {
+                            mainActivity.replaceWithPrayerCommentModification(comment);
+                        } else if (item.toString().compareToIgnoreCase("Delete") == 0) {
+                            Database db = new Database(mainActivity);
+                            db.DeletePrayerComment(comment.CommentID);
+                            adapterListViewComment.remove(comment);
+                            adapterListViewComment.notifyDataSetChanged();
+                        }
+
+                        return true;
+                    }
+                });
+
+                popupMenu.show();
+
+
+                return false;
+            }
+        });
+
     }
 
-
+    @Override
+    public void onCommentUpdate(final ArrayList<ModelPayerComment> comment){
+        Runnable run = new Runnable(){
+            public void run(){
+                adapterListViewComment.updateCommentList(comment);
+            }
+        };
+        mainActivity.runOnUiThread(run);
+    }
 }
