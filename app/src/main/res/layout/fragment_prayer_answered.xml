@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:orientation="vertical"
+    tools:context="com.penyourprayer.penyourprayer.UI.FragmentPrayerComment"
+    android:background="#ffffff">
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/answered_listView"
+        android:layout_weight="1"
+        tools:listitem="@layout/list_view_row_prayer_comment"
+        android:dividerHeight="0dp"
+        android:divider="#ffffff"
+        android:longClickable="true" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/comment_edittext">
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="45dp"
+            android:id="@+id/answered_editText"
+            android:hint="What God&apos;s answer?"
+            android:layout_weight="1"
+            android:backgroundTint="#ffffff" />
+
+        <ImageButton
+            android:layout_width="80dp"
+            android:layout_height="fill_parent"
+            android:id="@+id/answered_done_imageButton"
+            android:layout_weight="1"
+            android:background="@null"
+            android:src="@drawable/ic_actionbar_done_p"
+            android:scaleType="fitCenter"
+            android:visibility="gone" />
+    </LinearLayout>
+
+</LinearLayout>

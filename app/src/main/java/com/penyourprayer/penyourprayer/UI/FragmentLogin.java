@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -33,8 +34,10 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
+import com.penyourprayer.penyourprayer.Common.DataLoading;
 import com.penyourprayer.penyourprayer.Common.Model.ModelUserLogin;
 import com.penyourprayer.penyourprayer.Common.Utils;
+import com.penyourprayer.penyourprayer.Database.Database;
 import com.penyourprayer.penyourprayer.QuickstartPreferences;
 import com.penyourprayer.penyourprayer.R;
 import com.penyourprayer.penyourprayer.WebAPI.Model.SimpleJsonResponse;
@@ -428,8 +431,7 @@ public class FragmentLogin extends Fragment implements
 
 
     private void startLoginProcess(ModelUserLogin user){
-        SharedPreferences sharedPreferences = mainActivity.getSharedPreferences("PenYourPrayer.SharePreference", Context.MODE_PRIVATE);
-        user.GoogleCloudMessagingDeviceID = sharedPreferences.getString(QuickstartPreferences.DeviceRegistrationToken, "");
+        user.GoogleCloudMessagingDeviceID = mainActivity.sharedPreferences.getString(QuickstartPreferences.DeviceRegistrationToken, "");
 
         if(user.GoogleCloudMessagingDeviceID.length() == 0) {
             loginProgressbar.setVisibility(View.GONE);
@@ -483,7 +485,10 @@ public class FragmentLogin extends Fragment implements
                         mainActivity.sharedPreferences.edit().putString(QuickstartPreferences.OwnerHMACKey, model.HMACHashKey).apply();
                         mainActivity.sharedPreferences.edit().putString(QuickstartPreferences.OwnerLoginType, model.loginType.toString()).apply();
                         mainActivity.sharedPreferences.edit().putString(QuickstartPreferences.OwnerUserName, model.UserName).apply();
-                        mainActivity.replaceWithPrayerListFragment();
+
+                        loaddata();
+
+
                     }
                 }
 
@@ -505,6 +510,27 @@ public class FragmentLogin extends Fragment implements
 
 
         }
+    }
+
+    private void loaddata(){
+        AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                DataLoading dl = new DataLoading(mainActivity);
+                dl.fetchLatestDataFromServer();
+                return "";
+            }
+
+            @Override
+            protected void onPostExecute(String action) {
+                Database db = new Database(mainActivity);
+                mainActivity.friends = db.getAllFriends(mainActivity.OwnerID);
+                mainActivity.loadDrawerContent(true);
+                mainActivity.replaceWithPrayerListFragment();
+            }
+
+        };
+        task.execute();
     }
 
     private void ResendAccountActivation(){

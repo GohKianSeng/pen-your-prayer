@@ -50,4 +50,8 @@ public class QuickstartPreferences {
     //Web url
     public static final String api_server = "http://pyptesting.com/";
     public static final String locale_server = "https://www.telize.com/";
+
+    //upload image standard
+    public static final int Dimension = 3840;
+    public static final int Quality = 10;
 }

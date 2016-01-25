@@ -12,11 +12,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.penyourprayer.penyourprayer.Common.DataLoading;
 import com.penyourprayer.penyourprayer.Common.Model.ModelFriendProfile;
+import com.penyourprayer.penyourprayer.Common.Model.ModelOwnerPrayer;
 import com.penyourprayer.penyourprayer.Database.Database;
+import com.penyourprayer.penyourprayer.QuickstartPreferences;
 import com.penyourprayer.penyourprayer.R;
+import com.penyourprayer.penyourprayer.WebAPI.InterfaceFriends;
+import com.penyourprayer.penyourprayer.WebAPI.Model.SimpleJsonResponse;
+import com.penyourprayer.penyourprayer.WebAPI.PrayerInterface;
+import com.penyourprayer.penyourprayer.WebAPI.httpClient;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import retrofit.RestAdapter;
+import retrofit.client.OkClient;
+import retrofit.converter.GsonConverter;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -95,22 +109,39 @@ public class FragmentInitialSplash extends Fragment {
         AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... params) {
+                long userid = mainActivity.sharedPreferences.getLong(QuickstartPreferences.OwnerID, 0);
+                String hmacKey = mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerHMACKey, "");
+                if(userid !=  0 && hmacKey.length() > 0){
+                    DataLoading dl = new DataLoading(mainActivity);
+                    dl.fetchLatestDataFromServer();
+                    return "AUTOLOGIN";
+                }
 
-                Database db = new Database(mainActivity);
-                friends = db.getAllFriends();
                 SystemClock.sleep(1000);
                 //start checking, to login or already login.
                 return "";
             }
 
             @Override
-            protected void onPostExecute(String token) {
-                mainActivity.friends = friends;
-                mainActivity.loadDrawerContent(true);
-                mainActivity.replaceWithLoginFragment();
+            protected void onPostExecute(String action) {
+
+                if(action.compareToIgnoreCase("AUTOLOGIN") == 0){
+                    Database db = new Database(mainActivity);
+                    mainActivity.OwnerID = String.valueOf(mainActivity.sharedPreferences.getLong(QuickstartPreferences.OwnerID, 0));
+                    mainActivity.OwnerDisplayName = mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerDisplayName, "");
+                    mainActivity.OwnerProfilePictureURL = mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerProfilePictureURL, "");
+                    mainActivity.friends = db.getAllFriends(mainActivity.OwnerID);
+                    mainActivity.loadDrawerContent(true);
+                    mainActivity.replaceWithPrayerListFragment();
+                }
+                else{
+                    mainActivity.replaceWithLoginFragment();
+                }
             }
 
         };
         task.execute();
     }
+
+
 }

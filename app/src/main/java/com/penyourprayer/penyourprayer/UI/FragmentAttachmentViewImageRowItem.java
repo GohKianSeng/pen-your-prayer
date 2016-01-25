@@ -11,10 +11,12 @@ import com.penyourprayer.penyourprayer.Common.Adapter.AdapterViewPageImage;
 import com.penyourprayer.penyourprayer.Common.ImageLoad.ImageLoader;
 import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAttachement;
 import com.penyourprayer.penyourprayer.Common.ViewPager.HackyViewPager;
+import com.penyourprayer.penyourprayer.QuickstartPreferences;
 import com.penyourprayer.penyourprayer.R;
 import com.squareup.picasso.Picasso;
 import com.viewpagerindicator.CirclePageIndicator;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import uk.co.senab.photoview.PhotoView;
@@ -72,6 +74,20 @@ public class FragmentAttachmentViewImageRowItem extends Fragment {
         else
             deleteImageButton.setVisibility(View.GONE);
 
-        Picasso.with(mainActivity).load(attachment.OriginalFilePath).into(photoView);
+        LoadImage(attachment, photoView);
+
+    }
+
+    private void LoadImage(ModelPrayerAttachement att, PhotoView imgbutton){
+        String path = "";
+        File ls = new File(att.OriginalFilePath);
+        if(ls.exists()) {
+            Picasso.with(mainActivity).load(att.OriginalFilePath).into(imgbutton);
+        }
+        else{
+            String url = "";
+            url = QuickstartPreferences.api_server + "/api/attachment/DownloadPrayerAttachment?AttachmentID=" + att.GUID + "&UserID=" + mainActivity.OwnerID;
+            Picasso.with(mainActivity).load(url).into(imgbutton);
+        }
     }
 }

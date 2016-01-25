@@ -1,5 +1,9 @@
 package com.penyourprayer.penyourprayer.QueueAction;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.SystemClock;
@@ -12,6 +16,7 @@ import com.penyourprayer.penyourprayer.Common.Interface.InterfacePrayerCommentLi
 import com.penyourprayer.penyourprayer.Common.Interface.InterfacePrayerListUpdated;
 import com.penyourprayer.penyourprayer.Common.Model.ModelFriendProfile;
 import com.penyourprayer.penyourprayer.Common.Model.ModelOwnerPrayer;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPayerAnswered;
 import com.penyourprayer.penyourprayer.Common.Model.ModelPayerComment;
 import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAttachement;
 import com.penyourprayer.penyourprayer.Database.Database;
@@ -25,6 +30,9 @@ import com.penyourprayer.penyourprayer.WebAPI.PrayerInterface;
 import com.penyourprayer.penyourprayer.WebAPI.httpClient;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import retrofit.RestAdapter;
@@ -93,6 +101,9 @@ public class QueueAction extends AsyncTask<String, Void, String> {
                 if (p.Item == ModelQueueAction.ItemType.Prayer && p.Action == ModelQueueAction.ActionType.Insert) {
                     submitNewPrayer(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
                 }
+                else if (p.Item == ModelQueueAction.ItemType.Prayer && p.Action == ModelQueueAction.ActionType.Delete) {
+                    submitDeletePrayer(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
+                }
                 else if(p.Item == ModelQueueAction.ItemType.PrayerPublicView && p.Action == ModelQueueAction.ActionType.Update){
                     submitUpdatePrayerPublicView(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
                 }
@@ -108,12 +119,57 @@ public class QueueAction extends AsyncTask<String, Void, String> {
                 else if(p.Item == ModelQueueAction.ItemType.PrayerComment && p.Action == ModelQueueAction.ActionType.Update){
                     submitUpdatePrayerComment(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
                 }
+                else if(p.Item == ModelQueueAction.ItemType.PrayerAmen && p.Action == ModelQueueAction.ActionType.Insert){
+                    submitNewPrayerAmen(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
+                }
+                else if(p.Item == ModelQueueAction.ItemType.PrayerAmen && p.Action == ModelQueueAction.ActionType.Delete){
+                    submitDeletePrayerAmen(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
+                }
+                else if(p.Item == ModelQueueAction.ItemType.PrayerAnswered && p.Action == ModelQueueAction.ActionType.Insert){
+                    submitnewPrayerAnswered(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
+                }
+
             }
             db.close();
         }
         catch(Exception e){
             String sdf = e.toString();
             sdf.toString();
+        }
+    }
+
+    private void submitnewPrayerAnswered(Database db, RestAdapter adapter, String AnsweredID, int QueueID, String IfExecutedGUID){
+        ModelPayerAnswered p = db.GetPrayerAnswered(AnsweredID);
+        if(p == null)
+            return;
+
+        PrayerInterface prayerInterface = adapter.create(PrayerInterface.class);
+        SimpleJsonResponse response = prayerInterface.AddNewPrayerAnswered(IfExecutedGUID, p.OwnerPrayerID, p);
+        if (response.StatusCode == 200) {
+            if(response.Description.toUpperCase().startsWith("OK-") || response.Description.toUpperCase().startsWith("EXISTS-")){
+                String newAnsweredID = response.Description.substring(response.Description.indexOf("-") + 1);
+                db.UpdatePrayerAnsweredID(newAnsweredID, p.AnsweredID, p.OwnerPrayerID);
+                p.AnsweredID = newAnsweredID;
+            }
+
+
+            db.deleteQueue(QueueID);
+        }
+    }
+
+    private void submitDeletePrayerAmen(Database db, RestAdapter adapter, String PrayerID, int QueueID, String IfExecutedGUID){
+        PrayerInterface prayerInterface = adapter.create(PrayerInterface.class);
+        SimpleJsonResponse response = prayerInterface.DeletePrayerAmen(IfExecutedGUID, PrayerID);
+        if (response.StatusCode == 200) {
+            db.deleteQueue(QueueID);
+        }
+    }
+
+    private void submitNewPrayerAmen(Database db, RestAdapter adapter, String PrayerID, int QueueID, String IfExecutedGUID){
+        PrayerInterface prayerInterface = adapter.create(PrayerInterface.class);
+        SimpleJsonResponse response = prayerInterface.AddNewPrayerAmen(IfExecutedGUID, PrayerID);
+        if (response.StatusCode == 200) {
+            db.deleteQueue(QueueID);
         }
     }
 
@@ -156,8 +212,8 @@ public class QueueAction extends AsyncTask<String, Void, String> {
         PrayerInterface prayerInterface = adapter.create(PrayerInterface.class);
         SimpleJsonResponse response = prayerInterface.AddNewPrayerComment(IfExecutedGUID, p.OwnerPrayerID, p);
         if (response.StatusCode == 200) {
-            if(response.Description.toUpperCase().startsWith("OK-")){
-                String newCommentID = response.Description.substring(3);
+            if(response.Description.toUpperCase().startsWith("OK-") || response.Description.toUpperCase().startsWith("EXISTS-")){
+                String newCommentID = response.Description.substring(response.Description.indexOf("-") + 1);
                 db.UpdatePrayerCommentID(newCommentID, p.CommentID, p.OwnerPrayerID);
                 p.CommentID = newCommentID;
             }
@@ -186,7 +242,7 @@ public class QueueAction extends AsyncTask<String, Void, String> {
     }
 
     private void submitUpdatePrayerTagFriends(Database db, RestAdapter adapter, String PrayerID, int QueueID, String IfExecutedGUID){
-        ArrayList<ModelFriendProfile> selectedFriends = db.getSelectedTagFriend(PrayerID);
+        ArrayList<ModelFriendProfile> selectedFriends = db.getSelectedTagFriend(PrayerID, mainActivity.OwnerID);
         if(selectedFriends == null)
             return;
 
@@ -197,12 +253,21 @@ public class QueueAction extends AsyncTask<String, Void, String> {
         }
     }
 
+    private void submitDeletePrayer(Database db, RestAdapter adapter, String PrayerID, int QueueID, String IfExecutedGUID){
+
+        PrayerInterface prayerInterface = adapter.create(PrayerInterface.class);
+        SimpleJsonResponse response = prayerInterface.DeletePrayer(IfExecutedGUID, PrayerID);
+        if (response.StatusCode == 200) {
+            db.deleteQueue(QueueID);
+        }
+    }
+
     private void submitNewPrayer(Database db, RestAdapter adapter, String PrayerID, int QueueID, String IfExecutedGUID){
 
         ModelOwnerPrayer p = db.GetPrayer(PrayerID);
         if(p == null)
             return;
-        p.selectedFriends = db.getSelectedTagFriend(p.PrayerID);
+        p.selectedFriends = db.getSelectedTagFriend(p.PrayerID, mainActivity.OwnerID);
         p.attachments = db.getAllOwnerPrayerAttachment(p.PrayerID);
         try {
             for(int x=0; x<p.attachments.size(); x++) {
@@ -248,11 +313,98 @@ public class QueueAction extends AsyncTask<String, Void, String> {
     }
 
     private SimpleJsonResponse uploadPrayerImage(ModelPrayerAttachement att, RestAdapter tadapter){
-        TypedFile attachmentImg = new TypedFile("multipart/form-data", new File(att.OriginalFilePath.substring(7)));
+        String fileToSend = cropAndSave(att.OriginalFilePath.substring(7), att.GUID);
+        File f = new File(fileToSend);
+
+        TypedFile attachmentImg = new TypedFile("multipart/form-data", new File(fileToSend));
         InterfaceUploadFile interfaceUploadFile = tadapter.create(InterfaceUploadFile.class);
-        SimpleJsonResponse json = interfaceUploadFile.CheckImageUploaded(att.GUID, att.FileName);
+        SimpleJsonResponse json = interfaceUploadFile.CheckImageUploaded(att.GUID, f.getName());
         if(json.StatusCode == 202 && json.Description.compareToIgnoreCase("NOTEXISTS") ==0)
             json = interfaceUploadFile.AddPrayerImage(att.GUID, attachmentImg);
         return json;
     }
+
+    public String cropAndSave(String pathOfInputImage, String GUID){
+
+        try
+        {
+            File f = new File(pathOfInputImage);
+            File dir = new File(f.getParent() + "/resized");
+            dir.mkdir();
+            String pathOfOutputImage = dir.getPath() + "/" + f.getName();
+            f = new File(pathOfOutputImage);
+            if(f.exists()){
+                return pathOfOutputImage;
+            }
+            int inWidth = 0;
+            int inHeight = 0;
+            float ratio = 0.0f;
+            int dstWidth = 0; int dstHeight = 0;
+
+            InputStream in = new FileInputStream(pathOfInputImage);
+
+            // decode image size (decode metadata only, not the whole image)
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(in, null, options);
+            in.close();
+            in = null;
+
+            // save width and height
+            inWidth = options.outWidth;
+            inHeight = options.outHeight;
+
+            if(inHeight > QuickstartPreferences.Dimension  || inWidth > QuickstartPreferences.Dimension ) {
+                if(inHeight > inWidth){
+                    dstHeight = QuickstartPreferences.Dimension;
+                    ratio = (float)inHeight / (float)QuickstartPreferences.Dimension;
+                    dstWidth = (int)((float)inWidth / ratio);
+                }
+                if(inHeight < inWidth){
+                    dstWidth = QuickstartPreferences.Dimension;
+                    ratio = (float)inWidth / (float)QuickstartPreferences.Dimension;
+                    dstHeight = (int)((float)inHeight / ratio);
+                }
+                else{
+                    return pathOfInputImage;
+                }
+
+                // decode full image pre-resized
+                in = new FileInputStream(pathOfInputImage);
+                options = new BitmapFactory.Options();
+                // calc rought re-size (this is no exact resize)
+                options.inSampleSize = Math.max(inWidth / dstWidth, inHeight / dstHeight);
+                // decode full image
+                Bitmap roughBitmap = BitmapFactory.decodeStream(in, null, options);
+
+                // calc exact destination size
+                Matrix m = new Matrix();
+                RectF inRect = new RectF(0, 0, roughBitmap.getWidth(), roughBitmap.getHeight());
+                RectF outRect = new RectF(0, 0, dstWidth, dstHeight);
+                outRect = new RectF(0, 0, roughBitmap.getWidth(), roughBitmap.getHeight());
+                m.setRectToRect(inRect, outRect, Matrix.ScaleToFit.CENTER);
+                float[] values = new float[9];
+                m.getValues(values);
+
+                // resize bitmap
+                Bitmap resizedBitmap = Bitmap.createScaledBitmap(roughBitmap, (int) (roughBitmap.getWidth() * values[0]), (int) (roughBitmap.getHeight() * values[4]), true);
+
+                // save image
+                try {
+                    FileOutputStream out = new FileOutputStream(pathOfOutputImage);
+                    resizedBitmap.compress(Bitmap.CompressFormat.JPEG, QuickstartPreferences.Quality, out);
+                    return pathOfOutputImage;
+                } catch (Exception e) {
+                    e.toString();
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            e.toString();
+        }
+        return "";
+    }
 }
+
+

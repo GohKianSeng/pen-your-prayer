@@ -23,4 +23,8 @@ android:layout_height="match_parent"
         android:id="@+id/navigationdrawer"
         layout="@layout/drawer_main_ui"/>
 
+    <include
+        android:id="@+id/navigationdrawer_right"
+        layout="@layout/drawer_right_ui"/>
+
 </android.support.v4.widget.DrawerLayout>

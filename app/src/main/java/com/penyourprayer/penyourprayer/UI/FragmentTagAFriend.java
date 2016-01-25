@@ -43,15 +43,7 @@ public class FragmentTagAFriend extends Fragment {
     private MainActivity mainActivity;
     EditText searcheditText;
     private AdapterListViewProfileFriend adapter;
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FragmentTagAFriend.
-     */
-    // TODO: Rename and change types and number of parameters
+
     public static FragmentTagAFriend newInstance(String GUID) {
         FragmentTagAFriend fragment = new FragmentTagAFriend();
         Bundle args = new Bundle();
@@ -89,7 +81,7 @@ public class FragmentTagAFriend extends Fragment {
         ((ImageButton)mCustomView.findViewById(R.id.tagafriend_back_ImageButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (GUID.length() > 0) {
+                if (GUID != null && GUID.length() > 0) {
                     mainActivity.selectedFriends = new ArrayList<ModelFriendProfile>();
                 }
                 mainActivity.popBackFragmentStack();
@@ -124,7 +116,7 @@ public class FragmentTagAFriend extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Database db = new Database(mainActivity);
-        friends = db.getAllFriends();
+        friends = db.getAllFriends(mainActivity.OwnerID);
         updateFriendList();
 
 

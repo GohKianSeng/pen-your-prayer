@@ -140,13 +140,12 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
         Database db = new Database(mainActivity);
         allprayers = db.getAllOwnerPrayer(mainActivity.OwnerID);
 
-        prayerArrayAdapter = new AdapterListViewPrayer(this.getActivity(), R.layout.card_ui_owner_layout, allprayers);
+        prayerArrayAdapter = new AdapterListViewPrayer(this, this.getActivity(), R.layout.card_ui_owner_layout, allprayers);
 
         listView = (ListView) view.findViewById(R.id.prayer_listView);
         listView.setFastScrollEnabled(true);
-        if (listView != null) {
-            listView.setAdapter(prayerArrayAdapter);
-        }
+        listView.setAdapter(prayerArrayAdapter);
+
 
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
         fab.attachToListView(listView);
@@ -177,7 +176,7 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
 
                     if(scrollCount < -1) {
                         fab.hide(true);
-                        actionBar.hide();
+                        //actionBar.hide();
                     }
                 }
                 if(mLastFirstVisibleItem>firstVisibleItem)
@@ -189,7 +188,7 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
 
                     if(scrollCount > 1) {
                         fab.show(true);
-                        actionBar.show();
+                        //actionBar.show();
                     }
                 }
                 mLastFirstVisibleItem=firstVisibleItem;
@@ -202,6 +201,11 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
             }
         });
 
+    }
+
+    public void removeItem(int position){
+        prayerArrayAdapter.remove(prayerArrayAdapter.getItem(position));
+        prayerArrayAdapter.notifyDataSetChanged();
     }
 
     private void onChangePrayerCategory(int category){

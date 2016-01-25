@@ -21,6 +21,10 @@ public class ModelFriendProfile {
         this.ProfilePictureURL = img_url;
     }
 
+    public ModelFriendProfile(String UserID){
+        this.UserID = UserID;
+    }
+
     public ModelFriendProfile(ActionName actionName){
         this.actionName = actionName;
         this.isAction = true;

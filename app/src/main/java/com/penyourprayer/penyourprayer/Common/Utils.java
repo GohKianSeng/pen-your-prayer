@@ -1,9 +1,14 @@
 package com.penyourprayer.penyourprayer.Common;
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 
 import com.penyourprayer.penyourprayer.QuickstartPreferences;
 import com.penyourprayer.penyourprayer.UI.MainActivity;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Random;
@@ -59,5 +64,19 @@ public class Utils {
         DisplayMetrics displayMetrics = ma.getResources().getDisplayMetrics();
         int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
         return px;
+    }
+
+    public static File getAbsolutePath(Intent data, MainActivity mainActivity){
+        Uri uri = data.getData();
+        String[] projection = { MediaStore.Images.Media.DATA };
+
+        Cursor cursor = mainActivity.getContentResolver().query(uri, projection, null, null, null);
+        cursor.moveToFirst();
+
+        int columnIndex = cursor.getColumnIndex(projection[0]);
+        String picturePath = cursor.getString(columnIndex); // returns null
+        cursor.close();
+
+        return new File(picturePath);
     }
 }

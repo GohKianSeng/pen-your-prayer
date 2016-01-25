@@ -142,11 +142,6 @@
                         android:background="?attr/rte_icToolbarImage"/>
 
                     <com.onegravity.rteditor.toolbar.RTToolbarImageButton
-                        android:id="@+id/toolbar_undo"
-                        style="@style/RTE_ToolbarButton"
-                        android:background="?attr/rte_icToolbarUndo"/>
-
-                    <com.onegravity.rteditor.toolbar.RTToolbarImageButton
                         android:id="@+id/toolbar_redo"
                         style="@style/RTE_ToolbarButton"
                         android:background="?attr/rte_icToolbarRedo"/>

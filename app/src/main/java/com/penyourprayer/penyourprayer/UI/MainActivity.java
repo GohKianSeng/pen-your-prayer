@@ -25,12 +25,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.penyourprayer.penyourprayer.Common.Interface.InterfaceFragmentBackHandler;
 import com.penyourprayer.penyourprayer.Common.Model.ModelFriendProfile;
 import com.penyourprayer.penyourprayer.Common.ImageLoad.ImageProcessor;
 import com.penyourprayer.penyourprayer.Common.Adapter.AdapterListViewDrawerProfileFriend;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPayerAnswered;
 import com.penyourprayer.penyourprayer.Common.Model.ModelPayerComment;
 import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAttachement;
 import com.penyourprayer.penyourprayer.GoogleCloudMessaging.RegistrationIntentService;
@@ -93,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
 
         sharedPreferences = this.getSharedPreferences("PenYourPrayer.SharePreference", Context.MODE_PRIVATE);
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
-        Fabric.with(this, new Twitter(authConfig));
+        Fabric.with(this, new Twitter(authConfig), new Crashlytics());
         setContentView(R.layout.activity_main);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -252,6 +254,33 @@ public class MainActivity extends AppCompatActivity {
     public void replaceWithPrayerCommentModification(ModelPayerComment c){
         // Create fragment and give it an argument specifying the article it should show
         Fragment newFragment = FragmentPrayerCommentEdit.newInstance(c);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
+
+        transaction.replace(R.id.fragment, newFragment);
+        transaction.addToBackStack(null);
+
+        transaction.commit();
+    }
+
+    public void replaceWithPrayerAnsweredModification(ModelPayerAnswered a){
+        // Create fragment and give it an argument specifying the article it should show
+        Fragment newFragment = FragmentPrayerAnsweredEdit.newInstance(a);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
+
+        transaction.replace(R.id.fragment, newFragment);
+        transaction.addToBackStack(null);
+
+        transaction.commit();
+    }
+
+    public void replaceWithPrayerAnswered(ArrayList<ModelPayerAnswered> answer, String PrayerID){
+
+        // Create fragment and give it an argument specifying the article it should show
+        Fragment newFragment = FragmentPrayerAnswered.newInstance(answer, PrayerID);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);

@@ -88,7 +88,7 @@ public class httpClient extends OkHttpClient {
 
                     return chain.proceed(request);
                 } catch (Exception e) {
-
+                    e.toString();
                 }
 
                 return null;

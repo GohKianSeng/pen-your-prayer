@@ -1,10 +1,15 @@
 package com.penyourprayer.penyourprayer.UI;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -41,6 +46,7 @@ import com.penyourprayer.penyourprayer.R;
 import com.penyourprayer.penyourprayer.WebAPI.httpClient;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -51,6 +57,7 @@ import retrofit.converter.GsonConverter;
 public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragmentBackHandler {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private int PICK_IMAGE_REQUEST = 1122;
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private RTManager mRTManager;
@@ -63,6 +70,7 @@ public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragme
     private boolean publicView = false;
     private RestAdapter adapter;
     private ImageButton imageButton1, imageButton2, imageButton3, imageButton4, imageButton5;
+    private ImageButton actionbar_attachment_imageButton;
     private ImageLoader imageLoader;
     private LinearLayout attachment_layout;
     private String OwnerLoginType;
@@ -117,6 +125,7 @@ public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragme
         ((ImageButton)mCustomView.findViewById(R.id.createnewprayer_back_ImageButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mainActivity.selectedFriends = new ArrayList<ModelFriendProfile>();
                 onBackPressed();
             }
         });
@@ -141,6 +150,19 @@ public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragme
                     ((ImageButton) v).setImageResource(R.drawable.ic_actionbar_public_w);
                     publicView = true;
                 }
+            }
+        });
+
+        actionbar_attachment_imageButton = (ImageButton)mCustomView.findViewById(R.id.createnewprayer_attachment_ImageButton);
+        actionbar_attachment_imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+// Always show the chooser (if there are multiple options available)
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+
             }
         });
 
@@ -272,7 +294,7 @@ public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragme
         String prayer = mRTMessageField.getText(RTFormat.HTML);
 
         Database db = new Database(mainActivity);
-        db.AddNewPrayer(mainActivity, prayer, publicView, mainActivity.selectedFriends, mainActivity.attachment);
+        db.AddNewPrayer(prayer, publicView, mainActivity.selectedFriends, mainActivity.attachment);
 
         mainActivity.attachment = new ArrayList<ModelPrayerAttachement>();
         mainActivity.selectedFriends = new ArrayList<ModelFriendProfile>();
@@ -291,6 +313,8 @@ public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragme
         imageButton5.setOnClickListener(null);
 
         for(int x=0; x<mainActivity.attachment.size(); x++){
+
+            actionbar_attachment_imageButton.setImageResource(R.drawable.ic_actionbar_image_attachment_w);
 
             attachment_layout.setVisibility(View.VISIBLE);
             if(x==0) {
@@ -341,19 +365,26 @@ public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragme
         }
     }
 
+
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         //mRTManager.onActivityResult(requestCode, resultCode, data);
-        if(data != null) {
-            RTImage image = (RTImage) data.getSerializableExtra("RTE_RESULT_MEDIA");
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && data != null && resultCode == Activity.RESULT_OK) {
+            File f = Utils.getAbsolutePath(data, mainActivity);
+
             ModelPrayerAttachement o = new ModelPrayerAttachement();
-            o.OriginalFilePath = "file://" + image.getFilePath(RTFormat.HTML);
+            o.OriginalFilePath = "file://" + f.getPath();
             o.GUID = UUID.randomUUID().toString().replace("-", "");
-            o.FileName = image.getFileName();
+            o.FileName = f.getName();
+            o.UserID = mainActivity.OwnerID;
             mainActivity.attachment.add(o);
 
             updateAttachmentView();
+
         }
     }
 }
