@@ -80,9 +80,9 @@ public class FragmentAttachmentViewImageRowItem extends Fragment {
 
     private void LoadImage(ModelPrayerAttachement att, PhotoView imgbutton){
         String path = "";
-        File ls = new File(att.OriginalFilePath);
+        File ls = new File(att.OriginalFilePath.substring(7));
         if(ls.exists()) {
-            Picasso.with(mainActivity).load(att.OriginalFilePath).into(imgbutton);
+            Picasso.with(mainActivity).load(att.OriginalFilePath).resize(500,500).into(imgbutton);
         }
         else{
             String url = "";
