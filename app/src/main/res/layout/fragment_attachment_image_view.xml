@@ -1,26 +1,29 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     tools:context="com.penyourprayer.penyourprayer.UI.FragmentAttachmentViewImage"
     android:background="#000000"
     android:padding="0dp">
 
 
 
-    <com.penyourprayer.penyourprayer.Common.ViewPager.HackyViewPager xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/view_pager_attachment_image"
-        android:layout_width="fill_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="false"
-        android:layout_alignParentBottom="true"
-        android:layout_centerInParent="true" />
+    <com.daimajia.slider.library.SliderLayout
+        android:id="@+id/slider"
+        android:layout_width="match_parent"
+        custom:pager_animation="Accordion"
+        custom:auto_cycle="true"
+        custom:indicator_visibility="visible"
+        custom:pager_animation_span="1100"
+        android:layout_height="match_parent"/>
 
-    <com.viewpagerindicator.CirclePageIndicator
-        android:id="@+id/view_pager_attachment_image_indicator"
-        android:layout_height="wrap_content"
-        android:layout_width="fill_parent"
+    <com.daimajia.slider.library.Indicators.PagerIndicator
+        android:id="@+id/custom_indicator2"
+        style="@style/AndroidImageSlider_Corner_Oval_Orange"
+        android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:padding="20dp"
-        style="@style/CustomCirclePageIndicator" />
+        android:layout_marginBottom="20dp"
+        />
 
 </RelativeLayout>

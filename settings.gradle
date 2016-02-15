@@ -1,2 +1,2 @@
-include ':app', ':RTEditor-Toolbar'
+include ':app', ':RTEditor-Toolbar', ':library'
 include ':ViewPageIndicator'

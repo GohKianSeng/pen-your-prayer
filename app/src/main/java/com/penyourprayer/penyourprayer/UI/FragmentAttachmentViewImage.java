@@ -7,11 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.penyourprayer.penyourprayer.Common.Adapter.AdapterViewPageImage;
+import com.daimajia.slider.library.SliderLayout;
+import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAttachement;
-import com.penyourprayer.penyourprayer.Common.ViewPager.HackyViewPager;
 import com.penyourprayer.penyourprayer.R;
-import com.viewpagerindicator.CirclePageIndicator;
 
 import java.util.ArrayList;
 
@@ -19,9 +18,9 @@ import java.util.ArrayList;
  * A placeholder fragment containing a simple view.
  */
 public class FragmentAttachmentViewImage extends Fragment {
+
+    private SliderLayout dSlider;
     private MainActivity mainActivity;
-    private HackyViewPager viewpager;
-    private static final String ISLOCKED_ARG = "isLocked";
     private int SelectedPage = 0;
     private boolean allowModification = false;
     private ArrayList<ModelPrayerAttachement> attachment;
@@ -62,20 +61,22 @@ public class FragmentAttachmentViewImage extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mainActivity = (MainActivity)getActivity();
 
-        viewpager = (HackyViewPager) view.findViewById(R.id.view_pager_attachment_image);
-        viewpager.setAdapter(new AdapterViewPageImage(this.getFragmentManager(), mainActivity, attachment, allowModification));
+        dSlider = (SliderLayout)view.findViewById(R.id.slider);
 
-        CirclePageIndicator lineIndicator = (CirclePageIndicator) view.findViewById(R.id.view_pager_attachment_image_indicator);
-        lineIndicator.setViewPager(viewpager);
-
-        viewpager.setCurrentItem(SelectedPage);
-
-        if (savedInstanceState != null) {
-            boolean isLocked = savedInstanceState.getBoolean(ISLOCKED_ARG, false);
-            ((HackyViewPager) viewpager).setLocked(isLocked);
+        for(int x=0; x<attachment.size(); x++){
+            ZoomSliderViewer textSliderView = new ZoomSliderViewer(mainActivity);
+            // initialize a SliderLayout
+            textSliderView
+                    .description("")
+                    .image(attachment.get(x).getAvailableURI(mainActivity))
+                    .setScaleType(BaseSliderView.ScaleType.CenterInside);
+            dSlider.addSlider(textSliderView);
         }
+
+        dSlider.setPresetTransformer(SliderLayout.Transformer.Default);
+        dSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
+        dSlider.setCurrentPosition(SelectedPage, true);
 
     }
 

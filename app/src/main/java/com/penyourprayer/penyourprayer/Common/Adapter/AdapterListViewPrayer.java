@@ -215,19 +215,19 @@ public class AdapterListViewPrayer extends ArrayAdapter {
                 for(int x=0; x<resources.get(position).attachments.size(); x++){
 
                         if(x==0) {
-                                LoadImage(resources.get(position).attachments, x, p.image1);
+                                LoadImage(resources.get(position).attachments, x, p.image1, x);
                         }
                         if(x==1) {
-                                LoadImage(resources.get(position).attachments, x, p.image2);
+                                LoadImage(resources.get(position).attachments, x, p.image2, x);
                         }
                         if(x==2) {
-                                LoadImage(resources.get(position).attachments, x, p.image3);
+                                LoadImage(resources.get(position).attachments, x, p.image3, x);
                         }
                         if(x==3) {
-                                LoadImage(resources.get(position).attachments, x, p.image4);
+                                LoadImage(resources.get(position).attachments, x, p.image4, x);
                         }
                         if(x==4) {
-                                LoadImage(resources.get(position).attachments, x, p.image5);
+                                LoadImage(resources.get(position).attachments, x, p.image5, x);
                         }
                 }
 
@@ -279,21 +279,12 @@ public class AdapterListViewPrayer extends ArrayAdapter {
                 return convertView;
         }
 
-        private void LoadImage(final ArrayList<ModelPrayerAttachement> att, final int position, final ImageButton imgbutton){
-                String path = "";
-                File ls = new File(att.get(position).OriginalFilePath.substring(7));
-                if(ls.exists()) {
-                        Picasso.with(mainactivity).load(att.get(position).OriginalFilePath).resize(witdthHeight, witdthHeight).centerCrop().into(imgbutton);
-                }
-                else{
-                        String url = "";
-                        url = QuickstartPreferences.api_server + "/api/attachment/DownloadPrayerAttachment?AttachmentID=" + att.get(position).GUID + "&UserID=" + mainactivity.OwnerID;
-                        Picasso.with(mainactivity).load(url).resize(witdthHeight, witdthHeight).centerCrop().into(imgbutton);
-                }
+        private void LoadImage(final ArrayList<ModelPrayerAttachement> att, final int position, final ImageButton imgbutton, final int imagePosition){
+                Picasso.with(mainactivity).load(att.get(position).getAvailableURI(mainactivity)).resize(witdthHeight, witdthHeight).centerCrop().into(imgbutton);
                 imgbutton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                                showAttachmentImage(0, att);
+                                showAttachmentImage(imagePosition, att);
                         }
                 });
         }
