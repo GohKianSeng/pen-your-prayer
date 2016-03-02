@@ -27,7 +27,7 @@
         <ImageButton
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:id="@+id/drawer_prayer_list_add"
+            android:id="@+id/drawer_prayer_request_add"
             android:src="@drawable/ic_actionbar_plus_w"
             android:background="#800080"
             android:layout_gravity="center"

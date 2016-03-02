@@ -14,8 +14,10 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/editText"
-            android:hint="Subject" />
+            android:id="@+id/create_prayer_request_subject"
+            android:hint="Subject"
+            android:inputType="textCapWords|textAutoCorrect|text"
+            android:maxLength="40" />
 
         <ScrollView
                 android:id="@+id/rte_content"
@@ -34,7 +36,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="top"
                     android:background="@null"
-                    android:hint="Description"
+                    android:hint="Description, this is optional."
                     android:imeOptions="actionDone|flagNoEnterAction"
                     android:inputType="textMultiLine|textAutoCorrect|textCapSentences" />
 

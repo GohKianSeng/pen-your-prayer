@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
@@ -64,6 +65,7 @@ public class FragmentCreateNewPrayerRequest extends Fragment implements Interfac
     private RestAdapter adapter;
     private ImageButton imageButton1, imageButton2, imageButton3, imageButton4, imageButton5;
     private ImageButton actionbar_attachment_imageButton;
+    private EditText subject;
     private ImageLoader imageLoader;
     private LinearLayout attachment_layout;
     private String OwnerLoginType;
@@ -110,43 +112,19 @@ public class FragmentCreateNewPrayerRequest extends Fragment implements Interfac
         actionBar.setDisplayShowHomeEnabled(false);
         actionBar.setDisplayShowTitleEnabled(false);
 
-        View mCustomView = inflater.inflate(R.layout.actionbar_create_new_prayer, null);
+        View mCustomView = inflater.inflate(R.layout.actionbar_create_new_prayer_request, null);
         actionBar.setCustomView(mCustomView);
         actionBar.setDisplayShowCustomEnabled(true);
         actionBar.show();
 
-        ((ImageButton)mCustomView.findViewById(R.id.createnewprayer_back_ImageButton)).setOnClickListener(new View.OnClickListener() {
+        ((ImageButton)mCustomView.findViewById(R.id.createnewprayer_request_back_ImageButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mainActivity.selectedFriends = new ArrayList<ModelFriendProfile>();
                 onBackPressed();
             }
         });
 
-        if(mainActivity.selectedFriends.size() > 0)
-            ((ImageButton)mCustomView.findViewById(R.id.createnewprayer_tagfriend_ImageButton)).setImageResource(R.drawable.ic_actionbar_tagfriend_w);
-
-        ((ImageButton)mCustomView.findViewById(R.id.createnewprayer_tagfriend_ImageButton)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mainActivity.replaceWithTagAFriend(null);
-            }
-        });
-
-        ((ImageButton)mCustomView.findViewById(R.id.createnewprayer_public_ImageButton)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (publicView) {
-                    ((ImageButton) v).setImageResource(R.drawable.ic_actionbar_public_p);
-                    publicView = false;
-                } else {
-                    ((ImageButton) v).setImageResource(R.drawable.ic_actionbar_public_w);
-                    publicView = true;
-                }
-            }
-        });
-
-        actionbar_attachment_imageButton = (ImageButton)mCustomView.findViewById(R.id.createnewprayer_attachment_ImageButton);
+        actionbar_attachment_imageButton = (ImageButton)mCustomView.findViewById(R.id.createnewprayer_request_attachment_ImageButton);
         actionbar_attachment_imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -159,16 +137,16 @@ public class FragmentCreateNewPrayerRequest extends Fragment implements Interfac
             }
         });
 
-        actionbar_done = (ImageButton)mCustomView.findViewById(R.id.createnewprayer_done_ImageButton);
+        actionbar_done = (ImageButton)mCustomView.findViewById(R.id.createnewprayer_request_done_ImageButton);
         actionbar_done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveNewPrayer();
+                saveNewPrayerRequest();
             }
         });
         actionbar_done.setEnabled(false);
 
-        return inflater.inflate(R.layout.fragment_create_new_prayer, container, false);
+        return inflater.inflate(R.layout.fragment_create_prayer_reqeuest, container, false);
 
     }
 
@@ -202,8 +180,10 @@ public class FragmentCreateNewPrayerRequest extends Fragment implements Interfac
         // register message editor
         mRTMessageField = (RTEditText) view.findViewById(R.id.rtEditText_1);
         mRTManager.registerEditor(mRTMessageField, true);
-        mRTMessageField.requestFocus();
-        mRTMessageField.addTextChangedListener(new TextWatcher() {
+
+        subject = (EditText)view.findViewById(R.id.create_prayer_request_subject);
+        subject.requestFocus();
+        subject.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -211,7 +191,7 @@ public class FragmentCreateNewPrayerRequest extends Fragment implements Interfac
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (mRTMessageField.getText().toString().trim().length() > 0) {
+                if (subject.getText().toString().trim().length() > 0) {
                     actionbar_done.setImageResource(R.drawable.ic_actionbar_done_w);
                     actionbar_done.setEnabled(true);
                 } else {
@@ -229,7 +209,7 @@ public class FragmentCreateNewPrayerRequest extends Fragment implements Interfac
         updateAttachmentView();
 
         InputMethodManager imm = (InputMethodManager) this.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(mRTMessageField, InputMethodManager.SHOW_IMPLICIT);
+        imm.showSoftInput(subject, InputMethodManager.SHOW_IMPLICIT);
     }
 
     @Override
@@ -283,7 +263,7 @@ public class FragmentCreateNewPrayerRequest extends Fragment implements Interfac
             mainActivity.popBackFragmentStack();
     }
 
-    private void saveNewPrayer(){
+    private void saveNewPrayerRequest(){
         String prayer = mRTMessageField.getText(RTFormat.HTML);
 
         Database db = new Database(mainActivity);

@@ -27,7 +27,7 @@ public class Database extends SQLiteOpenHelper {
 
     // All Static variables
     // Database Version
-    private static final int DATABASE_VERSION = 38;
+    private static final int DATABASE_VERSION = 40;
 
     // Database Name
     private static final String DATABASE_NAME = "PenYourPrayerSQLite";
@@ -39,8 +39,8 @@ public class Database extends SQLiteOpenHelper {
     private static final String tb_ownerPrayer = "CREATE TABLE tb_ownerPrayer (PrayerID TEXT NOT NULL UNIQUE, CreatedWhen DATETIME NOT NULL DEFAULT (DATETIME('NOW','LOCALTIME')), TouchedWhen DATETIME NOT NULL DEFAULT (DATETIME('NOW','LOCALTIME')), Content TEXT NOT NULL, PublicView INTEGER NOT NULL DEFAULT 0, ServerSent INTEGER NOT NULL DEFAULT 0, Deleted INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(PrayerID))";
     private static final String tb_QueueAction = "CREATE TABLE tb_QueueAction (ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, Action TEXT NOT NULL, Item TEXT NOT NULL, ItemID TEXT NOT NULL, IfExecutedGUID TEXT NOT NULL)";
     private static final String tb_OwnerPrayerAttachment = "CREATE TABLE tb_OwnerPrayerAttachment (OwnerPrayerID TEXT NOT NULL, GUID TEXT NOT NULL, UserID TEXT NOT NULL, OriginalFilePath TEXT NOT NULL, FileName TEXT NOT NULL, PRIMARY KEY(OwnerPrayerID,GUID))";
-    private static final String tb_PrayerTag = "CREATE TABLE tb_PrayerTag (PrayerTagID TEXT NOT NULL UNIQUE, Subject TEXT NOT NULL, Description TEXT NOT NULL, CreatedWhen DATETIME DEFAULT (DATETIME('NOW','LOCALTIME')), TouchedWhen DATETIME DEFAULT (DATETIME('NOW','LOCALTIME')), PRIMARY KEY(PrayerTagID)";
-
+    private static final String tb_PrayerTag = "CREATE TABLE tb_PrayerRequest (PrayerRequestID TEXT NOT NULL UNIQUE, Subject TEXT NOT NULL, Description TEXT, CreatedWhen DATETIME DEFAULT (DATETIME('NOW','LOCALTIME')), TouchedWhen DATETIME DEFAULT (DATETIME('NOW','LOCALTIME')), PRIMARY KEY(PrayerRequestID)";
+    private static final String tb_PrayerRequestAttachment = "CREATE TABLE tb_PrayerRequestAttachment (PrayerRequestID TEXT NOT NULL, GUID TEXT NOT NULL, UserID TEXT NOT NULL, OriginalFilePath TEXT NOT NULL, FileName TEXT NOT NULL, PRIMARY KEY(PrayerRequestID,GUID))";
 
     public Database(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -64,6 +64,7 @@ public class Database extends SQLiteOpenHelper {
         database.execSQL(tb_OwnerPrayerAttachment);
         database.execSQL(tb_OwnerPrayerAnswered);
         database.execSQL(tb_PrayerTag);
+        database.execSQL(tb_PrayerRequestAttachment);
     }
 
     @Override
@@ -76,6 +77,8 @@ public class Database extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS tb_ownerPrayer");
         db.execSQL("DROP TABLE IF EXISTS tb_QueueAction");
         db.execSQL("DROP TABLE IF EXISTS tb_OwnerPrayerAttachment");
+        db.execSQL("DROP TABLE IF EXISTS tb_PrayerTag");
+        db.execSQL("DROP TABLE IF EXISTS tb_PrayerRequestAttachment");
         onCreate(db);
     }
 
@@ -116,6 +119,47 @@ public class Database extends SQLiteOpenHelper {
         db.delete("tb_QueueAction", "ID = " + String.valueOf(QueueID) , null);
     }
 
+    /***********************************************
+     *
+     * Prayer Request section
+     *
+     *  TEXT NOT NULL UNIQUE,  TEXT NOT NULL,  TEXT, CreatedWhen DATETIME DEFAULT (DATETIME('NOW','LOCALTIME')), TouchedWhen DATETIME DEFAULT (DATETIME('NOW','LOCALTIME'))
+     **********************************************/
+    public void AddNewPrayerRequest(String subject, String description, ArrayList<ModelPrayerAttachement> attachment){
+        SQLiteDatabase db = getWritableDatabase();
+        long id = -1;
+        String tUUID = "";
+        while(id == -1) {
+            tUUID = UUID.randomUUID().toString();
+            ContentValues cv = new ContentValues();
+            cv.put("PrayerRequestID", tUUID);
+            cv.put("Subject", subject);
+            cv.put("Description", description);
+
+            id = db.insert("tb_PrayerRequest", null, cv);
+        }
+
+        for(int x=0; x<attachment.size(); x++){
+            ModelPrayerAttachement f = attachment.get(x);
+            long id2 = -1;
+            while(id2 == -1) {
+                ContentValues cv = new ContentValues();
+                cv.put("PrayerRequestID", tUUID);
+                cv.put("GUID", f.GUID);
+                cv.put("OriginalFilePath", f.OriginalFilePath);
+                cv.put("FileName", f.FileName);
+                cv.put("UserID", f.UserID);
+                id2 = db.insert("tb_PrayerRequestAttachment", null, cv);
+            }
+        }
+
+        ContentValues cv = new ContentValues();
+        cv.put("Action", ModelQueueAction.ActionType.Insert.toString());
+        cv.put("Item", ModelQueueAction.ItemType.PrayerRequest.toString());
+        cv.put("ItemID", tUUID);
+        cv.put("IfExecutedGUID", UUID.randomUUID().toString());
+        db.insert("tb_QueueAction", null, cv);
+    }
 
 
     /***********************************************

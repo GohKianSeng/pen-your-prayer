@@ -11,6 +11,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +41,7 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
     private TextView mTextView;
     private FloatingActionButton fab;
     private MainActivity mainActivity;
-    private ImageButton delete_ImageButton;
+    private ImageButton prayer_list_prayer_request_option_ImageButton, prayer_list_friend_option_ImageButton;
     private SwipeRefreshLayout prayer_list_swiperefresh;
     private View previousPrayerListCategory = null;
     private AdapterListViewPrayer prayerArrayAdapter;
@@ -69,16 +70,36 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
         actionBar.setCustomView(mCustomView);
         actionBar.setDisplayShowCustomEnabled(true);
         actionBar.show();
-        ((ImageButton)mCustomView.findViewById(R.id.prayer_list_option_ImageButton)).setOnClickListener(new View.OnClickListener() {
+
+        prayer_list_friend_option_ImageButton = (ImageButton)mCustomView.findViewById(R.id.prayer_list_friend_option_ImageButton);
+        prayer_list_friend_option_ImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mainActivity.isNavigationDrawerOpened()){
-                    ((ImageButton) v).setImageResource(R.drawable.ic_actionbar_drawer_close);
-                    mainActivity.showNavigationDrawer(true);
+                if (mainActivity.isNavigationDrawerOpened(Gravity.LEFT)) {
+                    prayer_list_friend_option_ImageButton.setImageResource(R.drawable.ic_actionbar_drawer_close);
+                    mainActivity.showNavigationDrawer(Gravity.LEFT, false);
+                } else {
+                    prayer_list_friend_option_ImageButton.setImageResource(R.drawable.ic_actionbar_drawer_open);
+                    prayer_list_prayer_request_option_ImageButton.setImageResource(R.drawable.ic_actionbar_drawer_open);
+                    mainActivity.showNavigationDrawer(Gravity.LEFT, true);
+                    mainActivity.showNavigationDrawer(Gravity.RIGHT, false);
                 }
-                else {
-                    ((ImageButton) v).setImageResource(R.drawable.ic_actionbar_drawer_open);
-                    mainActivity.showNavigationDrawer(false);
+
+            }
+        });
+
+        prayer_list_prayer_request_option_ImageButton = (ImageButton)mCustomView.findViewById(R.id.prayer_list_prayer_request_option_ImageButton);
+        prayer_list_prayer_request_option_ImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mainActivity.isNavigationDrawerOpened(Gravity.RIGHT)) {
+                    prayer_list_prayer_request_option_ImageButton.setImageResource(R.drawable.ic_actionbar_drawer_open);
+                    mainActivity.showNavigationDrawer(Gravity.RIGHT, false);
+                } else {
+                    prayer_list_prayer_request_option_ImageButton.setImageResource(R.drawable.ic_actionbar_drawer_close);
+                    prayer_list_friend_option_ImageButton.setImageResource(R.drawable.ic_actionbar_drawer_close);
+                    mainActivity.showNavigationDrawer(Gravity.RIGHT, true);
+                    mainActivity.showNavigationDrawer(Gravity.LEFT, false);
                 }
 
             }

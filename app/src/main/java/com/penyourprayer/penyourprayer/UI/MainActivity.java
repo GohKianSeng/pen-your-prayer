@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
         ImageView profileImage = (ImageView)findViewById(R.id.drawer_profile_image);
         profileImage.setImageBitmap(ImageProcessor.getRoundedBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.profile2)));
 
-        findViewById(R.id.drawer_prayer_list_add).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.drawer_prayer_request_add).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 replaceWithCreateNewPrayerRequestFragment();
@@ -252,15 +252,15 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public boolean isNavigationDrawerOpened(){
-        return mDrawerLayout.isDrawerOpen(Gravity.LEFT);
+    public boolean isNavigationDrawerOpened(int LeftRight){
+        return mDrawerLayout.isDrawerOpen(LeftRight);
     }
 
-    public void showNavigationDrawer(boolean show){
-        if(!show)
-            mDrawerLayout.openDrawer(Gravity.LEFT);
+    public void showNavigationDrawer(int LeftRight, boolean show){
+        if(show)
+            mDrawerLayout.openDrawer(LeftRight);
         else
-            mDrawerLayout.closeDrawer(Gravity.LEFT);
+            mDrawerLayout.closeDrawer(LeftRight);
     }
 
     public void replaceWithPrayerCommentModification(ModelPayerComment c){
@@ -431,12 +431,12 @@ public class MainActivity extends AppCompatActivity {
     public void replaceWithCreateNewPrayerRequestFragment(){
         // Create fragment and give it an argument specifying the article it should show
 
-        Fragment createNewPrayerFragment = new FragmentCreateNewPrayerRequest();
+        Fragment createNewPrayerRequestFragment = new FragmentCreateNewPrayerRequest();
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
 
-        transaction.replace(R.id.fragment, createNewPrayerFragment);
+        transaction.replace(R.id.fragment, createNewPrayerRequestFragment);
         transaction.addToBackStack(null);
 
         transaction.commit();
