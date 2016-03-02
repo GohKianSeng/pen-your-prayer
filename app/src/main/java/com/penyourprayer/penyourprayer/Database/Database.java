@@ -39,6 +39,8 @@ public class Database extends SQLiteOpenHelper {
     private static final String tb_ownerPrayer = "CREATE TABLE tb_ownerPrayer (PrayerID TEXT NOT NULL UNIQUE, CreatedWhen DATETIME NOT NULL DEFAULT (DATETIME('NOW','LOCALTIME')), TouchedWhen DATETIME NOT NULL DEFAULT (DATETIME('NOW','LOCALTIME')), Content TEXT NOT NULL, PublicView INTEGER NOT NULL DEFAULT 0, ServerSent INTEGER NOT NULL DEFAULT 0, Deleted INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(PrayerID))";
     private static final String tb_QueueAction = "CREATE TABLE tb_QueueAction (ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, Action TEXT NOT NULL, Item TEXT NOT NULL, ItemID TEXT NOT NULL, IfExecutedGUID TEXT NOT NULL)";
     private static final String tb_OwnerPrayerAttachment = "CREATE TABLE tb_OwnerPrayerAttachment (OwnerPrayerID TEXT NOT NULL, GUID TEXT NOT NULL, UserID TEXT NOT NULL, OriginalFilePath TEXT NOT NULL, FileName TEXT NOT NULL, PRIMARY KEY(OwnerPrayerID,GUID))";
+    private static final String tb_PrayerTag = "CREATE TABLE tb_PrayerTag (PrayerTagID TEXT NOT NULL UNIQUE, Subject TEXT NOT NULL, Description TEXT NOT NULL, CreatedWhen DATETIME DEFAULT (DATETIME('NOW','LOCALTIME')), TouchedWhen DATETIME DEFAULT (DATETIME('NOW','LOCALTIME')), PRIMARY KEY(PrayerTagID)";
+
 
     public Database(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -61,6 +63,7 @@ public class Database extends SQLiteOpenHelper {
         database.execSQL(tb_QueueAction);
         database.execSQL(tb_OwnerPrayerAttachment);
         database.execSQL(tb_OwnerPrayerAnswered);
+        database.execSQL(tb_PrayerTag);
     }
 
     @Override

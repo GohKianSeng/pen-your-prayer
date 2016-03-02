@@ -1,0 +1,171 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.penyourprayer.penyourprayer.UI.FragmentCreateNewPrayerRequest"
+    android:background="#ffffff">
+
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/editText"
+            android:hint="Subject" />
+
+        <ScrollView
+                android:id="@+id/rte_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_margin="4dp"
+                android:fillViewport="true"
+                android:scrollbarStyle="insideOverlay"
+                    android:layout_weight="1"
+            android:visibility="visible">
+
+                <com.onegravity.rteditor.RTEditText
+                    android:id="@+id/rtEditText_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="top"
+                    android:background="@null"
+                    android:hint="Description"
+                    android:imeOptions="actionDone|flagNoEnterAction"
+                    android:inputType="textMultiLine|textAutoCorrect|textCapSentences" />
+
+            </ScrollView>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:id="@+id/create_prayer_attachment_layout">
+
+                <ImageButton
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:id="@+id/create_prayer_attachment_imageButton1"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="5dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/aaa"
+                    android:background="#ffffff" />
+
+                <ImageButton
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:id="@+id/create_prayer_attachment_imageButton2"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="5dp"
+                    android:scaleType="fitCenter"
+                    android:background="#ffffff" />
+
+                <ImageButton
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:id="@+id/create_prayer_attachment_imageButton3"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="5dp"
+                    android:scaleType="fitCenter"
+                    android:background="#ffffff" />
+
+                <ImageButton
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:id="@+id/create_prayer_attachment_imageButton4"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="5dp"
+                    android:scaleType="fitCenter"
+                    android:background="#ffffff" />
+
+                <ImageButton
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:id="@+id/create_prayer_attachment_imageButton5"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:scaleType="fitCenter"
+                    android:background="#ffffff" />
+            </LinearLayout>
+
+            <HorizontalScrollView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/rte_toolbar_container"
+            android:background="#800080"
+            android:scrollbarStyle="outsideOverlay"
+            android:layout_weight="1">
+
+                <com.onegravity.rteditor.toolbar.HorizontalRTToolbar
+                    android:id="@+id/rte_toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/actionBarItemBackground"
+                    android:orientation="horizontal" >
+
+                    <com.onegravity.rteditor.toolbar.RTToolbarImageButton
+                        android:id="@+id/toolbar_bold"
+                        style="@style/RTE_ToolbarButton"
+                        android:background="?attr/rte_icToolbarBold" />
+
+                    <com.onegravity.rteditor.toolbar.RTToolbarImageButton
+                        android:id="@+id/toolbar_italic"
+                        style="@style/RTE_ToolbarButton"
+                        android:background="?attr/rte_icToolbarItalic" />
+
+                    <com.onegravity.rteditor.toolbar.RTToolbarImageButton
+                        android:id="@+id/toolbar_underline"
+                        style="@style/RTE_ToolbarButton"
+                        android:background="?attr/rte_icToolbarUnderline" />
+
+                    <com.onegravity.rteditor.toolbar.RTToolbarImageButton
+                        android:id="@+id/toolbar_number"
+                        style="@style/RTE_ToolbarButton"
+                        android:background="?attr/rte_icToolbarNumber" />
+
+                    <com.onegravity.rteditor.toolbar.RTToolbarImageButton
+                        android:id="@+id/toolbar_bullet"
+                        style="@style/RTE_ToolbarButton"
+                        android:background="?attr/rte_icToolbarBullet" />
+
+                    <com.onegravity.rteditor.toolbar.RTToolbarImageButton
+                        android:id="@+id/toolbar_image"
+                        style="@style/RTE_ToolbarButton"
+                        android:background="?attr/rte_icToolbarImage"/>
+
+                    <com.onegravity.rteditor.toolbar.RTToolbarImageButton
+                        android:id="@+id/toolbar_redo"
+                        style="@style/RTE_ToolbarButton"
+                        android:background="?attr/rte_icToolbarRedo"/>
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="New Button"
+                        android:id="@+id/button"
+                        android:visibility="invisible" />
+                </com.onegravity.rteditor.toolbar.HorizontalRTToolbar>
+
+            </HorizontalScrollView>
+
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</RelativeLayout>

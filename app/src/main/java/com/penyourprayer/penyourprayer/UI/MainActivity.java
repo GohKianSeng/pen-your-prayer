@@ -24,6 +24,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -107,6 +108,13 @@ public class MainActivity extends AppCompatActivity {
         ImageView profileImage = (ImageView)findViewById(R.id.drawer_profile_image);
         profileImage.setImageBitmap(ImageProcessor.getRoundedBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.profile2)));
 
+        findViewById(R.id.drawer_prayer_list_add).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                replaceWithCreateNewPrayerRequestFragment();
+            }
+        });
+
         ((LinearLayout)findViewById(R.id.drawer_profile_layout)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -148,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        paused = true;
         paused = true;
         super.onPause();
     }
@@ -409,6 +418,20 @@ public class MainActivity extends AppCompatActivity {
         // Create fragment and give it an argument specifying the article it should show
 
         Fragment createNewPrayerFragment = new FragmentCreateNewPrayer();
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
+
+        transaction.replace(R.id.fragment, createNewPrayerFragment);
+        transaction.addToBackStack(null);
+
+        transaction.commit();
+    }
+
+    public void replaceWithCreateNewPrayerRequestFragment(){
+        // Create fragment and give it an argument specifying the article it should show
+
+        Fragment createNewPrayerFragment = new FragmentCreateNewPrayerRequest();
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
