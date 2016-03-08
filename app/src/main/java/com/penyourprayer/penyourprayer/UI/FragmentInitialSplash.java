@@ -131,7 +131,8 @@ public class FragmentInitialSplash extends Fragment {
                     mainActivity.OwnerDisplayName = mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerDisplayName, "");
                     mainActivity.OwnerProfilePictureURL = mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerProfilePictureURL, "");
                     mainActivity.friends = db.getAllFriends(mainActivity.OwnerID);
-                    mainActivity.loadDrawerContent(true);
+                    mainActivity.prayerRequest = db.getAllUnansweredPrayerRequest();
+                    mainActivity.loadLeftRightDrawerContent(true);
                     mainActivity.replaceWithPrayerListFragment();
                 }
                 else{

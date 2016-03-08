@@ -4,16 +4,19 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-public class ModelPayerAmen {
+public class ModelPrayerAnswered {
 
-    public String AmenID;
+    public String AnsweredID;
+    public String OwnerPrayerID;
     public String WhoID;
     public String WhoName;
     public String WhoProfilePicture;
+    public String Answered;
     public Date CreatedWhen;
     public Date TouchedWhen;
+    public boolean ServerSent;
 
-    public ModelPayerAmen(){}
+    public ModelPrayerAnswered(){}
 
     public String formattedCreatedWhen(){
         SimpleDateFormat format = new SimpleDateFormat("dd MMM yyyy hh:mm:ss aa");
@@ -36,5 +39,4 @@ public class ModelPayerAmen {
         format.setTimeZone(TimeZone.getTimeZone("GMT"));
         return format.format(CreatedWhen);
     }
-
 }

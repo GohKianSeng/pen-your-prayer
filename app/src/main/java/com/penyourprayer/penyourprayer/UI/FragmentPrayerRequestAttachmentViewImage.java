@@ -18,23 +18,23 @@ import java.util.ArrayList;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class FragmentAttachmentViewImage extends Fragment {
+public class FragmentPrayerRequestAttachmentViewImage extends Fragment {
 
     private SliderLayout dSlider;
     private MainActivity mainActivity;
     private int SelectedPage = 0;
     private boolean allowModification = false;
-    private ArrayList<ModelPrayerAttachement> attachment;
-    public FragmentAttachmentViewImage() {
+    private ArrayList<ModelPrayerRequestAttachement> attachment;
+    public FragmentPrayerRequestAttachmentViewImage() {
         // Required empty public constructor
     }
 
-    public void setResources(ArrayList<ModelPrayerAttachement> att){
+    public void setResources(ArrayList<ModelPrayerRequestAttachement> att){
         this.attachment = att;
     }
 
-    public static FragmentAttachmentViewImage newInstance(int page, ArrayList<ModelPrayerAttachement> att, boolean allowModification) {
-        FragmentAttachmentViewImage fragment = new FragmentAttachmentViewImage();
+    public static FragmentPrayerRequestAttachmentViewImage newInstance(int page, ArrayList<ModelPrayerRequestAttachement> att, boolean allowModification) {
+        FragmentPrayerRequestAttachmentViewImage fragment = new FragmentPrayerRequestAttachmentViewImage();
         Bundle args = new Bundle();
         args.putInt("SelectedPage", page);
         args.putBoolean("AllowModification", allowModification);

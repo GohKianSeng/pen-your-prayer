@@ -29,10 +29,10 @@ import com.onegravity.rteditor.api.RTMediaFactoryImpl;
 import com.onegravity.rteditor.api.RTProxyImpl;
 import com.onegravity.rteditor.api.format.RTFormat;
 import com.onegravity.rteditor.toolbar.HorizontalRTToolbar;
-import com.penyourprayer.penyourprayer.Common.ImageLoad.ImageLoader;
 import com.penyourprayer.penyourprayer.Common.Interface.InterfaceFragmentBackHandler;
-import com.penyourprayer.penyourprayer.Common.Model.ModelFriendProfile;
 import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAttachement;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerRequest;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerRequestAttachement;
 import com.penyourprayer.penyourprayer.Common.Utils;
 import com.penyourprayer.penyourprayer.Database.Database;
 import com.penyourprayer.penyourprayer.QuickstartPreferences;
@@ -57,51 +57,39 @@ public class FragmentCreateNewPrayerRequest extends Fragment implements Interfac
     private RTManager mRTManager;
     private MainActivity mainActivity;
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private boolean isModification = false;
     private ImageButton actionbar_done;
     RTEditText mRTMessageField;
-    private boolean publicView = false;
-    private RestAdapter adapter;
     private ImageButton imageButton1, imageButton2, imageButton3, imageButton4, imageButton5;
-    private ImageButton actionbar_attachment_imageButton;
+    private ImageButton actionbar_attachment_imageButton, actionbar_answered_imageButton;
     private EditText subject;
-    private ImageLoader imageLoader;
     private LinearLayout attachment_layout;
-    private String OwnerLoginType;
-    private String OwnerUserName;
-    private String HMACKey;
+    private boolean answered = false;
     int witdthHeight = 1;
+    private ModelPrayerRequest prayerRequest = null;
+    private EditText answerComment;
 
     public FragmentCreateNewPrayerRequest() {
         // Required empty public constructor
     }
 
+    public static FragmentCreateNewPrayerRequest newInstance(ModelPrayerRequest pr, boolean forModification, boolean answered) {
+        FragmentCreateNewPrayerRequest fragment = new FragmentCreateNewPrayerRequest();
+        fragment.isModification = forModification;
+        fragment.prayerRequest = pr;
+        fragment.answered = answered;
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
 
         mainActivity = ((MainActivity) getActivity());
         mainActivity.attachment = new  ArrayList<ModelPrayerAttachement>();
         witdthHeight = Utils.dpToPx(mainActivity, QuickstartPreferences.thumbnailDPsize);
-        imageLoader = new ImageLoader(mainActivity);
 
         this.getActivity().setTheme(R.style.ThemeLight);
-
-        OwnerLoginType = mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerLoginType, "");
-        OwnerUserName = mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerUserName, "");
-        HMACKey = mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerHMACKey, "");
-
-        Gson gson = new GsonBuilder().setDateFormat(QuickstartPreferences.DefaultTimeFormat).create();
-        adapter = new RestAdapter.Builder()
-                .setConverter(new GsonConverter(gson))
-                .setEndpoint(QuickstartPreferences.api_server)
-                .setClient(new OkClient(new httpClient(OwnerLoginType, OwnerUserName, HMACKey)))
-                .build();
     }
 
     @Override
@@ -124,6 +112,24 @@ public class FragmentCreateNewPrayerRequest extends Fragment implements Interfac
             }
         });
 
+        actionbar_answered_imageButton = (ImageButton)mCustomView.findViewById(R.id.createnewprayer_request_answered_ImageButton);
+        actionbar_answered_imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (answered) {
+                    actionbar_answered_imageButton.setImageResource(R.drawable.ic_actionbar_uncheck_w);
+                    answered = false;
+                    answerComment.setVisibility(View.GONE);
+                } else {
+                    actionbar_answered_imageButton.setImageResource(R.drawable.ic_actionbar_check_w);
+                    answered = true;
+                    answerComment.setVisibility(View.VISIBLE);
+                }
+                checkIfAllowDoneActionButton();
+            }
+        });
+
+
         actionbar_attachment_imageButton = (ImageButton)mCustomView.findViewById(R.id.createnewprayer_request_attachment_ImageButton);
         actionbar_attachment_imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -141,7 +147,10 @@ public class FragmentCreateNewPrayerRequest extends Fragment implements Interfac
         actionbar_done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveNewPrayerRequest();
+                if(!isModification)
+                    saveNewPrayerRequest();
+                else
+                    updatePrayerRequest();
             }
         });
         actionbar_done.setEnabled(false);
@@ -155,6 +164,8 @@ public class FragmentCreateNewPrayerRequest extends Fragment implements Interfac
         super.onViewCreated(view, savedInstanceState);
 
         mainActivity.lockDrawer(true);
+
+        answerComment = (EditText) view.findViewById(R.id.create_prayer_request_answer_comment);
 
         attachment_layout = (LinearLayout)view.findViewById(R.id.create_prayer_attachment_layout);
         imageButton1 = (ImageButton)view.findViewById(R.id.create_prayer_attachment_imageButton1);
@@ -191,13 +202,7 @@ public class FragmentCreateNewPrayerRequest extends Fragment implements Interfac
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (subject.getText().toString().trim().length() > 0) {
-                    actionbar_done.setImageResource(R.drawable.ic_actionbar_done_w);
-                    actionbar_done.setEnabled(true);
-                } else {
-                    actionbar_done.setImageResource(R.drawable.ic_actionbar_done_p);
-                    actionbar_done.setEnabled(false);
-                }
+                checkIfAllowDoneActionButton();
             }
 
             @Override
@@ -206,10 +211,55 @@ public class FragmentCreateNewPrayerRequest extends Fragment implements Interfac
             }
         });
 
-        updateAttachmentView();
+        if(prayerRequest != null){
+            subject.setText(prayerRequest.Subject.substring(1));
+            mRTMessageField.setRichTextEditing(true, prayerRequest.Description);
+            if(!answered)
+                answered = prayerRequest.Answered;
+            actionbar_answered_imageButton.setVisibility(View.VISIBLE);
+            if(answered){
+                actionbar_answered_imageButton.setImageResource(R.drawable.ic_actionbar_check_w);
+                answerComment.setVisibility(View.VISIBLE);
+            }
+            mainActivity.pr_attachment = prayerRequest.attachments;
+            updateAttachmentView();
+            checkIfAllowDoneActionButton();
+        }
 
-        InputMethodManager imm = (InputMethodManager) this.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(subject, InputMethodManager.SHOW_IMPLICIT);
+        if(answered){
+            InputMethodManager imm = (InputMethodManager) this.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(answerComment, InputMethodManager.SHOW_IMPLICIT);
+        }
+        else {
+            InputMethodManager imm = (InputMethodManager) this.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(subject, InputMethodManager.SHOW_IMPLICIT);
+        }
+    }
+
+    public void checkIfAllowDoneActionButton(){
+        if(!isModification){
+            if (subject.getText().toString().trim().length() > 0) {
+                actionbar_done.setImageResource(R.drawable.ic_actionbar_done_w);
+                actionbar_done.setEnabled(true);
+            } else {
+                actionbar_done.setImageResource(R.drawable.ic_actionbar_done_p);
+                actionbar_done.setEnabled(false);
+            }
+        }
+        else{
+            if(this.answered && answerComment.getText().toString().trim().length() > 0 && subject.getText().toString().trim().length() > 0) {
+                actionbar_done.setImageResource(R.drawable.ic_actionbar_done_w);
+                actionbar_done.setEnabled(true);
+            }
+            else if(!this.answered && subject.getText().toString().trim().length() > 0) {
+                actionbar_done.setImageResource(R.drawable.ic_actionbar_done_w);
+                actionbar_done.setEnabled(true);
+            }
+            else{
+                actionbar_done.setImageResource(R.drawable.ic_actionbar_done_p);
+                actionbar_done.setEnabled(false);
+            }
+        }
     }
 
     @Override
@@ -264,18 +314,29 @@ public class FragmentCreateNewPrayerRequest extends Fragment implements Interfac
     }
 
     private void saveNewPrayerRequest(){
-        String prayer = mRTMessageField.getText(RTFormat.HTML);
+        String description = mRTMessageField.getText(RTFormat.HTML);
 
         Database db = new Database(mainActivity);
-        db.AddNewPrayer(prayer, publicView, mainActivity.selectedFriends, mainActivity.attachment);
+        db.AddNewPrayerRequest(subject.getText().toString(), description, mainActivity.pr_attachment);
 
-        mainActivity.attachment = new ArrayList<ModelPrayerAttachement>();
-        mainActivity.selectedFriends = new ArrayList<ModelFriendProfile>();
+        mainActivity.prayerRequest = db.getAllUnansweredPrayerRequest();
+        mainActivity.reloadPrayerRequest();
+        mainActivity.popBackFragmentStack();
+    }
+
+    private void updatePrayerRequest(){
+        String description = mRTMessageField.getText(RTFormat.HTML);
+
+        Database db = new Database(mainActivity);
+        db.UpdatePrayerRequest(prayerRequest.PrayerRequestID, answered, answerComment.getText().toString().trim(), subject.getText().toString(), description);
+
+        mainActivity.prayerRequest = db.getAllUnansweredPrayerRequest();
+        mainActivity.reloadPrayerRequest();
         mainActivity.popBackFragmentStack();
     }
 
     private void showAttachmentImage(int page){
-        mainActivity.replaceWithAttachmentViewImage(page, mainActivity.attachment, true);
+        mainActivity.replaceWithPrayerRequestAttachmentViewImage(page, mainActivity.pr_attachment, true);
     }
 
     private void updateAttachmentView(){
@@ -285,13 +346,13 @@ public class FragmentCreateNewPrayerRequest extends Fragment implements Interfac
         imageButton4.setOnClickListener(null);
         imageButton5.setOnClickListener(null);
 
-        for(int x=0; x<mainActivity.attachment.size(); x++){
+        for(int x=0; x<mainActivity.pr_attachment.size(); x++){
 
             actionbar_attachment_imageButton.setImageResource(R.drawable.ic_actionbar_image_attachment_w);
 
             attachment_layout.setVisibility(View.VISIBLE);
             if(x==0) {
-                Picasso.with(mainActivity).load(mainActivity.attachment.get(x).OriginalFilePath).resize(witdthHeight, witdthHeight).centerCrop().into(imageButton1);
+                Picasso.with(mainActivity).load(mainActivity.pr_attachment.get(x).OriginalFilePath).resize(witdthHeight, witdthHeight).centerCrop().into(imageButton1);
                 imageButton1.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -300,7 +361,7 @@ public class FragmentCreateNewPrayerRequest extends Fragment implements Interfac
                 });
             }
             if(x==1) {
-                Picasso.with(mainActivity).load(mainActivity.attachment.get(x).OriginalFilePath).resize(witdthHeight, witdthHeight).centerCrop().into(imageButton2);
+                Picasso.with(mainActivity).load(mainActivity.pr_attachment.get(x).OriginalFilePath).resize(witdthHeight, witdthHeight).centerCrop().into(imageButton2);
                 imageButton2.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -309,7 +370,7 @@ public class FragmentCreateNewPrayerRequest extends Fragment implements Interfac
                 });
             }
             if(x==2) {
-                Picasso.with(mainActivity).load(mainActivity.attachment.get(x).OriginalFilePath).resize(witdthHeight, witdthHeight).centerCrop().into(imageButton3);
+                Picasso.with(mainActivity).load(mainActivity.pr_attachment.get(x).OriginalFilePath).resize(witdthHeight, witdthHeight).centerCrop().into(imageButton3);
                 imageButton3.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -318,7 +379,7 @@ public class FragmentCreateNewPrayerRequest extends Fragment implements Interfac
                 });
             }
             if(x==3) {
-                Picasso.with(mainActivity).load(mainActivity.attachment.get(x).OriginalFilePath).resize(witdthHeight, witdthHeight).centerCrop().into(imageButton4);
+                Picasso.with(mainActivity).load(mainActivity.pr_attachment.get(x).OriginalFilePath).resize(witdthHeight, witdthHeight).centerCrop().into(imageButton4);
                 imageButton4.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -327,7 +388,7 @@ public class FragmentCreateNewPrayerRequest extends Fragment implements Interfac
                 });
             }
             if(x==4) {
-                Picasso.with(mainActivity).load(mainActivity.attachment.get(x).OriginalFilePath).resize(witdthHeight, witdthHeight).centerCrop().into(imageButton5);
+                Picasso.with(mainActivity).load(mainActivity.pr_attachment.get(x).OriginalFilePath).resize(witdthHeight, witdthHeight).centerCrop().into(imageButton5);
                 imageButton5.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -349,12 +410,12 @@ public class FragmentCreateNewPrayerRequest extends Fragment implements Interfac
         if (requestCode == PICK_IMAGE_REQUEST && data != null && resultCode == Activity.RESULT_OK) {
             File f = Utils.getAbsolutePath(data, mainActivity);
 
-            ModelPrayerAttachement o = new ModelPrayerAttachement();
+            ModelPrayerRequestAttachement o = new ModelPrayerRequestAttachement();
             o.OriginalFilePath = "file://" + f.getPath();
             o.GUID = UUID.randomUUID().toString().replace("-", "");
             o.FileName = f.getName();
             o.UserID = mainActivity.OwnerID;
-            mainActivity.attachment.add(o);
+            mainActivity.pr_attachment.add(o);
 
             updateAttachmentView();
 

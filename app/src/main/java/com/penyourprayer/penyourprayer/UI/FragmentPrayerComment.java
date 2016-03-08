@@ -18,7 +18,7 @@ import android.widget.ListView;
 
 import com.penyourprayer.penyourprayer.Common.Adapter.AdapterListViewComment;
 import com.penyourprayer.penyourprayer.Common.Interface.InterfacePrayerCommentListViewUpdated;
-import com.penyourprayer.penyourprayer.Common.Model.ModelPayerComment;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerComment;
 import com.penyourprayer.penyourprayer.Common.Utils;
 import com.penyourprayer.penyourprayer.Database.Database;
 import com.penyourprayer.penyourprayer.QuickstartPreferences;
@@ -33,7 +33,7 @@ import retrofit.client.OkClient;
 public class FragmentPrayerComment extends Fragment implements InterfacePrayerCommentListViewUpdated {
     private MainActivity mainActivity;
     private RestAdapter adapter;
-    public ArrayList<ModelPayerComment> comment;
+    public ArrayList<ModelPrayerComment> comment;
     public String PrayerID;
     private ImageButton donebutton;
     private ListView comment_listView;
@@ -43,7 +43,7 @@ public class FragmentPrayerComment extends Fragment implements InterfacePrayerCo
         // Required empty public constructor
     }
 
-    public static FragmentPrayerComment newInstance(ArrayList<ModelPayerComment> comment, String PrayerID) {
+    public static FragmentPrayerComment newInstance(ArrayList<ModelPrayerComment> comment, String PrayerID) {
         FragmentPrayerComment fragment = new FragmentPrayerComment();
         fragment.comment = comment;
         fragment.PrayerID = PrayerID;
@@ -100,7 +100,7 @@ public class FragmentPrayerComment extends Fragment implements InterfacePrayerCo
             public void onClick(View v) {
                 Database db = new Database(mainActivity);
                 db.addOwnerPrayerComment(PrayerID, comment_editText.getText().toString(), mainActivity.OwnerID, mainActivity.OwnerDisplayName, mainActivity.OwnerProfilePictureURL);
-                ModelPayerComment newcomment = db.getAllOwnerPrayerComment(PrayerID).get(0);
+                ModelPrayerComment newcomment = db.getAllOwnerPrayerComment(PrayerID).get(0);
                 adapterListViewComment.addComment(newcomment);
                 comment_editText.setText("");
                 donebutton.setVisibility(View.GONE);
@@ -124,7 +124,7 @@ public class FragmentPrayerComment extends Fragment implements InterfacePrayerCo
 
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     public boolean onMenuItemClick(MenuItem item) {
-                        ModelPayerComment comment = (ModelPayerComment) adapterListViewComment.getItem(position);
+                        ModelPrayerComment comment = (ModelPrayerComment) adapterListViewComment.getItem(position);
 
                         if (item.toString().compareToIgnoreCase("Edit") == 0) {
                             mainActivity.replaceWithPrayerCommentModification(comment);
@@ -149,7 +149,7 @@ public class FragmentPrayerComment extends Fragment implements InterfacePrayerCo
     }
 
     @Override
-    public void onCommentUpdate(final ArrayList<ModelPayerComment> comment){
+    public void onCommentUpdate(final ArrayList<ModelPrayerComment> comment){
         Runnable run = new Runnable(){
             public void run(){
                 adapterListViewComment.updateCommentList(comment);

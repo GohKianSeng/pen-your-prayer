@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-public class ModelPayerComment {
+public class ModelPrayerComment {
 
     public String CommentID;
     public String OwnerPrayerID;
@@ -16,7 +16,7 @@ public class ModelPayerComment {
     public Date TouchedWhen;
     public boolean ServerSent;
 
-    public ModelPayerComment(){}
+    public ModelPrayerComment(){}
 
     public String formattedCreatedWhen(){
         SimpleDateFormat format = new SimpleDateFormat("dd MMM yyyy hh:mm:ss aa");

@@ -1,7 +1,6 @@
 package com.penyourprayer.penyourprayer.Common.Interface;
 
-import com.penyourprayer.penyourprayer.Common.Model.ModelOwnerPrayer;
-import com.penyourprayer.penyourprayer.Common.Model.ModelPayerComment;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerComment;
 
 import java.util.ArrayList;
 
@@ -10,5 +9,5 @@ import java.util.ArrayList;
  */
 
 public interface InterfacePrayerCommentListViewUpdated {
-    public void onCommentUpdate(ArrayList<ModelPayerComment> comment);
+    public void onCommentUpdate(ArrayList<ModelPrayerComment> comment);
 }

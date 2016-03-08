@@ -18,22 +18,15 @@ import android.widget.ListView;
 
 import com.penyourprayer.penyourprayer.Common.Adapter.AdapterListViewAnswered;
 import com.penyourprayer.penyourprayer.Common.Interface.InterfacePrayerAnsweredListViewUpdated;
-import com.penyourprayer.penyourprayer.Common.Model.ModelPayerAnswered;
-import com.penyourprayer.penyourprayer.Common.Model.ModelPayerComment;
-import com.penyourprayer.penyourprayer.Common.Utils;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAnswered;
 import com.penyourprayer.penyourprayer.Database.Database;
-import com.penyourprayer.penyourprayer.QuickstartPreferences;
 import com.penyourprayer.penyourprayer.R;
-import com.penyourprayer.penyourprayer.WebAPI.httpClient;
 
 import java.util.ArrayList;
 
-import retrofit.RestAdapter;
-import retrofit.client.OkClient;
-
 public class FragmentPrayerAnswered extends Fragment implements InterfacePrayerAnsweredListViewUpdated {
     private MainActivity mainActivity;
-    public ArrayList<ModelPayerAnswered> answered;
+    public ArrayList<ModelPrayerAnswered> answered;
     public String PrayerID;
     private ImageButton donebutton;
     private ListView answered_listView;
@@ -43,7 +36,7 @@ public class FragmentPrayerAnswered extends Fragment implements InterfacePrayerA
         // Required empty public constructor
     }
 
-    public static FragmentPrayerAnswered newInstance(ArrayList<ModelPayerAnswered> answer, String PrayerID) {
+    public static FragmentPrayerAnswered newInstance(ArrayList<ModelPrayerAnswered> answer, String PrayerID) {
         FragmentPrayerAnswered fragment = new FragmentPrayerAnswered();
         fragment.answered = answer;
         fragment.PrayerID = PrayerID;
@@ -95,7 +88,7 @@ public class FragmentPrayerAnswered extends Fragment implements InterfacePrayerA
             public void onClick(View v) {
                 Database db = new Database(mainActivity);
                 db.addOwnerPrayerAnswered(PrayerID, answered_editText.getText().toString(), mainActivity.OwnerID, mainActivity.OwnerDisplayName, mainActivity.OwnerProfilePictureURL);
-                ModelPayerAnswered newAnswer = db.getAllOwnerPrayerAnswered(PrayerID).get(0);
+                ModelPrayerAnswered newAnswer = db.getAllOwnerPrayerAnswered(PrayerID).get(0);
                 adapterListViewAnswered.addComment(newAnswer);
                 answered_editText.setText("");
                 donebutton.setVisibility(View.GONE);
@@ -119,7 +112,7 @@ public class FragmentPrayerAnswered extends Fragment implements InterfacePrayerA
 
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     public boolean onMenuItemClick(MenuItem item) {
-                        ModelPayerAnswered answer = (ModelPayerAnswered) adapterListViewAnswered.getItem(position);
+                        ModelPrayerAnswered answer = (ModelPrayerAnswered) adapterListViewAnswered.getItem(position);
 
                         if (item.toString().compareToIgnoreCase("Edit") == 0) {
                             mainActivity.replaceWithPrayerAnsweredModification(answer);
@@ -144,7 +137,7 @@ public class FragmentPrayerAnswered extends Fragment implements InterfacePrayerA
     }
 
     @Override
-    public void onCommentUpdate(final ArrayList<ModelPayerAnswered> comment){
+    public void onCommentUpdate(final ArrayList<ModelPrayerAnswered> comment){
         Runnable run = new Runnable(){
             public void run(){
                 adapterListViewAnswered.updateCommentList(comment);

@@ -1,7 +1,6 @@
 package com.penyourprayer.penyourprayer.UI;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -15,13 +14,13 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 
 import com.penyourprayer.penyourprayer.Common.Interface.InterfacePrayerCommentEditUpdated;
-import com.penyourprayer.penyourprayer.Common.Model.ModelPayerComment;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerComment;
 import com.penyourprayer.penyourprayer.Database.Database;
 import com.penyourprayer.penyourprayer.R;
 
 public class FragmentPrayerCommentEdit extends Fragment implements InterfacePrayerCommentEditUpdated {
     private MainActivity mainActivity;
-    public ModelPayerComment comment;
+    public ModelPrayerComment comment;
     public EditText comment_editText;
     private ImageButton donebutton;
     private boolean dirty = false;
@@ -29,7 +28,7 @@ public class FragmentPrayerCommentEdit extends Fragment implements InterfacePray
         // Required empty public constructor
     }
 
-    public static FragmentPrayerCommentEdit newInstance(ModelPayerComment comment) {
+    public static FragmentPrayerCommentEdit newInstance(ModelPrayerComment comment) {
         FragmentPrayerCommentEdit fragment = new FragmentPrayerCommentEdit();
         fragment.comment = comment;
         return fragment;
@@ -116,7 +115,7 @@ public class FragmentPrayerCommentEdit extends Fragment implements InterfacePray
     }
 
     @Override
-    public void onCommentUpdate(ModelPayerComment c){
+    public void onCommentUpdate(ModelPrayerComment c){
         this.comment = c;
     }
 }

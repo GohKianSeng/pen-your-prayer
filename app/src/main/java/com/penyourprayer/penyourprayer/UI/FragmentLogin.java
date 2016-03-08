@@ -525,7 +525,7 @@ public class FragmentLogin extends Fragment implements
             protected void onPostExecute(String action) {
                 Database db = new Database(mainActivity);
                 mainActivity.friends = db.getAllFriends(mainActivity.OwnerID);
-                mainActivity.loadDrawerContent(true);
+                mainActivity.loadLeftRightDrawerContent(true);
                 mainActivity.replaceWithPrayerListFragment();
             }
 

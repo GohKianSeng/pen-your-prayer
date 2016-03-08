@@ -16,9 +16,11 @@ import com.penyourprayer.penyourprayer.Common.Interface.InterfacePrayerCommentLi
 import com.penyourprayer.penyourprayer.Common.Interface.InterfacePrayerListUpdated;
 import com.penyourprayer.penyourprayer.Common.Model.ModelFriendProfile;
 import com.penyourprayer.penyourprayer.Common.Model.ModelOwnerPrayer;
-import com.penyourprayer.penyourprayer.Common.Model.ModelPayerAnswered;
-import com.penyourprayer.penyourprayer.Common.Model.ModelPayerComment;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAnswered;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerComment;
 import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAttachement;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerRequest;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerRequestAttachement;
 import com.penyourprayer.penyourprayer.Database.Database;
 import com.penyourprayer.penyourprayer.Common.Model.ModelQueueAction;
 import com.penyourprayer.penyourprayer.QuickstartPreferences;
@@ -98,7 +100,13 @@ public class QueueAction extends AsyncTask<String, Void, String> {
             for (int x = 0; x < queue.size(); x++) {
                 ModelQueueAction p = queue.get(x);
 
-                if (p.Item == ModelQueueAction.ItemType.Prayer && p.Action == ModelQueueAction.ActionType.Insert) {
+                if (p.Item == ModelQueueAction.ItemType.PrayerRequest && p.Action == ModelQueueAction.ActionType.Insert) {
+                    submitNewPrayerRequest(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
+                }
+                if (p.Item == ModelQueueAction.ItemType.PrayerRequest && p.Action == ModelQueueAction.ActionType.Update) {
+                    submitUpdatePrayerRequest(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
+                }
+                else if (p.Item == ModelQueueAction.ItemType.Prayer && p.Action == ModelQueueAction.ActionType.Insert) {
                     submitNewPrayer(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
                 }
                 else if (p.Item == ModelQueueAction.ItemType.Prayer && p.Action == ModelQueueAction.ActionType.Delete) {
@@ -138,8 +146,59 @@ public class QueueAction extends AsyncTask<String, Void, String> {
         }
     }
 
+    private void submitUpdatePrayerRequest(Database db, RestAdapter adapter, String PrayerRequestID, int QueueID, String IfExecutedGUID) {
+        ModelPrayerRequest p = db.GetPrayerRequest(PrayerRequestID);
+        if(p == null)
+            return;
+
+    }
+
+
+    private void submitNewPrayerRequest(Database db, RestAdapter adapter, String PrayerRequestID, int QueueID, String IfExecutedGUID) {
+        ModelPrayerRequest p = db.GetPrayerRequest(PrayerRequestID);
+        if(p == null)
+            return;
+
+        p.attachments = db.getAllPrayerRequestAttachment(p.PrayerRequestID);
+        try {
+            for(int x=0; x<p.attachments.size(); x++) {
+                ModelPrayerRequestAttachement att = p.attachments.get(x);
+                SimpleJsonResponse response = uploadPrayerImage(att, adapter);
+                if (response.StatusCode == 202) {
+                    String newFilename = "";
+                    if(response.Description.toUpperCase().startsWith("EXISTS-")){
+                        newFilename = response.Description.substring(7);
+                    }
+                    else{
+                        newFilename = response.Description;
+                    }
+
+                    db.updatePrayerRequestAttachmentFilename(newFilename, att.GUID, p.PrayerRequestID);
+                }
+            }
+
+            PrayerInterface prayerInterface = adapter.create(PrayerInterface.class);
+            SimpleJsonResponse response = prayerInterface.AddNewPrayerRequest(IfExecutedGUID, p);
+            if (response.StatusCode == 200) {
+                if(response.Description.toUpperCase().startsWith("OK-") || response.Description.toUpperCase().startsWith("EXISTS-")){
+                    String newPrayerRequestID = response.Description.substring(response.Description.indexOf("-") + 1);
+                    db.UpdatePrayerRequestID(newPrayerRequestID, p.PrayerRequestID);
+                    p.PrayerRequestID = newPrayerRequestID;
+                }
+
+
+                db.deleteQueue(QueueID);
+            }
+
+        } catch (Exception e) {
+            String sdf = e.getMessage();
+        }
+
+
+    }
+
     private void submitnewPrayerAnswered(Database db, RestAdapter adapter, String AnsweredID, int QueueID, String IfExecutedGUID){
-        ModelPayerAnswered p = db.GetPrayerAnswered(AnsweredID);
+        ModelPrayerAnswered p = db.GetPrayerAnswered(AnsweredID);
         if(p == null)
             return;
 
@@ -174,7 +233,7 @@ public class QueueAction extends AsyncTask<String, Void, String> {
     }
 
     private void submitUpdatePrayerComment(Database db, RestAdapter adapter, String CommentID, int QueueID, String IfExecutedGUID){
-        ModelPayerComment p = db.GetPrayerComment(CommentID);
+        ModelPrayerComment p = db.GetPrayerComment(CommentID);
         if(p == null)
             return;
 
@@ -205,7 +264,7 @@ public class QueueAction extends AsyncTask<String, Void, String> {
     }
 
     private void submitnewPrayerComment(Database db, RestAdapter adapter, String CommentID, int QueueID, String IfExecutedGUID){
-        ModelPayerComment p = db.GetPrayerComment(CommentID);
+        ModelPrayerComment p = db.GetPrayerComment(CommentID);
         if(p == null)
             return;
 
@@ -312,6 +371,18 @@ public class QueueAction extends AsyncTask<String, Void, String> {
         }
     }
 
+    private SimpleJsonResponse uploadPrayerImage(ModelPrayerRequestAttachement att, RestAdapter tadapter){
+        String fileToSend = cropAndSave(att.OriginalFilePath.substring(7), att.GUID);
+        File f = new File(fileToSend);
+
+        TypedFile attachmentImg = new TypedFile("multipart/form-data", new File(fileToSend));
+        InterfaceUploadFile interfaceUploadFile = tadapter.create(InterfaceUploadFile.class);
+        SimpleJsonResponse json = interfaceUploadFile.CheckImageUploaded(att.GUID, f.getName());
+        if(json.StatusCode == 202 && json.Description.compareToIgnoreCase("NOTEXISTS") ==0)
+            json = interfaceUploadFile.AddPrayerImage(att.GUID, attachmentImg);
+        return json;
+    }
+
     private SimpleJsonResponse uploadPrayerImage(ModelPrayerAttachement att, RestAdapter tadapter){
         String fileToSend = cropAndSave(att.OriginalFilePath.substring(7), att.GUID);
         File f = new File(fileToSend);
@@ -403,7 +474,7 @@ public class QueueAction extends AsyncTask<String, Void, String> {
         {
             e.toString();
         }
-        return "";
+        return pathOfInputImage;
     }
 }
 

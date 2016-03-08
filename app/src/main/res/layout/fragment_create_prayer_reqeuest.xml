@@ -13,11 +13,22 @@
 
         <EditText
             android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:id="@+id/create_prayer_request_answer_comment"
+            android:hint="What is God&apos;s answer?"
+            android:inputType="textAutoCorrect|text|textMultiLine"
+            android:visibility="gone"
+            android:singleLine="false"
+            android:gravity="bottom"
+            android:maxLines="2" />
+
+        <EditText
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/create_prayer_request_subject"
             android:hint="Subject"
             android:inputType="textCapWords|textAutoCorrect|text"
-            android:maxLength="40" />
+            android:maxLength="39" />
 
         <ScrollView
                 android:id="@+id/rte_content"

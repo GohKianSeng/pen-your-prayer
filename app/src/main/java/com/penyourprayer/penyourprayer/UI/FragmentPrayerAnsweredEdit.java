@@ -14,13 +14,13 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 
 import com.penyourprayer.penyourprayer.Common.Interface.InterfacePrayerAnsweredEditUpdated;
-import com.penyourprayer.penyourprayer.Common.Model.ModelPayerAnswered;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAnswered;
 import com.penyourprayer.penyourprayer.Database.Database;
 import com.penyourprayer.penyourprayer.R;
 
 public class FragmentPrayerAnsweredEdit extends Fragment implements InterfacePrayerAnsweredEditUpdated {
     private MainActivity mainActivity;
-    public ModelPayerAnswered answer;
+    public ModelPrayerAnswered answer;
     public EditText answered_editText;
     private ImageButton donebutton;
     private boolean dirty = false;
@@ -28,7 +28,7 @@ public class FragmentPrayerAnsweredEdit extends Fragment implements InterfacePra
         // Required empty public constructor
     }
 
-    public static FragmentPrayerAnsweredEdit newInstance(ModelPayerAnswered a) {
+    public static FragmentPrayerAnsweredEdit newInstance(ModelPrayerAnswered a) {
         FragmentPrayerAnsweredEdit fragment = new FragmentPrayerAnsweredEdit();
         fragment.answer = a;
         return fragment;
@@ -115,7 +115,7 @@ public class FragmentPrayerAnsweredEdit extends Fragment implements InterfacePra
     }
 
     @Override
-    public void onCommentUpdate(ModelPayerAnswered a){
+    public void onCommentUpdate(ModelPrayerAnswered a){
         this.answer = a;
     }
 }

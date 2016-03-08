@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.penyourprayer.penyourprayer.Common.Model.ModelPayerAnswered;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAnswered;
 import com.penyourprayer.penyourprayer.Common.Model.ViewHolder.ViewHolderPrayerAnsweredModel;
 import com.penyourprayer.penyourprayer.R;
 import com.penyourprayer.penyourprayer.UI.MainActivity;
@@ -21,8 +21,8 @@ import java.util.ArrayList;
 
 public class AdapterListViewAnswered extends ArrayAdapter {
         private MainActivity mainactivity;
-        private ArrayList<ModelPayerAnswered> answered;
-        public AdapterListViewAnswered(Context context, int resourcesID, ArrayList<ModelPayerAnswered> a) {
+        private ArrayList<ModelPrayerAnswered> answered;
+        public AdapterListViewAnswered(Context context, int resourcesID, ArrayList<ModelPrayerAnswered> a) {
                 super(context, resourcesID, a);
                 // TODO Auto-generated constructor stub
                 this.mainactivity = (MainActivity)context;
@@ -68,12 +68,12 @@ public class AdapterListViewAnswered extends ArrayAdapter {
                 return convertView;
         }
 
-        public void addComment(ModelPayerAnswered a){
+        public void addComment(ModelPrayerAnswered a){
                 this.insert(a, 0);
                 this.notifyDataSetChanged();
         }
 
-        public void updateCommentList(ArrayList<ModelPayerAnswered> a){
+        public void updateCommentList(ArrayList<ModelPrayerAnswered> a){
                 this.answered = a;
                 this.clear();
                 this.addAll(a);

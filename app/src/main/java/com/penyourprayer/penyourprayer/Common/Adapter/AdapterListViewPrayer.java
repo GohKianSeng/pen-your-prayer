@@ -4,32 +4,23 @@ package com.penyourprayer.penyourprayer.Common.Adapter;
  * Created by sisgks on 06/10/2015.
  */
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.text.Html;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
-import android.widget.GridView;
-import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 import com.penyourprayer.penyourprayer.Common.ImageLoad.ImageLoader;
 import com.penyourprayer.penyourprayer.Common.Model.ModelOwnerPrayer;
-import com.penyourprayer.penyourprayer.Common.Model.ModelPayerAnswered;
-import com.penyourprayer.penyourprayer.Common.Model.ModelPayerComment;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAnswered;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerComment;
 import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAttachement;
 import com.penyourprayer.penyourprayer.Common.Model.ViewHolder.ViewHolderPrayerModel;
 import com.penyourprayer.penyourprayer.Common.Utils;
@@ -38,16 +29,8 @@ import com.penyourprayer.penyourprayer.QuickstartPreferences;
 import com.penyourprayer.penyourprayer.R;
 import com.penyourprayer.penyourprayer.UI.FragmentPrayerList;
 import com.penyourprayer.penyourprayer.UI.MainActivity;
-import com.squareup.okhttp.Cache;
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Response;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class AdapterListViewPrayer extends ArrayAdapter {
@@ -139,7 +122,7 @@ public class AdapterListViewPrayer extends ArrayAdapter {
                         @Override
                         public void onClick(View v) {
                                 Database db = new Database(mainactivity);
-                                ArrayList<ModelPayerAnswered> answered = db.getAllOwnerPrayerAnswered(resources.get(position).PrayerID);
+                                ArrayList<ModelPrayerAnswered> answered = db.getAllOwnerPrayerAnswered(resources.get(position).PrayerID);
                                 mainactivity.replaceWithPrayerAnswered(answered, resources.get(position).PrayerID);
                         }
                 });
@@ -148,7 +131,7 @@ public class AdapterListViewPrayer extends ArrayAdapter {
                         @Override
                         public void onClick(View v) {
                                 Database db = new Database(mainactivity);
-                                ArrayList<ModelPayerComment> comments = db.getAllOwnerPrayerComment(resources.get(position).PrayerID);
+                                ArrayList<ModelPrayerComment> comments = db.getAllOwnerPrayerComment(resources.get(position).PrayerID);
                                 mainactivity.replaceWithPrayerComment(comments, resources.get(position).PrayerID);
                         }
                 });

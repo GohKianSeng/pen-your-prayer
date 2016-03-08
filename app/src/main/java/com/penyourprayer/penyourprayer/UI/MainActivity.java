@@ -1,5 +1,6 @@
 package com.penyourprayer.penyourprayer.UI;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -19,12 +20,13 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.PopupMenu;
 import android.util.Base64;
 import android.util.Log;
-import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -32,13 +34,17 @@ import android.widget.ListView;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.penyourprayer.penyourprayer.Common.Adapter.AdapterListViewDrawerPrayerRequest;
 import com.penyourprayer.penyourprayer.Common.Interface.InterfaceFragmentBackHandler;
 import com.penyourprayer.penyourprayer.Common.Model.ModelFriendProfile;
 import com.penyourprayer.penyourprayer.Common.ImageLoad.ImageProcessor;
 import com.penyourprayer.penyourprayer.Common.Adapter.AdapterListViewDrawerProfileFriend;
-import com.penyourprayer.penyourprayer.Common.Model.ModelPayerAnswered;
-import com.penyourprayer.penyourprayer.Common.Model.ModelPayerComment;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAnswered;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerComment;
 import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAttachement;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerRequest;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerRequestAttachement;
+import com.penyourprayer.penyourprayer.Database.Database;
 import com.penyourprayer.penyourprayer.GoogleCloudMessaging.RegistrationIntentService;
 import com.penyourprayer.penyourprayer.QueueAction.QueueAction;
 import com.penyourprayer.penyourprayer.QuickstartPreferences;
@@ -59,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
     private String TWITTER_KEY = "jSBnTpknelOuZX6e4Cg101oue", TWITTER_SECRET = "w5j7WPwHWwY4DSfJ82tRVZF7SBogZJ6XABptVt431uOowvwFKC";
     private boolean drawerCurrentFriendMode = true;
     public ArrayList<ModelFriendProfile> friends;
+    public ArrayList<ModelPrayerRequest> prayerRequest;
     public ArrayList<ModelFriendProfile> selectedFriends = new ArrayList<ModelFriendProfile>();
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     public String OwnerID;
@@ -66,8 +73,10 @@ public class MainActivity extends AppCompatActivity {
     public String OwnerProfilePictureURL;
     public SharedPreferences sharedPreferences;
     public ArrayList<ModelPrayerAttachement> attachment;
+    public ArrayList<ModelPrayerRequestAttachement> pr_attachment;
     private QueueAction qa;
-    private boolean paused = false;
+    private boolean UnAnsweredType = true;
+    private AdapterListViewDrawerPrayerRequest pr_adapter;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -108,6 +117,19 @@ public class MainActivity extends AppCompatActivity {
         ImageView profileImage = (ImageView)findViewById(R.id.drawer_profile_image);
         profileImage.setImageBitmap(ImageProcessor.getRoundedBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.profile2)));
 
+        findViewById(R.id.drawer_prayer_request_type).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UnAnsweredType = !UnAnsweredType;
+                Database db = new Database(v.getContext());
+
+                if(UnAnsweredType)
+                    pr_adapter.refreshAllItem(db.getAllUnansweredPrayerRequest());
+                else
+                    pr_adapter.refreshAllItem(db.getAllAnsweredPrayerRequest());
+            }
+        });
+
         findViewById(R.id.drawer_prayer_request_add).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -125,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
                     ((ImageView) v.findViewById(R.id.drawer_profile_menu_button)).setImageResource(R.drawable.ic_drawer_menu_down);
                     drawerCurrentFriendMode = true;
                 }
-                loadDrawerContent(drawerCurrentFriendMode);
+                loadLeftRightDrawerContent(drawerCurrentFriendMode);
             }
         });
 
@@ -156,8 +178,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
-        paused = true;
-        paused = true;
         super.onPause();
     }
 
@@ -196,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void loadDrawerContent(boolean drawerCurrentFriendMode){
+    public void loadLeftRightDrawerContent(boolean drawerCurrentFriendMode){
         ArrayList<ModelFriendProfile> settings = new ArrayList<ModelFriendProfile>();
 
         ModelFriendProfile set = new ModelFriendProfile(ModelFriendProfile.ActionName.Logout);
@@ -236,6 +256,53 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+
+
+        //load right drawer
+        ListView rq_list = (ListView)findViewById(R.id.drawer_right_listview);
+        pr_adapter = new AdapterListViewDrawerPrayerRequest(this, R.layout.list_view_row_prayer_request_drawer, prayerRequest);
+        rq_list.setAdapter(pr_adapter);
+
+        rq_list.setItemsCanFocus(false);
+        rq_list.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        rq_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+            }
+        });
+
+        rq_list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+
+                LayoutInflater inflater = getLayoutInflater();
+
+                PopupMenu popupMenu = new PopupMenu(view.getContext(), view);
+                popupMenu.inflate(R.menu.prayer_request_menu);
+
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    public boolean onMenuItemClick(MenuItem item) {
+                        ModelPrayerRequest prayerRequest = (ModelPrayerRequest) pr_adapter.getItem(position);
+
+                        if (item.toString().compareToIgnoreCase("Edit") == 0) {
+                            replaceWithModifyPrayerRequestFragment(prayerRequest, false);
+                        } else if (item.toString().compareToIgnoreCase("Delete") == 0) {
+
+                        } else if (item.toString().compareToIgnoreCase("Answered") == 0) {
+                            replaceWithModifyPrayerRequestFragment(prayerRequest, true);
+                        }
+
+                        return true;
+                    }
+                });
+
+                popupMenu.show();
+
+
+                return false;
+            }
+        });
     }
 
     public void popBackFragmentStack() {
@@ -263,7 +330,11 @@ public class MainActivity extends AppCompatActivity {
             mDrawerLayout.closeDrawer(LeftRight);
     }
 
-    public void replaceWithPrayerCommentModification(ModelPayerComment c){
+    public void reloadPrayerRequest(){
+        pr_adapter.refreshAllItem(prayerRequest);
+    }
+
+    public void replaceWithPrayerCommentModification(ModelPrayerComment c){
         // Create fragment and give it an argument specifying the article it should show
         Fragment newFragment = FragmentPrayerCommentEdit.newInstance(c);
 
@@ -276,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
         transaction.commit();
     }
 
-    public void replaceWithPrayerAnsweredModification(ModelPayerAnswered a){
+    public void replaceWithPrayerAnsweredModification(ModelPrayerAnswered a){
         // Create fragment and give it an argument specifying the article it should show
         Fragment newFragment = FragmentPrayerAnsweredEdit.newInstance(a);
 
@@ -289,7 +360,7 @@ public class MainActivity extends AppCompatActivity {
         transaction.commit();
     }
 
-    public void replaceWithPrayerAnswered(ArrayList<ModelPayerAnswered> answer, String PrayerID){
+    public void replaceWithPrayerAnswered(ArrayList<ModelPrayerAnswered> answer, String PrayerID){
 
         // Create fragment and give it an argument specifying the article it should show
         Fragment newFragment = FragmentPrayerAnswered.newInstance(answer, PrayerID);
@@ -303,7 +374,7 @@ public class MainActivity extends AppCompatActivity {
         transaction.commit();
     }
 
-    public void replaceWithPrayerComment(ArrayList<ModelPayerComment> comment, String PrayerID){
+    public void replaceWithPrayerComment(ArrayList<ModelPrayerComment> comment, String PrayerID){
 
         // Create fragment and give it an argument specifying the article it should show
         Fragment newFragment = FragmentPrayerComment.newInstance(comment, PrayerID);
@@ -442,9 +513,36 @@ public class MainActivity extends AppCompatActivity {
         transaction.commit();
     }
 
+    public void replaceWithModifyPrayerRequestFragment(ModelPrayerRequest pr, boolean answered){
+        // Create fragment and give it an argument specifying the article it should show
+
+        Fragment createNewPrayerRequestFragment = FragmentCreateNewPrayerRequest.newInstance(pr, true, answered);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
+
+        transaction.replace(R.id.fragment, createNewPrayerRequestFragment);
+        transaction.addToBackStack(null);
+
+        transaction.commit();
+    }
+
     public void replaceWithAttachmentViewImage(int page, ArrayList<ModelPrayerAttachement> att, boolean allowModification){
         // Create fragment and give it an argument specifying the article it should show
         Fragment newFragment = FragmentAttachmentViewImage.newInstance(page, att, allowModification);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
+
+        transaction.replace(R.id.fragment, newFragment);
+        transaction.addToBackStack(null);
+
+        transaction.commit();
+    }
+
+    public void replaceWithPrayerRequestAttachmentViewImage(int page, ArrayList<ModelPrayerRequestAttachement> att, boolean allowModification){
+        // Create fragment and give it an argument specifying the article it should show
+        Fragment newFragment = FragmentPrayerRequestAttachmentViewImage.newInstance(page, att, allowModification);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);

@@ -6,37 +6,29 @@ package com.penyourprayer.penyourprayer.Common.Adapter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.penyourprayer.penyourprayer.Common.ImageLoad.ImageLoader;
-import com.penyourprayer.penyourprayer.Common.Model.ModelOwnerPrayer;
-import com.penyourprayer.penyourprayer.Common.Model.ModelPayerComment;
-import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAttachement;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerComment;
 import com.penyourprayer.penyourprayer.Common.Model.ViewHolder.ViewHolderPrayerCommentModel;
-import com.penyourprayer.penyourprayer.Common.Utils;
 import com.penyourprayer.penyourprayer.Database.Database;
-import com.penyourprayer.penyourprayer.QuickstartPreferences;
 import com.penyourprayer.penyourprayer.R;
 import com.penyourprayer.penyourprayer.UI.MainActivity;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 public class AdapterListViewComment extends ArrayAdapter {
         private MainActivity mainactivity;
-        private ArrayList<ModelPayerComment> comment;
+        private ArrayList<ModelPrayerComment> comment;
         private Database db;
         private ImageLoader imageLoader;
         int witdthHeight = 1;
-        public AdapterListViewComment(Context context, int resourcesID, ArrayList<ModelPayerComment> c) {
+        public AdapterListViewComment(Context context, int resourcesID, ArrayList<ModelPrayerComment> c) {
                 super(context, resourcesID, c);
                 // TODO Auto-generated constructor stub
                 this.mainactivity = (MainActivity)context;
@@ -84,12 +76,12 @@ public class AdapterListViewComment extends ArrayAdapter {
                 return convertView;
         }
 
-        public void addComment(ModelPayerComment c){
+        public void addComment(ModelPrayerComment c){
                 this.insert(c, 0);
                 this.notifyDataSetChanged();
         }
 
-        public void updateCommentList(ArrayList<ModelPayerComment> c){
+        public void updateCommentList(ArrayList<ModelPrayerComment> c){
                 this.comment = c;
                 this.clear();
                 this.addAll(c);

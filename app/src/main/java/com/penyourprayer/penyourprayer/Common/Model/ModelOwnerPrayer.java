@@ -1,8 +1,5 @@
 package com.penyourprayer.penyourprayer.Common.Model;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,9 +25,9 @@ public class ModelOwnerPrayer {
     public boolean ownerAmen = false;
     public ArrayList<ModelPrayerAttachement> attachments = new ArrayList<ModelPrayerAttachement>();
     public ArrayList<ModelFriendProfile> selectedFriends = new ArrayList<ModelFriendProfile>();
-    public ArrayList<ModelPayerComment> comments = new ArrayList<ModelPayerComment>();
-    public ArrayList<ModelPayerAnswered> answers = new ArrayList<ModelPayerAnswered>();
-    public ArrayList<ModelPayerAmen> amen = new ArrayList<ModelPayerAmen>();
+    public ArrayList<ModelPrayerComment> comments = new ArrayList<ModelPrayerComment>();
+    public ArrayList<ModelPrayerAnswered> answers = new ArrayList<ModelPrayerAnswered>();
+    public ArrayList<ModelPrayerAmen> amen = new ArrayList<ModelPrayerAmen>();
 
     public String IfExecutedGUID;
 

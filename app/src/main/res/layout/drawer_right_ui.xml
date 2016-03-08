@@ -1,10 +1,10 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:fitsSystemWindows="true"
     android:layout_width="240dp"
     android:layout_height="match_parent"
     android:layout_gravity="end"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
 
     <LinearLayout
@@ -27,6 +27,16 @@
         <ImageButton
             android:layout_width="20dp"
             android:layout_height="20dp"
+            android:id="@+id/drawer_prayer_request_type"
+            android:src="@drawable/ic_actionbar_timeglass_w"
+            android:background="#800080"
+            android:layout_gravity="center"
+            android:layout_marginRight="30dp"
+            android:scaleType="fitCenter" />
+
+        <ImageButton
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:id="@+id/drawer_prayer_request_add"
             android:src="@drawable/ic_actionbar_plus_w"
             android:background="#800080"
@@ -43,6 +53,7 @@
             android:choiceMode="singleChoice"
             android:divider="#f0f0f0"
             android:dividerHeight="2dp"
-            android:background="#ffffff"/>
+            android:background="#ffffff"
+            tools:listitem="@layout/list_view_row_prayer_request_drawer"/>
 
 </LinearLayout>

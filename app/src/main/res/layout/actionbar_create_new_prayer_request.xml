@@ -29,8 +29,8 @@
         <ImageButton
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:id="@+id/createnewprayer_request_public_ImageButton"
-            android:src="@drawable/ic_actionbar_public_p"
+            android:id="@+id/createnewprayer_request_answered_ImageButton"
+            android:src="@drawable/ic_actionbar_uncheck_w"
             android:background="?attr/selectableItemBackground"
             android:layout_weight="2"
             android:scaleType="fitCenter"
