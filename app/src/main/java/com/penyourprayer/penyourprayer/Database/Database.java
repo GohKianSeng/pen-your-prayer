@@ -126,6 +126,21 @@ public class Database extends SQLiteOpenHelper {
      * Prayer Request section
      *
      **********************************************/
+    public void DeletePrayerRequest(String PrayerRequestID){
+        SQLiteDatabase db = getWritableDatabase();
+
+        db.delete("tb_PrayerRequest", "PrayerRequestID = '" + PrayerRequestID + "'", null);
+        db.delete("tb_PrayerRequestAttachment", "PrayerRequestID = '" + PrayerRequestID + "'", null);
+
+
+        ContentValues cv = new ContentValues();
+        cv.put("Action", ModelQueueAction.ActionType.Delete.toString());
+        cv.put("Item", ModelQueueAction.ItemType.PrayerRequest.toString());
+        cv.put("ItemID", PrayerRequestID);
+        cv.put("IfExecutedGUID", UUID.randomUUID().toString());
+        db.insert("tb_QueueAction", null, cv);
+    }
+
     public void UpdatePrayerRequest(String PrayerRequestID, boolean answered, String answeredComment, String subject, String description) {
         SQLiteDatabase db = getWritableDatabase();
 
@@ -168,18 +183,19 @@ public class Database extends SQLiteOpenHelper {
 
             id = db.insert("tb_PrayerRequest", null, cv);
         }
-
-        for(int x=0; x<attachment.size(); x++){
-            ModelPrayerRequestAttachement f = attachment.get(x);
-            long id2 = -1;
-            while(id2 == -1) {
-                ContentValues cv = new ContentValues();
-                cv.put("PrayerRequestID", tUUID);
-                cv.put("GUID", f.GUID);
-                cv.put("OriginalFilePath", f.OriginalFilePath);
-                cv.put("FileName", f.FileName);
-                cv.put("UserID", f.UserID);
-                id2 = db.insert("tb_PrayerRequestAttachment", null, cv);
+        if(attachment != null) {
+            for (int x = 0; x < attachment.size(); x++) {
+                ModelPrayerRequestAttachement f = attachment.get(x);
+                long id2 = -1;
+                while (id2 == -1) {
+                    ContentValues cv = new ContentValues();
+                    cv.put("PrayerRequestID", tUUID);
+                    cv.put("GUID", f.GUID);
+                    cv.put("OriginalFilePath", f.OriginalFilePath);
+                    cv.put("FileName", f.FileName);
+                    cv.put("UserID", f.UserID);
+                    id2 = db.insert("tb_PrayerRequestAttachment", null, cv);
+                }
             }
         }
 

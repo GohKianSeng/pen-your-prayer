@@ -27,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -76,6 +77,8 @@ public class MainActivity extends AppCompatActivity {
     public ArrayList<ModelPrayerRequestAttachement> pr_attachment;
     private QueueAction qa;
     private boolean UnAnsweredType = true;
+    private ImageButton PrayerRequestType;
+
     private AdapterListViewDrawerPrayerRequest pr_adapter;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -117,16 +120,20 @@ public class MainActivity extends AppCompatActivity {
         ImageView profileImage = (ImageView)findViewById(R.id.drawer_profile_image);
         profileImage.setImageBitmap(ImageProcessor.getRoundedBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.profile2)));
 
-        findViewById(R.id.drawer_prayer_request_type).setOnClickListener(new View.OnClickListener() {
+        PrayerRequestType = (ImageButton) findViewById(R.id.drawer_prayer_request_type);
+        PrayerRequestType.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 UnAnsweredType = !UnAnsweredType;
                 Database db = new Database(v.getContext());
 
-                if(UnAnsweredType)
+                if (UnAnsweredType) {
                     pr_adapter.refreshAllItem(db.getAllUnansweredPrayerRequest());
-                else
+                    PrayerRequestType.setImageResource(R.drawable.ic_actionbar_timeglass_w);
+                } else {
                     pr_adapter.refreshAllItem(db.getAllAnsweredPrayerRequest());
+                    PrayerRequestType.setImageResource(R.drawable.ic_actionbar_check_w);
+                }
             }
         });
 
@@ -274,7 +281,7 @@ public class MainActivity extends AppCompatActivity {
 
         rq_list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+            public boolean onItemLongClick(AdapterView<?> parent, final View view, final int position, long id) {
 
                 LayoutInflater inflater = getLayoutInflater();
 
@@ -288,7 +295,10 @@ public class MainActivity extends AppCompatActivity {
                         if (item.toString().compareToIgnoreCase("Edit") == 0) {
                             replaceWithModifyPrayerRequestFragment(prayerRequest, false);
                         } else if (item.toString().compareToIgnoreCase("Delete") == 0) {
-
+                            Database db = new Database(view.getContext());
+                            db.DeletePrayerRequest(prayerRequest.PrayerRequestID);
+                            pr_adapter.remove(prayerRequest);
+                            pr_adapter.notifyDataSetChanged();
                         } else if (item.toString().compareToIgnoreCase("Answered") == 0) {
                             replaceWithModifyPrayerRequestFragment(prayerRequest, true);
                         }

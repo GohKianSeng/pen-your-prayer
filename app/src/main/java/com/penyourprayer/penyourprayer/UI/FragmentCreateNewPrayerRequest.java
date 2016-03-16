@@ -12,6 +12,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -220,6 +221,7 @@ public class FragmentCreateNewPrayerRequest extends Fragment implements Interfac
             if(answered){
                 actionbar_answered_imageButton.setImageResource(R.drawable.ic_actionbar_check_w);
                 answerComment.setVisibility(View.VISIBLE);
+                answerComment.setText(prayerRequest.AnswerComment);
             }
             mainActivity.pr_attachment = prayerRequest.attachments;
             updateAttachmentView();
@@ -322,6 +324,7 @@ public class FragmentCreateNewPrayerRequest extends Fragment implements Interfac
         mainActivity.prayerRequest = db.getAllUnansweredPrayerRequest();
         mainActivity.reloadPrayerRequest();
         mainActivity.popBackFragmentStack();
+        mainActivity.showNavigationDrawer(Gravity.RIGHT, true);
     }
 
     private void updatePrayerRequest(){

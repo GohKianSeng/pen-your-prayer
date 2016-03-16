@@ -103,6 +103,9 @@ public class QueueAction extends AsyncTask<String, Void, String> {
                 if (p.Item == ModelQueueAction.ItemType.PrayerRequest && p.Action == ModelQueueAction.ActionType.Insert) {
                     submitNewPrayerRequest(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
                 }
+                else if(p.Item == ModelQueueAction.ItemType.PrayerRequest && p.Action == ModelQueueAction.ActionType.Delete){
+                    submitDeletePrayerRequest(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
+                }
                 if (p.Item == ModelQueueAction.ItemType.PrayerRequest && p.Action == ModelQueueAction.ActionType.Update) {
                     submitUpdatePrayerRequest(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
                 }
@@ -146,13 +149,39 @@ public class QueueAction extends AsyncTask<String, Void, String> {
         }
     }
 
+    private void submitDeletePrayerRequest(Database db, RestAdapter adapter, String PrayerRequestID, int QueueID, String IfExecutedGUID){
+
+        PrayerInterface prayerInterface = adapter.create(PrayerInterface.class);
+        SimpleJsonResponse response = prayerInterface.DeletePrayerRequest(IfExecutedGUID, PrayerRequestID);
+        if (response.StatusCode == 200) {
+            if(response.Description.toUpperCase().compareToIgnoreCase("NOTEXISTS") == 0){
+                return;
+            }
+
+            db.deleteQueue(QueueID);
+            //update the commentID from server
+        }
+    }
+
     private void submitUpdatePrayerRequest(Database db, RestAdapter adapter, String PrayerRequestID, int QueueID, String IfExecutedGUID) {
         ModelPrayerRequest p = db.GetPrayerRequest(PrayerRequestID);
         if(p == null)
             return;
 
-    }
+        p.attachments = db.getAllPrayerRequestAttachment(p.PrayerRequestID);
+        try {
 
+            PrayerInterface prayerInterface = adapter.create(PrayerInterface.class);
+            SimpleJsonResponse response = prayerInterface.UpdatePrayerRequest(IfExecutedGUID, p);
+            if (response.StatusCode == 200) {
+
+                db.deleteQueue(QueueID);
+            }
+
+        } catch (Exception e) {
+            String sdf = e.getMessage();
+        }
+    }
 
     private void submitNewPrayerRequest(Database db, RestAdapter adapter, String PrayerRequestID, int QueueID, String IfExecutedGUID) {
         ModelPrayerRequest p = db.GetPrayerRequest(PrayerRequestID);

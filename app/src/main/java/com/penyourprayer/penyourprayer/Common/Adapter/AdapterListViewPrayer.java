@@ -250,9 +250,9 @@ public class AdapterListViewPrayer extends ArrayAdapter {
                         p.comment_imageButton.setImageResource(R.drawable.comment_1);
 
                 if(resources.get(position).numberOfAnswered > 0)
-                        p.answered_imageButton.setImageResource(R.drawable.answered_2);
+                        p.answered_imageButton.setImageResource(R.drawable.ic_actionbar_check_p);
                 else
-                        p.answered_imageButton.setImageResource(R.drawable.answered_1);
+                        p.answered_imageButton.setImageResource(R.drawable.ic_actionbar_timeglass_g);
 
                 if(resources.get(position).publicView)
                         p.publicView_imageButton.setImageResource(R.drawable.public_2);
