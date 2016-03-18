@@ -7,12 +7,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.penyourprayer.penyourprayer.Common.Model.ModelFriendProfile;
+import com.penyourprayer.penyourprayer.Common.Model.ModelOwnerPrayer;
 import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAmen;
 import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAnswered;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAttachement;
 import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerComment;
 import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerRequest;
-import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAttachement;
-import com.penyourprayer.penyourprayer.Common.Model.ModelOwnerPrayer;
 import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerRequestAttachement;
 import com.penyourprayer.penyourprayer.Common.Model.ModelQueueAction;
 

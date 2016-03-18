@@ -21,8 +21,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.onegravity.rteditor.RTEditText;
 import com.onegravity.rteditor.RTManager;
 import com.onegravity.rteditor.api.RTApi;
@@ -38,16 +36,11 @@ import com.penyourprayer.penyourprayer.Common.Utils;
 import com.penyourprayer.penyourprayer.Database.Database;
 import com.penyourprayer.penyourprayer.QuickstartPreferences;
 import com.penyourprayer.penyourprayer.R;
-import com.penyourprayer.penyourprayer.WebAPI.httpClient;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.UUID;
-
-import retrofit.RestAdapter;
-import retrofit.client.OkClient;
-import retrofit.converter.GsonConverter;
 
 public class FragmentCreateNewPrayerRequest extends Fragment implements InterfaceFragmentBackHandler {
     // TODO: Rename parameter arguments, choose names that match

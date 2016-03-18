@@ -1,7 +1,5 @@
 package com.penyourprayer.penyourprayer.Common.Model;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 import com.penyourprayer.penyourprayer.QuickstartPreferences;
 import com.penyourprayer.penyourprayer.UI.MainActivity;
 

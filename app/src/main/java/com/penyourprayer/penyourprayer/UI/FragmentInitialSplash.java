@@ -1,10 +1,10 @@
 package com.penyourprayer.penyourprayer.UI;
 
 
+import android.app.Fragment;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -12,25 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.penyourprayer.penyourprayer.Common.DataLoading;
 import com.penyourprayer.penyourprayer.Common.Model.ModelFriendProfile;
-import com.penyourprayer.penyourprayer.Common.Model.ModelOwnerPrayer;
 import com.penyourprayer.penyourprayer.Database.Database;
 import com.penyourprayer.penyourprayer.QuickstartPreferences;
 import com.penyourprayer.penyourprayer.R;
-import com.penyourprayer.penyourprayer.WebAPI.InterfaceFriends;
-import com.penyourprayer.penyourprayer.WebAPI.Model.SimpleJsonResponse;
-import com.penyourprayer.penyourprayer.WebAPI.PrayerInterface;
-import com.penyourprayer.penyourprayer.WebAPI.httpClient;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import retrofit.RestAdapter;
-import retrofit.client.OkClient;
-import retrofit.converter.GsonConverter;
 
 /**
  * A simple {@link Fragment} subclass.

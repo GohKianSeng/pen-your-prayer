@@ -1,6 +1,5 @@
 package com.penyourprayer.penyourprayer.UI;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -12,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
+import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -19,7 +19,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.PopupMenu;
 import android.util.Base64;
 import android.util.Log;
@@ -36,15 +35,15 @@ import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.penyourprayer.penyourprayer.Common.Adapter.AdapterListViewDrawerPrayerRequest;
+import com.penyourprayer.penyourprayer.Common.Adapter.AdapterListViewDrawerProfileFriend;
+import com.penyourprayer.penyourprayer.Common.ImageLoad.ImageProcessor;
 import com.penyourprayer.penyourprayer.Common.Interface.InterfaceFragmentBackHandler;
 import com.penyourprayer.penyourprayer.Common.Interface.InterfaceFragmentFriendsHandler;
 import com.penyourprayer.penyourprayer.Common.Interface.InterfaceFragmentPrayerRequestHandler;
 import com.penyourprayer.penyourprayer.Common.Model.ModelFriendProfile;
-import com.penyourprayer.penyourprayer.Common.ImageLoad.ImageProcessor;
-import com.penyourprayer.penyourprayer.Common.Adapter.AdapterListViewDrawerProfileFriend;
 import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAnswered;
-import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerComment;
 import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAttachement;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerComment;
 import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerRequest;
 import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerRequestAttachement;
 import com.penyourprayer.penyourprayer.Database.Database;
@@ -52,14 +51,14 @@ import com.penyourprayer.penyourprayer.GoogleCloudMessaging.RegistrationIntentSe
 import com.penyourprayer.penyourprayer.QueueAction.QueueAction;
 import com.penyourprayer.penyourprayer.QuickstartPreferences;
 import com.penyourprayer.penyourprayer.R;
-
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
-import io.fabric.sdk.android.Fabric;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+
+import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -108,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        printHashKeyForFacebook();
         //getContact();
         qa = new QueueAction(this);
 

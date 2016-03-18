@@ -1,7 +1,5 @@
 package com.penyourprayer.penyourprayer.Common.Model;
 
-import android.graphics.Bitmap;
-
 public class ModelFriendProfile {
 
     public enum ActionName {

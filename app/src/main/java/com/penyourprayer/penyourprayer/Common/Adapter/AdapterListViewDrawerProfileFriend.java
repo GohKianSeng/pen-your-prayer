@@ -13,11 +13,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.penyourprayer.penyourprayer.Common.Model.ModelFriendProfile;
 import com.penyourprayer.penyourprayer.Common.ImageLoad.ImageLoader;
+import com.penyourprayer.penyourprayer.Common.Model.ModelFriendProfile;
 import com.penyourprayer.penyourprayer.Common.Model.ViewHolder.ViewHolderTagFriendModel;
 import com.penyourprayer.penyourprayer.R;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 

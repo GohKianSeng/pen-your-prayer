@@ -17,7 +17,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.larswerkman.holocolorpicker.Util;
 import com.penyourprayer.penyourprayer.Common.Utils;
 import com.penyourprayer.penyourprayer.QuickstartPreferences;
 import com.penyourprayer.penyourprayer.R;
@@ -27,10 +26,6 @@ import com.penyourprayer.penyourprayer.WebAPI.Model.SimpleJsonResponse;
 import com.penyourprayer.penyourprayer.WebAPI.UserAccountInterface;
 import com.penyourprayer.penyourprayer.WebAPI.httpClient;
 
-import org.w3c.dom.Text;
-
-import java.util.Date;
-import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

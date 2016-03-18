@@ -1,7 +1,5 @@
 package com.penyourprayer.penyourprayer.Common.Model.ViewHolder;
 
-import android.widget.CheckBox;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 

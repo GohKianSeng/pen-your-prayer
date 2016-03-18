@@ -1,6 +1,5 @@
 package com.penyourprayer.penyourprayer.Common.Model.ViewHolder;
 
-import android.nfc.Tag;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;

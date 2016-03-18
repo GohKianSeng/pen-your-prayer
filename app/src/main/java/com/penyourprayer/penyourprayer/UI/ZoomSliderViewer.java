@@ -3,9 +3,11 @@ package com.penyourprayer.penyourprayer.UI;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import uk.co.senab.photoview.PhotoView;
+
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.penyourprayer.penyourprayer.R;
+
+import uk.co.senab.photoview.PhotoView;
 
 /**
  * Created by sisgks on 26/01/2016.

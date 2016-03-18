@@ -1,8 +1,11 @@
 package com.penyourprayer.penyourprayer.WebAPI;
 
-import com.penyourprayer.penyourprayer.WebAPI.Model.IPAddressLocale;;
+import com.penyourprayer.penyourprayer.WebAPI.Model.IPAddressLocale;
+
 import retrofit.Callback;
 import retrofit.http.GET;
+
+;
 
 
 /**

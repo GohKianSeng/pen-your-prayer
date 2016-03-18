@@ -7,28 +7,18 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.penyourprayer.penyourprayer.Common.Utils;
 import com.penyourprayer.penyourprayer.QuickstartPreferences;
 import com.penyourprayer.penyourprayer.R;
-import com.penyourprayer.penyourprayer.WebAPI.LocaleInterface;
-import com.penyourprayer.penyourprayer.WebAPI.Model.IPAddressLocale;
 import com.penyourprayer.penyourprayer.WebAPI.Model.SimpleJsonResponse;
 import com.penyourprayer.penyourprayer.WebAPI.UserAccountInterface;
 import com.penyourprayer.penyourprayer.WebAPI.httpClient;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import retrofit.Callback;
 import retrofit.RestAdapter;

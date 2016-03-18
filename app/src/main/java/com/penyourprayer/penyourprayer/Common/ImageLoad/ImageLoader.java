@@ -1,30 +1,30 @@
 package com.penyourprayer.penyourprayer.Common.ImageLoad;
 
-        import java.io.File;
-        import java.io.FileInputStream;
-        import java.io.FileNotFoundException;
-        import java.io.FileOutputStream;
-        import java.io.IOException;
-        import java.io.InputStream;
-        import java.io.OutputStream;
-        import java.net.HttpURLConnection;
-        import java.net.URL;
-        import java.util.Collections;
-        import java.util.Map;
-        import java.util.WeakHashMap;
-        import java.util.concurrent.ExecutorService;
-        import java.util.concurrent.Executors;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
+import android.os.Handler;
+import android.widget.ImageView;
 
-        import android.graphics.Matrix;
-        import android.media.ExifInterface;
-        import android.os.Handler;
-        import android.content.Context;
-        import android.graphics.Bitmap;
-        import android.graphics.BitmapFactory;
-        import android.widget.ImageView;
+import com.penyourprayer.penyourprayer.Common.Utils;
+import com.penyourprayer.penyourprayer.R;
 
-        import com.penyourprayer.penyourprayer.Common.Utils;
-        import com.penyourprayer.penyourprayer.R;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Collections;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 public class ImageLoader {
 
     MemoryCache memoryCache=new MemoryCache();

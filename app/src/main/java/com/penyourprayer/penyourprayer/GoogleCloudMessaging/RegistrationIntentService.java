@@ -3,11 +3,11 @@ package com.penyourprayer.penyourprayer.GoogleCloudMessaging;
 /**
  * Created by sisgks on 31/08/2015.
  */
+
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -15,7 +15,6 @@ import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 import com.penyourprayer.penyourprayer.QuickstartPreferences;
-import com.penyourprayer.penyourprayer.R;
 
 import java.io.IOException;
 

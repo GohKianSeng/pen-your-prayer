@@ -17,12 +17,12 @@ import com.penyourprayer.penyourprayer.Common.Interface.InterfacePrayerListUpdat
 import com.penyourprayer.penyourprayer.Common.Model.ModelFriendProfile;
 import com.penyourprayer.penyourprayer.Common.Model.ModelOwnerPrayer;
 import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAnswered;
-import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerComment;
 import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAttachement;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerComment;
 import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerRequest;
 import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerRequestAttachement;
-import com.penyourprayer.penyourprayer.Database.Database;
 import com.penyourprayer.penyourprayer.Common.Model.ModelQueueAction;
+import com.penyourprayer.penyourprayer.Database.Database;
 import com.penyourprayer.penyourprayer.QuickstartPreferences;
 import com.penyourprayer.penyourprayer.R;
 import com.penyourprayer.penyourprayer.UI.MainActivity;

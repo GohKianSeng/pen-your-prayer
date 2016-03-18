@@ -4,23 +4,17 @@ package com.penyourprayer.penyourprayer.Common.Adapter;
  * Created by sisgks on 06/10/2015.
  */
 
-import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.penyourprayer.penyourprayer.Common.ImageLoad.ImageLoader;
-import com.penyourprayer.penyourprayer.Common.Model.ModelFriendProfile;
-import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAttachement;
 import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerRequest;
 import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerRequestAttachement;
 import com.penyourprayer.penyourprayer.Common.Model.ViewHolder.ViewHolderPrayerRequestModel;
-import com.penyourprayer.penyourprayer.Common.Model.ViewHolder.ViewHolderTagFriendModel;
 import com.penyourprayer.penyourprayer.Common.Utils;
 import com.penyourprayer.penyourprayer.QuickstartPreferences;
 import com.penyourprayer.penyourprayer.R;

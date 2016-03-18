@@ -1,7 +1,5 @@
 package com.penyourprayer.penyourprayer.Common.Model;
 
-import android.text.method.Touch;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;

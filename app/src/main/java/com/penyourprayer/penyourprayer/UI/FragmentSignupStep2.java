@@ -15,22 +15,17 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.penyourprayer.penyourprayer.Common.Utils;
 import com.penyourprayer.penyourprayer.QuickstartPreferences;
 import com.penyourprayer.penyourprayer.R;
-import com.penyourprayer.penyourprayer.WebAPI.Model.IPAddressLocale;
 import com.penyourprayer.penyourprayer.WebAPI.Model.SimpleJsonResponse;
 import com.penyourprayer.penyourprayer.WebAPI.UserAccountInterface;
 import com.penyourprayer.penyourprayer.WebAPI.httpClient;
-import com.twitter.sdk.android.core.models.User;
 
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import retrofit.Callback;
 import retrofit.RestAdapter;

@@ -1,15 +1,10 @@
 package com.penyourprayer.penyourprayer.Common.Model.ViewHolder;
 
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.ms.square.android.expandabletextview.ExpandableTextView;
-import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAttachement;
-
-import java.util.ArrayList;
 
 /**
  * Created by sisgks on 07/10/2015.
