@@ -37,6 +37,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.penyourprayer.penyourprayer.Common.Adapter.AdapterListViewDrawerPrayerRequest;
 import com.penyourprayer.penyourprayer.Common.Interface.InterfaceFragmentBackHandler;
+import com.penyourprayer.penyourprayer.Common.Interface.InterfaceFragmentFriendsHandler;
+import com.penyourprayer.penyourprayer.Common.Interface.InterfaceFragmentPrayerRequestHandler;
 import com.penyourprayer.penyourprayer.Common.Model.ModelFriendProfile;
 import com.penyourprayer.penyourprayer.Common.ImageLoad.ImageProcessor;
 import com.penyourprayer.penyourprayer.Common.Adapter.AdapterListViewDrawerProfileFriend;
@@ -240,11 +242,14 @@ public class MainActivity extends AppCompatActivity {
 
             list.setItemsCanFocus(false);
             list.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-
+            list.setOnItemClickListener(null);
             list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                    Fragment f = getSupportFragmentManager().findFragmentById(R.id.fragment);
+                    if (f instanceof InterfaceFragmentFriendsHandler) {
+                        ((InterfaceFragmentFriendsHandler) f).onFriendPressed(friends.get(position));
+                    }
                 }
             });
         }
@@ -255,7 +260,7 @@ public class MainActivity extends AppCompatActivity {
 
             list.setItemsCanFocus(false);
             list.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-
+            list.setOnItemClickListener(null);
             list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -275,7 +280,13 @@ public class MainActivity extends AppCompatActivity {
         rq_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                Fragment f = getSupportFragmentManager().findFragmentById(R.id.fragment);
+                if (f instanceof InterfaceFragmentPrayerRequestHandler) {
+                    ((InterfaceFragmentPrayerRequestHandler) f).onPrayerRequestPressed(prayerRequest.get(position));
+                }
+                else {
+                    replaceWithModifyPrayerRequestFragment(prayerRequest.get(position), false);
+                }
             }
         });
 

@@ -15,7 +15,9 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
+import android.text.Html;
 import android.text.TextWatcher;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +26,7 @@ import android.widget.GridView;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -35,10 +38,14 @@ import com.onegravity.rteditor.api.RTProxyImpl;
 import com.onegravity.rteditor.api.format.RTFormat;
 import com.onegravity.rteditor.api.media.RTImage;
 import com.onegravity.rteditor.toolbar.HorizontalRTToolbar;
+import com.onegravity.rteditor.toolbar.ToolbarStatus;
 import com.penyourprayer.penyourprayer.Common.ImageLoad.ImageLoader;
 import com.penyourprayer.penyourprayer.Common.Interface.InterfaceFragmentBackHandler;
+import com.penyourprayer.penyourprayer.Common.Interface.InterfaceFragmentFriendsHandler;
+import com.penyourprayer.penyourprayer.Common.Interface.InterfaceFragmentPrayerRequestHandler;
 import com.penyourprayer.penyourprayer.Common.Model.ModelFriendProfile;
 import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerAttachement;
+import com.penyourprayer.penyourprayer.Common.Model.ModelPrayerRequest;
 import com.penyourprayer.penyourprayer.Common.Utils;
 import com.penyourprayer.penyourprayer.Database.Database;
 import com.penyourprayer.penyourprayer.QuickstartPreferences;
@@ -54,7 +61,7 @@ import retrofit.RestAdapter;
 import retrofit.client.OkClient;
 import retrofit.converter.GsonConverter;
 
-public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragmentBackHandler {
+public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragmentBackHandler, InterfaceFragmentPrayerRequestHandler, InterfaceFragmentFriendsHandler {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private int PICK_IMAGE_REQUEST = 1122;
@@ -76,7 +83,9 @@ public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragme
     private String OwnerLoginType;
     private String OwnerUserName;
     private String HMACKey;
+    private ImageButton tagFriend;
     int witdthHeight = 1;
+    private HorizontalRTToolbar rtToolbar0;
 
     public FragmentCreateNewPrayer() {
         // Required empty public constructor
@@ -133,7 +142,8 @@ public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragme
         if(mainActivity.selectedFriends.size() > 0)
             ((ImageButton)mCustomView.findViewById(R.id.createnewprayer_tagfriend_ImageButton)).setImageResource(R.drawable.ic_actionbar_tagfriend_w);
 
-        ((ImageButton)mCustomView.findViewById(R.id.createnewprayer_tagfriend_ImageButton)).setOnClickListener(new View.OnClickListener() {
+        tagFriend = (ImageButton)mCustomView.findViewById(R.id.createnewprayer_tagfriend_ImageButton);
+        tagFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mainActivity.replaceWithTagAFriend(null);
@@ -183,7 +193,7 @@ public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragme
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mainActivity.lockDrawer(true);
+        //mainActivity.lockDrawer(false);
 
         attachment_layout = (LinearLayout)view.findViewById(R.id.create_prayer_attachment_layout);
         imageButton1 = (ImageButton)view.findViewById(R.id.create_prayer_attachment_imageButton1);
@@ -200,7 +210,7 @@ public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragme
         ViewGroup toolbarContainer = (ViewGroup) view.findViewById(R.id.rte_toolbar_container);
 
         // register toolbar 0 (if it exists)
-        HorizontalRTToolbar rtToolbar0 = (HorizontalRTToolbar) view.findViewById(R.id.rte_toolbar);
+        rtToolbar0 = (HorizontalRTToolbar) view.findViewById(R.id.rte_toolbar);
         if (rtToolbar0 != null) {
             mRTManager.registerToolbar(toolbarContainer, rtToolbar0);
         }
@@ -262,6 +272,42 @@ public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragme
         }
         else
             return false;
+    }
+
+    @Override
+    public void onPrayerRequestPressed(ModelPrayerRequest pr){
+        ToolbarStatus toolbar = rtToolbar0.getCurrentToolBarStats();
+        mainActivity.showNavigationDrawer(Gravity.RIGHT, false);
+        String hashTag = "<b><u>" + pr.Subject + "</u></b><br/>";
+        String content = mRTMessageField.getText(RTFormat.HTML);
+        mRTMessageField.requestFocus();
+        if(content.length() <= 0)
+            mRTMessageField.setRichTextEditing(true, hashTag);
+        else
+            mRTMessageField.setRichTextEditing(true, content + "<br/>" + hashTag);
+
+        mRTMessageField.setSelection(mRTMessageField.getText(RTFormat.SPANNED).length());
+        rtToolbar0.setToolbarStatus(toolbar);
+
+    }
+
+    @Override
+    public void onFriendPressed(ModelFriendProfile friend){
+        Toast toast = Toast.makeText(mainActivity, friend.DisplayName + ", tag to prayer", Toast.LENGTH_SHORT);
+        toast.show();
+
+        for(int x=0; x<mainActivity.selectedFriends.size(); x++){
+            if(mainActivity.selectedFriends.get(x).UserID.compareToIgnoreCase(friend.UserID) == 0){
+
+                return;
+            }
+        }
+        mainActivity.showNavigationDrawer(Gravity.LEFT, false);
+        mainActivity.selectedFriends.add(friend);
+
+        if(mainActivity.selectedFriends.size() > 0)
+            tagFriend.setImageResource(R.drawable.ic_actionbar_tagfriend_w);
+
     }
 
     public void onBackPressed() {
@@ -364,8 +410,6 @@ public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragme
             }
         }
     }
-
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

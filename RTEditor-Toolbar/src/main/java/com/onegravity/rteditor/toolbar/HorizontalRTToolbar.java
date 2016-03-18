@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.Toolbar;
 
 import com.larswerkman.holocolorpicker.ColorPickerDialog;
 import com.larswerkman.holocolorpicker.OnColorChangedListener;
@@ -581,6 +582,26 @@ public class HorizontalRTToolbar extends LinearLayout implements RTToolbar, View
         }
     };
 
+    public ToolbarStatus getCurrentToolBarStats(){
+        ToolbarStatus toolbar = new ToolbarStatus();
+        toolbar.Bold = mBold.isChecked();
+        toolbar.Italic = mItalic.isChecked();
+        toolbar.Underline = mUnderline.isChecked();
+
+        return toolbar;
+    }
+
+    public void setToolbarStatus(ToolbarStatus toolbar){
+        mBold.setChecked(toolbar.Bold);
+        mListener.onEffectSelected(Effects.BOLD, mBold.isChecked());
+
+        mItalic.setChecked(toolbar.Italic);
+        mListener.onEffectSelected(Effects.ITALIC, mItalic.isChecked());
+
+        mUnderline.setChecked(toolbar.Underline);
+        mListener.onEffectSelected(Effects.UNDERLINE, mUnderline.isChecked());
+    }
+
     @Override
     public void onClick(View v) {
         if (mListener != null) {
@@ -647,7 +668,8 @@ public class HorizontalRTToolbar extends LinearLayout implements RTToolbar, View
                 //    mListener.onEffectSelected(Effects.INDENTATION, false);
                 //} else if (id == R.id.toolbar_link) {
                 //    mListener.onCreateLink();
-                } else if (id == R.id.toolbar_image) {
+            }
+            else if (id == R.id.toolbar_image) {
                     mListener.onPickImage();
                 //} else if (id == R.id.toolbar_image_capture) {
                 //    mListener.onCaptureImage();
