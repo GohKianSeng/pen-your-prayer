@@ -4,3 +4,5 @@ local.properties
 taskArtifacts
 wrapper
 /ViewPageIndicator/build
+gradlew.bat
+/gradlew

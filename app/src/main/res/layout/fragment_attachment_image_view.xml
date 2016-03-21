@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
-    tools:context="com.penyourprayer.penyourprayer.UI.FragmentAttachmentViewImage"
+    tools:context="com.belvia.penyourprayer.UI.FragmentAttachmentViewImage"
     android:background="#000000"
     android:padding="0dp">
 
