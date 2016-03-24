@@ -299,7 +299,7 @@ public class Database extends SQLiteOpenHelper {
             cv.put("Answered", pr.get(x).Answered);
             cv.put("AnswerComment", pr.get(x).AnswerComment);
             if(pr.get(x).Answered)
-                cv.put("AnsweredWhen", pr.get(x).formattedAnsweredWhen());
+                cv.put("AnsweredWhen", pr.get(x).toDBFormattedAnsweredWhen());
 
             cv.put("CreatedWhen", pr.get(x).toDBFormattedCreatedWhen());
             cv.put("TouchedWhen", pr.get(x).toDBFormattedTouchedWhen());

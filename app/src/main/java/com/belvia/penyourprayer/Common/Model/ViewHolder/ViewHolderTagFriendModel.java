@@ -4,11 +4,13 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.pkmmte.view.CircularImageView;
+
 /**
  * Created by sisgks on 07/10/2015.
  */
 public class ViewHolderTagFriendModel {
-    public ImageView profile_ImageView;
+    public CircularImageView profile_ImageView;
     public TextView name_TextView;
     public CheckBox selected_CheckBox;
 

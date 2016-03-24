@@ -100,7 +100,8 @@
                 android:id="@+id/socal_login_twitter_imageButton"
                 android:src="@drawable/ic_social_twitter"
                 android:background="@null"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:visibility="gone" />
         </LinearLayout>
 
     </LinearLayout>

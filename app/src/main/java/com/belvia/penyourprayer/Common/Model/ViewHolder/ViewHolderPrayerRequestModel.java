@@ -8,10 +8,10 @@ import android.widget.TextView;
  */
 public class ViewHolderPrayerRequestModel {
 
-    public TextView subject_TextView, answered_TextView, createdwhen_TextView;
+    public TextView subject_TextView, createdwhen_TextView;
     public String PrayerRequestID;
     public boolean containAttachment = false;
-    public ImageView image1, image2, image3, image4, image5;
+    public ImageView image1, image2, image3, image4, image5, answered_ImageView;
 
 
     public ViewHolderPrayerRequestModel(){

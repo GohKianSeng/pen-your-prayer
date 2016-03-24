@@ -22,17 +22,18 @@
             android:textColor="#ffffff"
             android:gravity="center_vertical"
             android:layout_marginLeft="10dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless" />
 
         <ImageButton
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:id="@+id/drawer_prayer_request_type"
             android:src="@drawable/ic_actionbar_timeglass_w"
-            android:background="#800080"
             android:layout_gravity="center"
             android:layout_marginRight="30dp"
-            android:scaleType="fitCenter" />
+            android:scaleType="fitCenter"
+            android:background="?attr/selectableItemBackgroundBorderless"/>
 
         <ImageButton
             android:layout_width="20dp"

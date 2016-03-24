@@ -48,7 +48,7 @@ public class AdapterListViewDrawerPrayerRequest extends ArrayAdapter {
                         p.PrayerRequestID = prayerRequest.get(position).PrayerRequestID;
                         p.subject_TextView = (TextView) convertView.findViewById(R.id.drawer_prayer_request_subject_textView);
                         p.createdwhen_TextView = (TextView) convertView.findViewById(R.id.drawer_prayer_request_createdwhen);
-                        p.answered_TextView = (TextView) convertView.findViewById(R.id.drawer_prayer_request_answered);
+                        p.answered_ImageView = (ImageView) convertView.findViewById(R.id.drawer_prayer_request_answered);
                         if(prayerRequest.get(position).attachments != null && prayerRequest.get(position).attachments.size() > 0)
                                 p.containAttachment = true;
 
@@ -71,11 +71,11 @@ public class AdapterListViewDrawerPrayerRequest extends ArrayAdapter {
                 p.subject_TextView.setText(prayerRequest.get(position).Subject);
 
                 if(prayerRequest.get(position).Answered) {
-                        p.answered_TextView.setText("Answered");
+                        p.answered_ImageView.setVisibility(View.VISIBLE);
                         p.createdwhen_TextView.setText(prayerRequest.get(position).formattedAnsweredWhen());
                 }
                 else
-                        p.answered_TextView.setText("");
+                        p.answered_ImageView.setVisibility(View.INVISIBLE);
 
 
                 for(int x=0; x<prayerRequest.get(position).attachments.size(); x++){

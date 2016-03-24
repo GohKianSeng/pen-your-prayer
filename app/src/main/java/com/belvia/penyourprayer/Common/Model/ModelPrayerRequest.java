@@ -57,4 +57,10 @@ public class ModelPrayerRequest {
         return format.format(CreatedWhen);
     }
 
+    public String toDBFormattedAnsweredWhen(){
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return format.format(AnsweredWhen);
+    }
+
 }

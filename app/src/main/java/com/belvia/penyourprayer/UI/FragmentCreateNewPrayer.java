@@ -237,6 +237,11 @@ public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragme
 
         updateAttachmentView();
 
+        String draft = mainActivity.sharedPreferences.getString(QuickstartPreferences.DraftNewPrayer, "");
+        if(draft.length() > 0) {
+            mRTMessageField.setRichTextEditing(true, draft);
+            mRTMessageField.setSelection(mRTMessageField.getText(RTFormat.SPANNED).length());
+        }
         InputMethodManager imm = (InputMethodManager) this.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(mRTMessageField, InputMethodManager.SHOW_IMPLICIT);
     }
@@ -246,8 +251,6 @@ public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragme
         super.onSaveInstanceState(outState);
 
         mRTManager.onSaveInstanceState(outState);
-
-
     }
 
     @Override
@@ -256,14 +259,6 @@ public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragme
         if (mRTManager != null) {
             mRTManager.onDestroy(true);
         }
-    }
-
-    private boolean checkIfContentfilled(){
-        if(mRTMessageField.getText().toString().trim().length() > 0){
-            return true;
-        }
-        else
-            return false;
     }
 
     @Override
@@ -303,29 +298,11 @@ public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragme
     }
 
     public void onBackPressed() {
-        if(checkIfContentfilled()){
-            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    switch (which){
-                        case DialogInterface.BUTTON_POSITIVE:
-                            mainActivity.popBackFragmentStack();
-                            break;
+        // auto save the content
+        if(mRTMessageField.getText().toString().trim().length() > 0)
+            mainActivity.sharedPreferences.edit().putString(QuickstartPreferences.DraftNewPrayer, mRTMessageField.getText().toString().trim()).apply();
 
-                        case DialogInterface.BUTTON_NEGATIVE:
-                            //No button clicked
-                            mainActivity.popBackFragmentStack();
-                            break;
-                    }
-                }
-            };
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
-            builder.setMessage("Would you like to save and complete it later?").setTitle("To be continue?").setPositiveButton("Yes", dialogClickListener)
-                    .setNegativeButton("No", dialogClickListener).setNeutralButton("Cancel", dialogClickListener).show();
-        }
-        else
-            mainActivity.popBackFragmentStack();
+        mainActivity.popBackFragmentStack();
     }
 
     private void saveNewPrayer(){
@@ -333,6 +310,8 @@ public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragme
 
         Database db = new Database(mainActivity);
         db.AddNewPrayer(prayer, publicView, mainActivity.selectedFriends, mainActivity.attachment);
+
+        mainActivity.sharedPreferences.edit().putString(QuickstartPreferences.DraftNewPrayer, "").apply();
 
         mainActivity.attachment = new ArrayList<ModelPrayerAttachement>();
         mainActivity.selectedFriends = new ArrayList<ModelFriendProfile>();
@@ -405,8 +384,6 @@ public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragme
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        //mRTManager.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == PICK_IMAGE_REQUEST && data != null && resultCode == Activity.RESULT_OK) {

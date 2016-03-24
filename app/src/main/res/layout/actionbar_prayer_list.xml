@@ -8,7 +8,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/prayer_list_friend_option_ImageButton"
-        android:background="?attr/selectableItemBackground"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_actionbar_drawer_close" />
     <View android:layout_width="wrap_content"
@@ -18,7 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/prayer_list_prayer_request_option_ImageButton"
-        android:background="?attr/selectableItemBackground"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_actionbar_drawer_open" />
 </LinearLayout>

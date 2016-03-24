@@ -16,8 +16,8 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+
 import com.ms.square.android.expandabletextview.ExpandableTextView;
-import com.belvia.penyourprayer.Common.ImageLoad.ImageLoader;
 import com.belvia.penyourprayer.Common.Model.ModelOwnerPrayer;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerAnswered;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerAttachement;
@@ -36,9 +36,6 @@ import java.util.ArrayList;
 public class AdapterListViewPrayer extends ArrayAdapter {
         private MainActivity mainactivity;
         private ArrayList<ModelOwnerPrayer> resources;
-        private Database db;
-        private Html.ImageGetter imgGetter;
-        private ImageLoader imageLoader;
         int witdthHeight = 1;
         private FragmentPrayerList prayerlistView;
         public AdapterListViewPrayer(FragmentPrayerList fpl, Context context, int resourcesID, ArrayList<ModelOwnerPrayer> allprayers) {
@@ -47,8 +44,6 @@ public class AdapterListViewPrayer extends ArrayAdapter {
                 // TODO Auto-generated constructor stub
                 this.mainactivity = (MainActivity)context;
                 resources = allprayers;
-                db = new Database(mainactivity);
-                imageLoader = new ImageLoader(mainactivity);
                 witdthHeight = Utils.dpToPx(mainactivity, QuickstartPreferences.thumbnailDPsize);
         }
 

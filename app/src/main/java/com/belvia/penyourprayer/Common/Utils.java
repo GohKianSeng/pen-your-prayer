@@ -1,6 +1,10 @@
 package com.belvia.penyourprayer.Common;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.DisplayMetrics;
@@ -11,6 +15,7 @@ import com.belvia.penyourprayer.UI.MainActivity;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -78,5 +83,19 @@ public class Utils {
         cursor.close();
 
         return new File(picturePath);
+    }
+
+    public static boolean isInternetAvailable(MainActivity mainActivity) {
+        boolean connected = false;
+        ConnectivityManager connectivityManager = (ConnectivityManager)mainActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        if(networkInfo != null && networkInfo.isConnectedOrConnecting()) {
+            //we are connected to a network
+            connected = true;
+        }
+        else
+            connected = false;
+
+        return connected;
     }
 }

@@ -25,16 +25,11 @@ import java.util.ArrayList;
 public class AdapterListViewComment extends ArrayAdapter {
         private MainActivity mainactivity;
         private ArrayList<ModelPrayerComment> comment;
-        private Database db;
-        private ImageLoader imageLoader;
-        int witdthHeight = 1;
         public AdapterListViewComment(Context context, int resourcesID, ArrayList<ModelPrayerComment> c) {
                 super(context, resourcesID, c);
                 // TODO Auto-generated constructor stub
                 this.mainactivity = (MainActivity)context;
                 comment = c;
-                db = new Database(mainactivity);
-                imageLoader = new ImageLoader(mainactivity);
         }
 
         @Override

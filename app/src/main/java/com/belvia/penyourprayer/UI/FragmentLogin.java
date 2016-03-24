@@ -155,6 +155,7 @@ public class FragmentLogin extends Fragment implements
                 .setEndpoint(QuickstartPreferences.api_server)
                 .setClient(new OkClient(new httpClient("ANONYMOUS", Utils.TempUserID(mainActivity), QuickstartPreferences.AnonymousHMACKey)))
                 .build();
+
     }
 
     @Override
@@ -410,10 +411,10 @@ public class FragmentLogin extends Fragment implements
         // grant permissions or resolve an error in order to sign in. Refer to the javadoc for
         // ConnectionResult to see possible error codes.
         //Log.d(TAG, "onConnectionFailed:" + connectionResult);
-
-        loginProgressbar.setVisibility(View.GONE);
-        showLoginComponent(View.VISIBLE);
-
+        if(!connectionResult.hasResolution()) {
+            loginProgressbar.setVisibility(View.GONE);
+            showLoginComponent(View.VISIBLE);
+        }
     }
 
     @Override
@@ -489,16 +490,31 @@ public class FragmentLogin extends Fragment implements
 
                 @Override
                 public void failure(RetrofitError error) {
-                    new AlertDialog.Builder(mainActivity)
-                            .setTitle("Login Fail!")
-                            .setMessage("Invalid Credentials.")
-                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    showLoginComponent(View.VISIBLE);
-                                    loginProgressbar.setVisibility(View.GONE);
-                                }
-                            })
-                            .show();
+                    if(error.getLocalizedMessage().compareToIgnoreCase("Canceled") == 0 && error.getKind().compareTo(RetrofitError.Kind.NETWORK) == 0){
+
+                        new AlertDialog.Builder(mainActivity)
+                                .setTitle("Login Fail!")
+                                .setMessage("No Internet Connection")
+                                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        showLoginComponent(View.VISIBLE);
+                                        loginProgressbar.setVisibility(View.GONE);
+                                    }
+                                })
+                                .show();
+                    }
+                    else {
+                        new AlertDialog.Builder(mainActivity)
+                                .setTitle("Login Fail!")
+                                .setMessage("Invalid Credentials.")
+                                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        showLoginComponent(View.VISIBLE);
+                                        loginProgressbar.setVisibility(View.GONE);
+                                    }
+                                })
+                                .show();
+                    }
                 }
             });
 
@@ -520,6 +536,7 @@ public class FragmentLogin extends Fragment implements
             protected void onPostExecute(String action) {
                 Database db = new Database(mainActivity);
                 mainActivity.friends = db.getAllFriends(mainActivity.OwnerID);
+                mainActivity.prayerRequest = db.getAllUnansweredPrayerRequest();
                 mainActivity.loadLeftRightDrawerContent(true);
                 mainActivity.replaceWithPrayerListFragment();
             }

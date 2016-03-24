@@ -13,7 +13,7 @@
             android:layout_height="24dp"
             android:id="@+id/createnewprayer_request_back_ImageButton"
             android:src="@drawable/ic_actionbar_back_w"
-            android:background="?attr/selectableItemBackground"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="fitCenter" />
 
         <ImageButton
@@ -23,7 +23,7 @@
             android:src="@drawable/ic_actionbar_tagfriend_p"
             android:layout_weight="2"
             android:scaleType="fitCenter"
-            android:background="?attr/selectableItemBackground"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:visibility="invisible" />
 
         <ImageButton
@@ -31,7 +31,7 @@
             android:layout_height="24dp"
             android:id="@+id/createnewprayer_request_answered_ImageButton"
             android:src="@drawable/ic_actionbar_uncheck_w"
-            android:background="?attr/selectableItemBackground"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:layout_weight="2"
             android:scaleType="fitCenter"
             android:visibility="invisible" />
@@ -41,7 +41,7 @@
             android:layout_height="24dp"
             android:id="@+id/createnewprayer_request_attachment_ImageButton"
             android:src="@drawable/ic_actionbar_image_attachment_p"
-            android:background="?attr/selectableItemBackground"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:layout_weight="2"
             android:scaleType="fitCenter" />
 
@@ -49,7 +49,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:id="@+id/createnewprayer_request_done_ImageButton"
-            android:background="?attr/selectableItemBackground"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_actionbar_done_p"
             android:scaleType="fitCenter"/>
 

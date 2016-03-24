@@ -54,4 +54,7 @@ public class QuickstartPreferences {
     //upload image standard
     public static final int Dimension = 3840;
     public static final int Quality = 10;
+
+    //create new prayer auto save content
+    public static final String DraftNewPrayer = "DraftNewPrayer";
 }
