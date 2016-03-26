@@ -19,6 +19,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.belvia.penyourprayer.Common.SocialLogin.GooglePlus;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -197,20 +198,10 @@ public class FragmentLogin extends Fragment implements
         ((ImageButton) view.findViewById(R.id.socal_login_googleplus_imageButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showLoginComponent(View.GONE);
-                loginProgressbar.setVisibility(View.VISIBLE);
-
-                mShouldResolve = true;
-
-                FragmentLogin frag = (FragmentLogin)getFragmentManager().findFragmentById(R.id.fragment);
-                mGoogleApiClient = new GoogleApiClient.Builder(mainActivity)
-                        .addConnectionCallbacks(frag)
-                        .addOnConnectionFailedListener(frag)
-                        .enableAutoManage(mainActivity, 22, frag)
-                        .addApi(Plus.API)
-                        .addScope(new Scope(Scopes.PROFILE))
-                        .build();
-
+                //showLoginComponent(View.GONE);
+                //loginProgressbar.setVisibility(View.VISIBLE);
+                GooglePlus gp = new GooglePlus(mainActivity);
+                gp.loginGooglePlus();
             }
         });
 
@@ -292,7 +283,6 @@ public class FragmentLogin extends Fragment implements
 
         mTwitterAuthClient.onActivityResult(requestCode, resultCode, data);
     }
-
 
 
 
@@ -411,7 +401,7 @@ public class FragmentLogin extends Fragment implements
         // grant permissions or resolve an error in order to sign in. Refer to the javadoc for
         // ConnectionResult to see possible error codes.
         //Log.d(TAG, "onConnectionFailed:" + connectionResult);
-        if(!connectionResult.hasResolution()) {
+        if(!mShouldResolve || !connectionResult.hasResolution()) {
             loginProgressbar.setVisibility(View.GONE);
             showLoginComponent(View.VISIBLE);
         }

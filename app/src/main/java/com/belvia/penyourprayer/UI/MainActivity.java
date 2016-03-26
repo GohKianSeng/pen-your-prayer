@@ -51,6 +51,10 @@ import com.belvia.penyourprayer.GoogleCloudMessaging.RegistrationIntentService;
 import com.belvia.penyourprayer.QueueAction.QueueAction;
 import com.belvia.penyourprayer.QuickstartPreferences;
 import com.belvia.penyourprayer.R;
+import com.google.android.gms.common.Scopes;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.plus.Plus;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 
@@ -79,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
     private QueueAction qa;
     private boolean UnAnsweredType = true;
     private ImageButton PrayerRequestType;
-
+    public GoogleApiClient mGoogleApiClient;
     private AdapterListViewDrawerPrayerRequest pr_adapter;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -107,6 +111,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(Plus.API)
+                .addScope(new Scope(Scopes.PROFILE))
+                .build();
+
         printHashKeyForFacebook();
         //getContact();
         qa = new QueueAction(this);
