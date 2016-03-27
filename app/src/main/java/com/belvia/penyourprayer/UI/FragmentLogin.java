@@ -420,13 +420,13 @@ public class FragmentLogin extends Fragment implements
         user.GoogleCloudMessagingDeviceID = mainActivity.sharedPreferences.getString(QuickstartPreferences.DeviceRegistrationToken, "");
 
         if(user.GoogleCloudMessagingDeviceID.length() == 0) {
-            loginProgressbar.setVisibility(View.GONE);
-            showLoginComponent(View.VISIBLE);
+            //loginProgressbar.setVisibility(View.GONE);
+            //showLoginComponent(View.VISIBLE);
             //show some error meessage here
         }
         else{
             UserAccountInterface useracctInt = adapter.create(UserAccountInterface.class);
-            useracctInt.Login(user.loginType.toString(), user.UserName, user.accessToken, user.password_secret, "", new retrofit.Callback<ModelUserLogin>() {
+            useracctInt.Login(user.loginType.toString(), user.UserName, "Android", user.password_secret, user.GoogleCloudMessagingDeviceID, "", new retrofit.Callback<ModelUserLogin>() {
                 @Override
                 public void success(ModelUserLogin model, Response response) {
                     if(!model.EmailVerification){

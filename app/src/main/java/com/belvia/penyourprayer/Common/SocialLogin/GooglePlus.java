@@ -171,33 +171,18 @@ public class GooglePlus implements
 
     private void canProceedPrayerList(ModelUserLogin user){
 
+        user.GoogleCloudMessagingDeviceID = mainActivity.sharedPreferences.getString(QuickstartPreferences.DeviceRegistrationToken, "");
+
         RestAdapter adapter = new RestAdapter.Builder()
                 .setEndpoint(QuickstartPreferences.api_server)
                 .setClient(new OkClient(new httpClient("ANONYMOUS", Utils.TempUserID(mainActivity), QuickstartPreferences.AnonymousHMACKey)))
                 .build();
 
         UserAccountInterface useracctInt = adapter.create(UserAccountInterface.class);
-        useracctInt.Login(user.loginType.toString(), user.UserName, user.accessToken, user.password_secret, "", new retrofit.Callback<ModelUserLogin>() {
+        useracctInt.SocialLogin(user.loginType.toString(), user.UserName, "", user.accessToken ,"Android", user.GoogleCloudMessagingDeviceID, "", new retrofit.Callback<ModelUserLogin>() {
             @Override
             public void success(ModelUserLogin model, Response response) {
-                if(!model.EmailVerification){
-                    new AlertDialog.Builder(mainActivity)
-                            .setTitle("Account not activated!")
-                            .setMessage("Please check your email to activate your account. if your did not receive, please click resend.")
-                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    //showLoginComponent(View.VISIBLE);
-                                    //loginProgressbar.setVisibility(View.GONE);
-                                }
-                            })
-                            .setNegativeButton("Resend", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    //ResendAccountActivation();
-                                }
-                            })
-                            .show();
-                }
-                else if(model.HMACHashKey == null || model.HMACHashKey.length() == 0){
+                if (model.HMACHashKey == null || model.HMACHashKey.length() == 0) {
 
                     new AlertDialog.Builder(mainActivity)
                             .setTitle("Login Fail!")
@@ -210,8 +195,7 @@ public class GooglePlus implements
                             })
                             .show();
 
-                }
-                else{
+                } else {
 
                     mainActivity.OwnerID = String.valueOf(model.ID);
                     mainActivity.OwnerDisplayName = model.Name;
@@ -231,7 +215,7 @@ public class GooglePlus implements
 
             @Override
             public void failure(RetrofitError error) {
-                if(error.getLocalizedMessage().compareToIgnoreCase("Canceled") == 0 && error.getKind().compareTo(RetrofitError.Kind.NETWORK) == 0){
+                if (error.getLocalizedMessage().compareToIgnoreCase("Canceled") == 0 && error.getKind().compareTo(RetrofitError.Kind.NETWORK) == 0) {
 
                     new AlertDialog.Builder(mainActivity)
                             .setTitle("Login Fail!")
@@ -243,8 +227,7 @@ public class GooglePlus implements
                                 }
                             })
                             .show();
-                }
-                else {
+                } else {
                     new AlertDialog.Builder(mainActivity)
                             .setTitle("Login Fail!")
                             .setMessage("Invalid Credentials.")

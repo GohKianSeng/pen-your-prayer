@@ -35,6 +35,16 @@ public interface UserAccountInterface {
 
     @POST("/api/useraccount/Login")
     void Login(@Query("LoginType") String LoginType, @Query("UserName") String UserName,
-               @Query("AccessToken") String AccessToken, @Query("Password_Secret") String Password_Secret,
+               @Query("@MobilePlatform") String MobilePlatform, @Query("Password") String Password,
+               @Query("PushNotificationID") String PushNotificationID,
                @Body String body, Callback<ModelUserLogin> cb);
+
+    @POST("/api/useraccount/SocialLogin")
+    void SocialLogin(@Query("LoginType") String LoginType, @Query("UserName") String UserName,
+                     @Query("Secret") String Secret, @Query("AccessToken") String AccessToken,
+                     @Query("MobilePlatform") String MobilePlatform, @Query("PushNotificationID") String PushNotificationID,
+                     @Body String body, Callback<ModelUserLogin> cb);
 }
+
+
+//string LoginType, string UserName, string Secret, string AccessToken, string PushNotificationID, string MobilePlatform
