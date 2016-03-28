@@ -10,20 +10,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.belvia.penyourprayer.Common.ImageLoad.ImageLoader;
 import com.belvia.penyourprayer.Common.Model.ModelFriendProfile;
 import com.belvia.penyourprayer.Common.Model.ViewHolder.ViewHolderTagFriendModel;
 import com.belvia.penyourprayer.Common.Utils;
 import com.belvia.penyourprayer.QuickstartPreferences;
 import com.belvia.penyourprayer.R;
 import com.belvia.penyourprayer.UI.MainActivity;
-import com.pkmmte.view.CircularImageView;
 import com.squareup.picasso.Picasso;
-
 import java.util.ArrayList;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class AdapterListViewDrawerProfileFriend extends ArrayAdapter {
         public ArrayList<ModelFriendProfile> friends = null;
@@ -47,7 +43,7 @@ public class AdapterListViewDrawerProfileFriend extends ArrayAdapter {
                         convertView = inflater.inflate(R.layout.list_view_row_friends_drawer, parent, false);
 
                         p.name_TextView = (TextView) convertView.findViewById(R.id.drawer_profile_friend_name_textView);
-                        p.profile_ImageView = (CircularImageView) convertView.findViewById(R.id.drawer_profile_friend_image_imageView);
+                        p.profile_ImageView = (CircleImageView) convertView.findViewById(R.id.drawer_profile_friend_image_imageView);
                         convertView.setTag(p);
                 } else {
                         p = (ViewHolderTagFriendModel) convertView.getTag();

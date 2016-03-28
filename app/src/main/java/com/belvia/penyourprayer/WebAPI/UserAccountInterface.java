@@ -35,7 +35,7 @@ public interface UserAccountInterface {
 
     @POST("/api/useraccount/Login")
     void Login(@Query("LoginType") String LoginType, @Query("UserName") String UserName,
-               @Query("@MobilePlatform") String MobilePlatform, @Query("Password") String Password,
+               @Query("MobilePlatform") String MobilePlatform, @Query("Password") String Password,
                @Query("PushNotificationID") String PushNotificationID,
                @Body String body, Callback<ModelUserLogin> cb);
 

@@ -9,6 +9,8 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +21,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.belvia.penyourprayer.Common.SocialLogin.Facebook;
 import com.belvia.penyourprayer.Common.SocialLogin.GooglePlus;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -69,9 +72,7 @@ import retrofit.client.Response;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class FragmentLogin extends Fragment implements
-        GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener {
+public class FragmentLogin extends Fragment  {
 
     private RestAdapter adapter;
     private TwitterAuthClient mTwitterAuthClient;
@@ -79,6 +80,7 @@ public class FragmentLogin extends Fragment implements
     private String TWITTER_KEY = "jSBnTpknelOuZX6e4Cg101oue", TWITTER_SECRET = "w5j7WPwHWwY4DSfJ82tRVZF7SBogZJ6XABptVt431uOowvwFKC";
     //private TextView mTextView;
     private CallbackManager mCallbackManager;
+    private Facebook fb;
     private ModelUserLogin user;
 
     private FacebookCallback<LoginResult> mCallback = new FacebookCallback<LoginResult>() {
@@ -157,6 +159,13 @@ public class FragmentLogin extends Fragment implements
                 .setClient(new OkClient(new httpClient("ANONYMOUS", Utils.TempUserID(mainActivity), QuickstartPreferences.AnonymousHMACKey)))
                 .build();
 
+
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        actionBar.setDisplayShowHomeEnabled(false);
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.hide();
+
+        mainActivity.lockDrawer(true);
     }
 
     @Override
@@ -191,15 +200,17 @@ public class FragmentLogin extends Fragment implements
             @Override
             public void onClick(View view) {
                 showLoginComponent(View.GONE);
-                LoginManager.getInstance().logInWithReadPermissions(mainActivity, Arrays.asList("public_profile", "email", "user_friends"));
+                fb = new Facebook(mainActivity);
+                fb.loginFacebook();
+                //LoginManager.getInstance().logInWithReadPermissions(mainActivity, Arrays.asList("public_profile", "email", "user_friends"));
             }
         });
 
         ((ImageButton) view.findViewById(R.id.socal_login_googleplus_imageButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //showLoginComponent(View.GONE);
-                //loginProgressbar.setVisibility(View.VISIBLE);
+                showLoginComponent(View.GONE);
+                loginProgressbar.setVisibility(View.VISIBLE);
                 GooglePlus gp = new GooglePlus(mainActivity);
                 gp.loginGooglePlus();
             }
@@ -279,142 +290,11 @@ public class FragmentLogin extends Fragment implements
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        mCallbackManager.onActivityResult(requestCode, resultCode, data);
+        if(fb != null)
+            fb.mCallbackManager.onActivityResult(requestCode, resultCode, data);
 
         mTwitterAuthClient.onActivityResult(requestCode, resultCode, data);
     }
-
-
-
-
-
-
-
-
-
-
-
-    //Google Plus
-
-    /* Request code used to invoke sign in user interactions. */
-    private static final int RC_SIGN_IN = 0;
-
-    /* Is there a ConnectionResult resolution in progress? */
-    private boolean mIsResolving = false;
-
-    /* Should we automatically resolve ConnectionResults when possible? */
-    private boolean mShouldResolve = false;
-
-    private GoogleApiClient mGoogleApiClient;
-
-    @Override
-    public void onConnected(Bundle bundle) {
-        // onConnected indicates that an account was selected on the device, that the selected
-        // account has granted any requested permissions to our app and that we were able to
-        // establish a service connection to Google Play services.
-        //Log.d(TAG, "onConnected:" + bundle);
-        //mShouldResolve = false;
-
-        // Show the signed-in UI
-        //showSignedInUI();
-        if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
-            Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
-            String personName = currentPerson.getDisplayName();
-            String personPhoto = currentPerson.getImage().getUrl();
-            String personGooglePlusProfile = currentPerson.getUrl();
-
-
-            ModelUserLogin user = new ModelUserLogin();
-            user.loginType = ModelUserLogin.LoginType.GooglePlus;
-            user.UserName = currentPerson.getId();
-            user.Name = currentPerson.getDisplayName();
-            user.URLPictureProfile = currentPerson.getUrl();
-
-
-            final Context c = this.getContext();
-
-            AsyncTask<ModelUserLogin, Void, ModelUserLogin> task = new AsyncTask<ModelUserLogin, Void, ModelUserLogin>() {
-                @Override
-                protected ModelUserLogin doInBackground(ModelUserLogin... params) {
-                    String token = "";
-                    ModelUserLogin user = params[0];
-                    String accountName = Plus.AccountApi.getAccountName(mGoogleApiClient);
-                    user.SocialMediaEmail = accountName;
-                    Account account = new Account(accountName, GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
-                    String scopes = "audience:server:client_id:" + "1036182018589-qq5e49a73sc4p0q9f02isfin56snbcsd.apps.googleusercontent.com"; // Not the app's client ID.
-                    try {
-                        String googleToken = GoogleAuthUtil.getToken(c, account, scopes);
-                        user.accessToken = googleToken;
-                    } catch (IOException e) {
-                        String sss = "";
-                        //Log.e(TAG, "Error retrieving ID token.", e);
-                        return null;
-                    } catch (GoogleAuthException e) {
-                        //Log.e(TAG, "Error retrieving ID token.", e);
-                        String ddd = "";
-                        return null;
-                    }
-
-                    return user;
-                    //https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=eyJhbGciOiJSUzI1NiIsImtpZCI6Ijg4NTEyODVhNzM5ZjY0YTY0MGVjOGU5YTc2MjVlMjAzYWMwNGMwOTAifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXVkIjoiMTAzNjE4MjAxODU4OS1xcTVlNDlhNzNzYzRwMHE5ZjAyaXNmaW41NnNuYmNzZC5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbSIsInN1YiI6IjExNzg4NzA0NTM3ODc4ODY4NTMyOCIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhenAiOiIxMDM2MTgyMDE4NTg5LWtxMjZmMnFpM2dhZGlvMWFnZ3QwcWFvYzEzZ3Z2NjQ2LmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiZW1haWwiOiJ6bml0ZXI4MUBnbWFpbC5jb20iLCJpYXQiOjE0NDE2MTE1NzMsImV4cCI6MTQ0MTYxNTE3MywibmFtZSI6IktpYW4gU2VuZyIsInBpY3R1cmUiOiJodHRwczovL2xoNi5nb29nbGV1c2VyY29udGVudC5jb20vLWNKRVp5aUk5N05VL0FBQUFBQUFBQUFJL0FBQUFBQUFBQnkwLzdGU2dMYmIxd21ZL3M5Ni1jL3Bob3RvLmpwZyIsImdpdmVuX25hbWUiOiJLaWFuIiwiZmFtaWx5X25hbWUiOiJTZW5nIn0.Z-3MpKeZo2GYrMHrCxTMn39clk0JTJOYTubLi4s0q6AXfiqyw2ZLKN_YvugZfNttsfBh4YKnscTXFiAWFpXVyfXkG-s5YpDu1SGz2aVyHZtOIE8WLAXNn3aETuwNIe8BnndbwwSp9b1Hn-z9vj4q1iSM-em0El3z-tHD-VG5e9PDcGP5XLhLQWtX89ClOfsk3xNFMVo__Gd8HIB8BBBqxdX6DT491lRpa78WMA65oQ31TPwAdrcfzi3m9HzIbQTknopwsAPOKd-kBKR66udcaUKZa9fZ_lxhDb_aF_td-CF8Co3YhOPmzJBNWguCtcjB-SqAF5d5w67z-hgbt6TigQ
-                    /**
-                     *
-                     * {
-                     "iss": "accounts.google.com",
-                     this is my AppID "aud": "1036182018589-qq5e49a73sc4p0q9f02isfin56snbcsd.apps.googleusercontent.com",
-                     Signed in unique userid "sub": "117887045378788685328",
-                     "email_verified": "true",
-                     "azp": "1036182018589-kq26f2qi3gadio1aggt0qaoc13gvv646.apps.googleusercontent.com",
-                     "email": "zniter81@gmail.com",
-                     "iat": "1441611573",
-                     "exp": "1441615173",
-                     "name": "Kian Seng",
-                     "picture": "https://lh6.googleusercontent.com/-cJEZyiI97NU/AAAAAAAAAAI/AAAAAAAABy0/7FSgLbb1wmY/s96-c/photo.jpg",
-                     "given_name": "Kian",
-                     "family_name": "Seng",
-                     "alg": "RS256",
-                     "kid": "8851285a739f64a640ec8e9a7625e203ac04c090"
-                     }
-                     *
-                     *
-                     */
-                }
-
-                @Override
-                protected void onPostExecute(ModelUserLogin user) {
-
-                }
-
-            };
-
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, user);
-            else
-                task.execute(user);
-
-        }
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        // Could not connect to Google Play Services.  The user needs to select an account,
-        // grant permissions or resolve an error in order to sign in. Refer to the javadoc for
-        // ConnectionResult to see possible error codes.
-        //Log.d(TAG, "onConnectionFailed:" + connectionResult);
-        if(!mShouldResolve || !connectionResult.hasResolution()) {
-            loginProgressbar.setVisibility(View.GONE);
-            showLoginComponent(View.VISIBLE);
-        }
-    }
-
-    @Override
-    public void onConnectionSuspended(int id){
-        loginProgressbar.setVisibility(View.GONE);
-        showLoginComponent(View.VISIBLE);
-    }
-
-
-
 
     private void startLoginProcess(ModelUserLogin user){
         user.GoogleCloudMessagingDeviceID = mainActivity.sharedPreferences.getString(QuickstartPreferences.DeviceRegistrationToken, "");
@@ -472,7 +352,7 @@ public class FragmentLogin extends Fragment implements
                         mainActivity.sharedPreferences.edit().putString(QuickstartPreferences.OwnerLoginType, model.loginType.toString()).apply();
                         mainActivity.sharedPreferences.edit().putString(QuickstartPreferences.OwnerUserName, model.UserName).apply();
 
-                        loaddata();
+                        mainActivity.loadInitialLaunchData();
 
 
                     }
@@ -507,32 +387,7 @@ public class FragmentLogin extends Fragment implements
                     }
                 }
             });
-
-
-
         }
-    }
-
-    private void loaddata(){
-        AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
-            @Override
-            protected String doInBackground(Void... params) {
-                DataLoading dl = new DataLoading(mainActivity);
-                dl.fetchLatestDataFromServer();
-                return "";
-            }
-
-            @Override
-            protected void onPostExecute(String action) {
-                Database db = new Database(mainActivity);
-                mainActivity.friends = db.getAllFriends(mainActivity.OwnerID);
-                mainActivity.prayerRequest = db.getAllUnansweredPrayerRequest();
-                mainActivity.loadLeftRightDrawerContent(true);
-                mainActivity.replaceWithPrayerListFragment();
-            }
-
-        };
-        task.execute();
     }
 
     private void ResendAccountActivation(){

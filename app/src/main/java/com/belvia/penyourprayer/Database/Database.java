@@ -88,7 +88,15 @@ public class Database extends SQLiteOpenHelper {
         this.getWritableDatabase();
     }
 
-
+    /***********************************************
+     *
+     * clear Database
+     *
+     **********************************************/
+    public void ClearData() {
+        SQLiteDatabase db = getWritableDatabase();
+        onUpgrade(db, 1, 2);
+    }
 
 
 

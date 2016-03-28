@@ -11,7 +11,9 @@ import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -30,7 +32,13 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
+import com.belvia.penyourprayer.Common.DataLoading;
+import com.belvia.penyourprayer.Common.Model.ModelUserLogin;
+import com.belvia.penyourprayer.Common.SocialLogin.Facebook;
+import com.belvia.penyourprayer.Common.SocialLogin.GooglePlus;
+import com.belvia.penyourprayer.Common.Utils;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -55,6 +63,7 @@ import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
+import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 
@@ -85,6 +94,10 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton PrayerRequestType;
     public GoogleApiClient mGoogleApiClient;
     private AdapterListViewDrawerPrayerRequest pr_adapter;
+    public ImageView userProfileImage;
+    public TextView userProfileDisplayName;
+    private boolean checkFbstatusNow = false;
+    private Facebook fb;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -93,6 +106,11 @@ public class MainActivity extends AppCompatActivity {
         Fragment fragment=  this.getSupportFragmentManager().findFragmentById(R.id.fragment);
         if (fragment != null) {
             fragment.onActivityResult(requestCode, resultCode, data);
+        }
+
+        if(checkFbstatusNow){
+            checkFbstatusNow = false;
+            fb.mCallbackManager.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -111,17 +129,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(Plus.API)
-                .addScope(new Scope(Scopes.PROFILE))
-                .build();
+        sharedPreferences = this.getSharedPreferences("PenYourPrayer.SharePreference", Context.MODE_PRIVATE);
 
         printHashKeyForFacebook();
         //getContact();
         qa = new QueueAction(this);
 
-        sharedPreferences = this.getSharedPreferences("PenYourPrayer.SharePreference", Context.MODE_PRIVATE);
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig), new Crashlytics());
         setContentView(R.layout.activity_main);
@@ -129,8 +142,8 @@ public class MainActivity extends AppCompatActivity {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-        ImageView profileImage = (ImageView)findViewById(R.id.drawer_profile_image);
-        profileImage.setImageBitmap(ImageProcessor.getRoundedBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.profile2)));
+        userProfileImage = (ImageView)findViewById(R.id.drawer_profile_image);
+        userProfileDisplayName = (TextView)findViewById(R.id.drawer_profile_name);
 
         PrayerRequestType = (ImageButton) findViewById(R.id.drawer_prayer_request_type);
         PrayerRequestType.setOnClickListener(new View.OnClickListener() {
@@ -274,7 +287,9 @@ public class MainActivity extends AppCompatActivity {
             list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                    if(((ModelFriendProfile)parent.getItemAtPosition(position)).actionName.compareTo(ModelFriendProfile.ActionName.Logout) == 0){
+                        ((MainActivity)parent.getContext()).logout();
+                    }
                 }
             });
         }
@@ -645,4 +660,73 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void isSocialLoginValid(){
+        String loginType = this.sharedPreferences.getString(QuickstartPreferences.OwnerLoginType, "");
+        if(loginType.compareToIgnoreCase(ModelUserLogin.LoginType.GooglePlus.toString()) == 0){
+            GooglePlus gp = new GooglePlus(this);
+            gp.checkLoginStatus();
+        }
+        else if(loginType.compareToIgnoreCase(ModelUserLogin.LoginType.Facebook.toString()) == 0){
+            checkFbstatusNow = true;
+            fb = new Facebook(this, new Facebook.InitializeDone() {
+                @Override
+                public void onInitialized() {
+                    fb.checkLoginStatus();
+                }
+            });
+
+        }
+    }
+
+    public void loadInitialLaunchData(){
+        final MainActivity ma = this;
+        AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                DataLoading dl = new DataLoading(ma);
+                dl.fetchLatestDataFromServer();
+                return "";
+            }
+
+            @Override
+            protected void onPostExecute(String action) {
+                Database db = new Database(ma);
+                int witdthHeight = Utils.dpToPx(ma, QuickstartPreferences.thumbnailDPsize);
+
+                Picasso.with(ma).load(ma.OwnerProfilePictureURL).resize(witdthHeight, witdthHeight).centerCrop().into(userProfileImage);
+                userProfileDisplayName.setText(ma.OwnerDisplayName);
+
+                ma.friends = db.getAllFriends(ma.OwnerID);
+                ma.prayerRequest = db.getAllUnansweredPrayerRequest();
+                ma.loadLeftRightDrawerContent(true);
+                ma.replaceWithPrayerListFragment();
+            }
+
+        };
+        task.execute();
+    }
+
+    public void logout(){
+        this.sharedPreferences.edit().remove(QuickstartPreferences.OwnerID).apply();
+        this.sharedPreferences.edit().remove(QuickstartPreferences.OwnerDisplayName).apply();
+        this.sharedPreferences.edit().remove(QuickstartPreferences.OwnerProfilePictureURL).apply();
+        this.sharedPreferences.edit().remove(QuickstartPreferences.OwnerHMACKey).apply();
+        String loginType = this.sharedPreferences.getString(QuickstartPreferences.OwnerLoginType, "");
+        this.sharedPreferences.edit().remove(QuickstartPreferences.OwnerUserName).apply();
+        this.sharedPreferences.edit().remove(QuickstartPreferences.OwnerLoginType).apply();
+
+        if(loginType.compareToIgnoreCase(ModelUserLogin.LoginType.GooglePlus.toString()) ==0){
+            if(mGoogleApiClient.isConnected()){
+                Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+                mGoogleApiClient.disconnect();
+            }
+        }
+        else if(loginType.compareToIgnoreCase(ModelUserLogin.LoginType.Facebook.toString()) ==0){
+
+        }
+
+        Database db = new Database(this);
+        db.ClearData();
+        replaceWithLoginFragment();
+    }
 }

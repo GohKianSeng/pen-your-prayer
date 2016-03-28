@@ -57,12 +57,13 @@ public class GooglePlus implements
     }
 
     public void checkLoginStatus(){
-        if(mainActivity.mGoogleApiClient.isConnected()){
-            //already login can proceed
-        }
-        else{
-            mainActivity.replaceWithLoginFragment();
-        }
+        mainActivity.mGoogleApiClient = new GoogleApiClient.Builder(mainActivity)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(Plus.API)
+                .addScope(new Scope(Scopes.PROFILE))
+                .build();
+        mainActivity.mGoogleApiClient.connect();
     }
 
     @Override
@@ -77,19 +78,12 @@ public class GooglePlus implements
         //showSignedInUI();
         if (Plus.PeopleApi.getCurrentPerson(mainActivity.mGoogleApiClient) != null) {
             Person currentPerson = Plus.PeopleApi.getCurrentPerson(mainActivity.mGoogleApiClient);
-            String personName = currentPerson.getDisplayName();
-            String personPhoto = currentPerson.getImage().getUrl();
-            String personGooglePlusProfile = currentPerson.getUrl();
-
 
             ModelUserLogin user = new ModelUserLogin();
             user.loginType = ModelUserLogin.LoginType.GooglePlus;
             user.UserName = currentPerson.getId();
             user.Name = currentPerson.getDisplayName();
             user.URLPictureProfile = currentPerson.getUrl();
-
-
-
 
             AsyncTask<ModelUserLogin, Void, ModelUserLogin> task = new AsyncTask<ModelUserLogin, Void, ModelUserLogin>() {
                 @Override
@@ -160,7 +154,7 @@ public class GooglePlus implements
         // ConnectionResult to see possible error codes.
         //Log.d(TAG, "onConnectionFailed:" + connectionResult);
         if(!mShouldResolve || !connectionResult.hasResolution()) {
-            // show login page
+            mainActivity.replaceWithLoginFragment();
         }
     }
 
@@ -207,7 +201,7 @@ public class GooglePlus implements
                     mainActivity.sharedPreferences.edit().putString(QuickstartPreferences.OwnerLoginType, model.loginType.toString()).apply();
                     mainActivity.sharedPreferences.edit().putString(QuickstartPreferences.OwnerUserName, model.UserName).apply();
 
-                    //loaddata();
+                    mainActivity.loadInitialLaunchData();
 
 
                 }

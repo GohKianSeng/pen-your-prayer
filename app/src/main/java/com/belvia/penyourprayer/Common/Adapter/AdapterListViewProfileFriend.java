@@ -14,14 +14,13 @@ import android.widget.CheckBox;
 import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.belvia.penyourprayer.Common.ImageLoad.ImageLoader;
 import com.belvia.penyourprayer.Common.Model.ModelFriendProfile;
 import com.belvia.penyourprayer.Common.Model.ViewHolder.ViewHolderTagFriendModel;
 import com.belvia.penyourprayer.R;
-import com.pkmmte.view.CircularImageView;
-
 import java.util.ArrayList;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class AdapterListViewProfileFriend extends ArrayAdapter {
         public ArrayList<ModelFriendProfile> friends = null;
@@ -47,7 +46,7 @@ public class AdapterListViewProfileFriend extends ArrayAdapter {
 
                         p.name_TextView = (TextView) convertView.findViewById(R.id.profile_name_textView);
                         p.selected_CheckBox= (CheckBox) convertView.findViewById(R.id.profile_checkBox);
-                        p.profile_ImageView = (CircularImageView)convertView.findViewById(R.id.profile_img_imageView);
+                        p.profile_ImageView = (CircleImageView)convertView.findViewById(R.id.profile_img_imageView);
 
                         convertView.setTag(p);
                 }

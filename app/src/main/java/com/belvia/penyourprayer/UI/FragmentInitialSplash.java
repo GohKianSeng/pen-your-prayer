@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.belvia.penyourprayer.Common.DataLoading;
 import com.belvia.penyourprayer.Common.Model.ModelFriendProfile;
+import com.belvia.penyourprayer.Common.Model.ModelUserLogin;
 import com.belvia.penyourprayer.Database.Database;
 import com.belvia.penyourprayer.QuickstartPreferences;
 import com.belvia.penyourprayer.R;
@@ -92,44 +93,25 @@ public class FragmentInitialSplash extends Fragment {
         Typeface tf = Typeface.createFromAsset(this.getActivity().getAssets(), "fonts/journal.ttf");
         ((TextView) view.findViewById(R.id.splash_appname)).setTypeface(tf);
 
+        long userid = mainActivity.sharedPreferences.getLong(QuickstartPreferences.OwnerID, 0);
+        String hmacKey = mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerHMACKey, "");
+        if(userid !=  0 && hmacKey.length() > 0) {
+            mainActivity.OwnerID = String.valueOf(mainActivity.sharedPreferences.getLong(QuickstartPreferences.OwnerID, 0));
+            mainActivity.OwnerDisplayName = mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerDisplayName, "");
+            mainActivity.OwnerProfilePictureURL = mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerProfilePictureURL, "");
 
-
-        AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
-            @Override
-            protected String doInBackground(Void... params) {
-                long userid = mainActivity.sharedPreferences.getLong(QuickstartPreferences.OwnerID, 0);
-                String hmacKey = mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerHMACKey, "");
-                if(userid !=  0 && hmacKey.length() > 0){
-                    DataLoading dl = new DataLoading(mainActivity);
-                    dl.fetchLatestDataFromServer();
-                    return "AUTOLOGIN";
-                }
-
-                SystemClock.sleep(1000);
-                //start checking, to login or already login.
-                return "";
+            String loginType = mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerLoginType, "");
+            if(loginType.compareToIgnoreCase(ModelUserLogin.LoginType.Email.toString()) == 0){
+                mainActivity.loadInitialLaunchData();
+            }
+            else{
+                mainActivity.isSocialLoginValid();
             }
 
-            @Override
-            protected void onPostExecute(String action) {
-
-                if(action.compareToIgnoreCase("AUTOLOGIN") == 0){
-                    Database db = new Database(mainActivity);
-                    mainActivity.OwnerID = String.valueOf(mainActivity.sharedPreferences.getLong(QuickstartPreferences.OwnerID, 0));
-                    mainActivity.OwnerDisplayName = mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerDisplayName, "");
-                    mainActivity.OwnerProfilePictureURL = mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerProfilePictureURL, "");
-                    mainActivity.friends = db.getAllFriends(mainActivity.OwnerID);
-                    mainActivity.prayerRequest = db.getAllUnansweredPrayerRequest();
-                    mainActivity.loadLeftRightDrawerContent(true);
-                    mainActivity.replaceWithPrayerListFragment();
-                }
-                else{
-                    mainActivity.replaceWithLoginFragment();
-                }
-            }
-
-        };
-        task.execute();
+        }
+        else{
+            mainActivity.replaceWithLoginFragment();
+        }
     }
 
 

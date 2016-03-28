@@ -83,7 +83,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/socal_login_facebook_imageButton"
                 android:src="@drawable/ic_social_facebook"
-                android:background="@null"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:layout_weight="1" />
 
             <ImageButton
@@ -91,7 +91,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/socal_login_googleplus_imageButton"
                 android:src="@drawable/ic_social_googleplus"
-                android:background="@null"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:layout_weight="1" />
 
             <ImageButton
@@ -99,7 +99,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/socal_login_twitter_imageButton"
                 android:src="@drawable/ic_social_twitter"
-                android:background="@null"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:layout_weight="1"
                 android:visibility="gone" />
         </LinearLayout>

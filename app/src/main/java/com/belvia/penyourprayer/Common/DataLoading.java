@@ -54,7 +54,7 @@ public class DataLoading {
 
         ArrayList<ModelPrayerRequest> pr = db.getAllPrayerRequest_IDOnly();
         PrayerInterface int_pr = adapter.create(PrayerInterface.class);
-        ArrayList<ModelPrayerRequest> latest_pr = int_pr.GetLatestPrayerRequest("a",pr);
+        ArrayList<ModelPrayerRequest> latest_pr = int_pr.GetLatestPrayerRequest("a", pr);
         db.addPrayerRequest(latest_pr);
     }
 

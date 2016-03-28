@@ -71,5 +71,6 @@ dependencies {
         transitive = true;
     }
     compile project(':DaimajiaSlider')
-    compile 'com.pkmmte.view:circularimageview:1.1'
+    //compile 'com.pkmmte.view:circularimageview:1.1'
+    compile 'de.hdodenhof:circleimageview:2.0.0'
 }
