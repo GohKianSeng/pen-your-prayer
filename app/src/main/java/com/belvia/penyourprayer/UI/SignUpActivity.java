@@ -15,13 +15,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.belvia.penyourprayer.GoogleCloudMessaging.RegistrationIntentService;
 import com.belvia.penyourprayer.QuickstartPreferences;
 import com.belvia.penyourprayer.R;
 import com.belvia.penyourprayer.WebAPI.AsyncWebApi;
 import com.belvia.penyourprayer.WebAPI.AsyncWebApiResponse;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 
 public class SignUpActivity extends AppCompatActivity {
 

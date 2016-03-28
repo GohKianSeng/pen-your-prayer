@@ -4,8 +4,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.belvia.penyourprayer.R;
+import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 
 import uk.co.senab.photoview.PhotoView;
 

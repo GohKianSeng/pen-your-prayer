@@ -21,13 +21,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
-import com.onegravity.rteditor.RTEditText;
-import com.onegravity.rteditor.RTManager;
-import com.onegravity.rteditor.api.RTApi;
-import com.onegravity.rteditor.api.RTMediaFactoryImpl;
-import com.onegravity.rteditor.api.RTProxyImpl;
-import com.onegravity.rteditor.api.format.RTFormat;
-import com.onegravity.rteditor.toolbar.HorizontalRTToolbar;
 import com.belvia.penyourprayer.Common.Interface.InterfaceFragmentBackHandler;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerAttachement;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerRequest;
@@ -36,6 +29,13 @@ import com.belvia.penyourprayer.Common.Utils;
 import com.belvia.penyourprayer.Database.Database;
 import com.belvia.penyourprayer.QuickstartPreferences;
 import com.belvia.penyourprayer.R;
+import com.onegravity.rteditor.RTEditText;
+import com.onegravity.rteditor.RTManager;
+import com.onegravity.rteditor.api.RTApi;
+import com.onegravity.rteditor.api.RTMediaFactoryImpl;
+import com.onegravity.rteditor.api.RTProxyImpl;
+import com.onegravity.rteditor.api.format.RTFormat;
+import com.onegravity.rteditor.toolbar.HorizontalRTToolbar;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;

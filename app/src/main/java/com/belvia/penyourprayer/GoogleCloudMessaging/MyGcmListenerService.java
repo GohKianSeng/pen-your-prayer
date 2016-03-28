@@ -3,6 +3,7 @@ package com.belvia.penyourprayer.GoogleCloudMessaging;
 /**
  * Created by sisgks on 31/08/2015.
  */
+
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -14,10 +15,10 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 
-import com.google.android.gms.gcm.GcmListenerService;
 import com.belvia.penyourprayer.QuickstartPreferences;
 import com.belvia.penyourprayer.R;
 import com.belvia.penyourprayer.UI.SignUpActivity;
+import com.google.android.gms.gcm.GcmListenerService;
 
 public class MyGcmListenerService extends GcmListenerService {
 

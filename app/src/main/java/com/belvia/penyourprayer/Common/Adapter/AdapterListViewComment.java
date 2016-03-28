@@ -13,10 +13,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.belvia.penyourprayer.Common.ImageLoad.ImageLoader;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerComment;
 import com.belvia.penyourprayer.Common.Model.ViewHolder.ViewHolderPrayerCommentModel;
-import com.belvia.penyourprayer.Database.Database;
 import com.belvia.penyourprayer.R;
 import com.belvia.penyourprayer.UI.MainActivity;
 

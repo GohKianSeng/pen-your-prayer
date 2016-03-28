@@ -10,10 +10,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.database.Cursor;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -34,17 +32,9 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.belvia.penyourprayer.Common.DataLoading;
-import com.belvia.penyourprayer.Common.Model.ModelUserLogin;
-import com.belvia.penyourprayer.Common.SocialLogin.Facebook;
-import com.belvia.penyourprayer.Common.SocialLogin.GooglePlus;
-import com.belvia.penyourprayer.Common.Utils;
-import com.crashlytics.android.Crashlytics;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.belvia.penyourprayer.Common.Adapter.AdapterListViewDrawerPrayerRequest;
 import com.belvia.penyourprayer.Common.Adapter.AdapterListViewDrawerProfileFriend;
-import com.belvia.penyourprayer.Common.ImageLoad.ImageProcessor;
+import com.belvia.penyourprayer.Common.DataLoading;
 import com.belvia.penyourprayer.Common.Interface.InterfaceFragmentBackHandler;
 import com.belvia.penyourprayer.Common.Interface.InterfaceFragmentFriendsHandler;
 import com.belvia.penyourprayer.Common.Interface.InterfaceFragmentPrayerRequestHandler;
@@ -54,14 +44,21 @@ import com.belvia.penyourprayer.Common.Model.ModelPrayerAttachement;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerComment;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerRequest;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerRequestAttachement;
+import com.belvia.penyourprayer.Common.Model.ModelUserLogin;
+import com.belvia.penyourprayer.Common.SocialLogin.Facebook;
+import com.belvia.penyourprayer.Common.SocialLogin.GooglePlus;
+import com.belvia.penyourprayer.Common.Utils;
 import com.belvia.penyourprayer.Database.Database;
 import com.belvia.penyourprayer.GoogleCloudMessaging.RegistrationIntentService;
 import com.belvia.penyourprayer.QueueAction.QueueAction;
 import com.belvia.penyourprayer.QuickstartPreferences;
 import com.belvia.penyourprayer.R;
-import com.google.android.gms.common.Scopes;
+import com.crashlytics.android.Crashlytics;
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.Twitter;
@@ -107,11 +104,6 @@ public class MainActivity extends AppCompatActivity {
         if (fragment != null) {
             fragment.onActivityResult(requestCode, resultCode, data);
         }
-
-        if(checkFbstatusNow){
-            checkFbstatusNow = false;
-            fb.mCallbackManager.onActivityResult(requestCode, resultCode, data);
-        }
     }
 
     @Override
@@ -130,6 +122,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         sharedPreferences = this.getSharedPreferences("PenYourPrayer.SharePreference", Context.MODE_PRIVATE);
+
+        FacebookSdk.sdkInitialize(this.getApplicationContext());
 
         printHashKeyForFacebook();
         //getContact();
@@ -289,6 +283,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     if(((ModelFriendProfile)parent.getItemAtPosition(position)).actionName.compareTo(ModelFriendProfile.ActionName.Logout) == 0){
                         ((MainActivity)parent.getContext()).logout();
+                        ((MainActivity)parent.getContext()).replaceWithLoginFragment();
                     }
                 }
             });
@@ -376,7 +371,7 @@ public class MainActivity extends AppCompatActivity {
             mDrawerLayout.closeDrawer(LeftRight);
     }
 
-    public void reloadPrayerRequest(){
+    public void reloadPrayerRequest() {
         pr_adapter.refreshAllItem(prayerRequest);
     }
 
@@ -667,13 +662,8 @@ public class MainActivity extends AppCompatActivity {
             gp.checkLoginStatus();
         }
         else if(loginType.compareToIgnoreCase(ModelUserLogin.LoginType.Facebook.toString()) == 0){
-            checkFbstatusNow = true;
-            fb = new Facebook(this, new Facebook.InitializeDone() {
-                @Override
-                public void onInitialized() {
-                    fb.checkLoginStatus();
-                }
-            });
+            fb = new Facebook(this);
+            fb.checkLoginStatus();
 
         }
     }
@@ -722,11 +712,10 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         else if(loginType.compareToIgnoreCase(ModelUserLogin.LoginType.Facebook.toString()) ==0){
-
+            LoginManager.getInstance().logOut();
         }
 
         Database db = new Database(this);
         db.ClearData();
-        replaceWithLoginFragment();
     }
 }

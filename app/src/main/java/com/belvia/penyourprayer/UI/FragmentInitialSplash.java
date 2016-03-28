@@ -3,19 +3,15 @@ package com.belvia.penyourprayer.UI;
 
 import android.app.Fragment;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.belvia.penyourprayer.Common.DataLoading;
 import com.belvia.penyourprayer.Common.Model.ModelFriendProfile;
 import com.belvia.penyourprayer.Common.Model.ModelUserLogin;
-import com.belvia.penyourprayer.Database.Database;
 import com.belvia.penyourprayer.QuickstartPreferences;
 import com.belvia.penyourprayer.R;
 

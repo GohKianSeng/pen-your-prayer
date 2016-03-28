@@ -1,12 +1,9 @@
 package com.belvia.penyourprayer.Common.SocialLogin;
 
-import android.accounts.Account;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
 
 import com.belvia.penyourprayer.Common.Model.ModelUserLogin;
 import com.belvia.penyourprayer.Common.Utils;
@@ -17,24 +14,14 @@ import com.belvia.penyourprayer.WebAPI.httpClient;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.google.android.gms.auth.GoogleAuthException;
-import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.Scopes;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.Scope;
-import com.google.android.gms.plus.Plus;
-import com.google.android.gms.plus.model.people.Person;
 
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 import retrofit.RestAdapter;
@@ -58,29 +45,10 @@ public class Facebook implements FacebookCallback<LoginResult>{
     public CallbackManager mCallbackManager;
     private ModelUserLogin user;
 
-    public Facebook(MainActivity ma, final InitializeDone callback){
-        mainActivity = ma;
-
-        FacebookSdk.sdkInitialize(mainActivity.getApplicationContext(), new FacebookSdk.InitializeCallback() {
-            @Override
-            public void onInitialized() {
-                if(callback != null){
-                    callback.onInitialized();
-                }
-            }
-        });
-        mCallbackManager = CallbackManager.Factory.create();
-
-        LoginManager.getInstance().registerCallback(mCallbackManager, this);
-
-        user = new ModelUserLogin();
-
-    }
-
     public Facebook(MainActivity ma){
         mainActivity = ma;
 
-        FacebookSdk.sdkInitialize(mainActivity.getApplicationContext());
+        //FacebookSdk.sdkInitialize(mainActivity.getApplicationContext());
         mCallbackManager = CallbackManager.Factory.create();
 
         LoginManager.getInstance().registerCallback(mCallbackManager, this);
@@ -141,7 +109,11 @@ public class Facebook implements FacebookCallback<LoginResult>{
     public void checkLoginStatus(){
         com.facebook.AccessToken accessToken = com.facebook.AccessToken.getCurrentAccessToken();
         if(accessToken != null){
-            loginFacebook();
+            ModelUserLogin user = new ModelUserLogin();
+            user.loginType =  ModelUserLogin.LoginType.Facebook;
+            user.accessToken = accessToken.getToken();
+            user.UserName = accessToken.getUserId();
+            canProceedPrayerList(user);
         }
         else{
             mainActivity.replaceWithLoginFragment();
@@ -168,8 +140,7 @@ public class Facebook implements FacebookCallback<LoginResult>{
                             .setMessage("Invalid Credentials.")
                             .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
-                                    //showLoginComponent(View.VISIBLE);
-                                    //loginProgressbar.setVisibility(View.GONE);
+                                    mainActivity.replaceWithLoginFragment();
                                 }
                             })
                             .show();
@@ -201,8 +172,7 @@ public class Facebook implements FacebookCallback<LoginResult>{
                             .setMessage("No Internet Connection")
                             .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
-                                    //showLoginComponent(View.VISIBLE);
-                                    //loginProgressbar.setVisibility(View.GONE);
+                                    mainActivity.replaceWithLoginFragment();
                                 }
                             })
                             .show();
@@ -212,8 +182,7 @@ public class Facebook implements FacebookCallback<LoginResult>{
                             .setMessage("Invalid Credentials.")
                             .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
-                                    //showLoginComponent(View.VISIBLE);
-                                    //loginProgressbar.setVisibility(View.GONE);
+                                    mainActivity.replaceWithLoginFragment();
                                 }
                             })
                             .show();

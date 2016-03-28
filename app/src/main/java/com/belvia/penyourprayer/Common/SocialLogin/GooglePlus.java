@@ -2,12 +2,10 @@ package com.belvia.penyourprayer.Common.SocialLogin;
 
 import android.accounts.Account;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
 
 import com.belvia.penyourprayer.Common.Model.ModelUserLogin;
 import com.belvia.penyourprayer.Common.Utils;

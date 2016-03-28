@@ -16,8 +16,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-
-import com.ms.square.android.expandabletextview.ExpandableTextView;
 import com.belvia.penyourprayer.Common.Model.ModelOwnerPrayer;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerAnswered;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerAttachement;
@@ -29,6 +27,7 @@ import com.belvia.penyourprayer.QuickstartPreferences;
 import com.belvia.penyourprayer.R;
 import com.belvia.penyourprayer.UI.FragmentPrayerList;
 import com.belvia.penyourprayer.UI.MainActivity;
+import com.ms.square.android.expandabletextview.ExpandableTextView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

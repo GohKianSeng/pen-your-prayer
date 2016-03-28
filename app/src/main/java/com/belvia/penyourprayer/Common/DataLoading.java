@@ -1,7 +1,5 @@
 package com.belvia.penyourprayer.Common;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.belvia.penyourprayer.Common.Model.ModelFriendProfile;
 import com.belvia.penyourprayer.Common.Model.ModelOwnerPrayer;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerRequest;
@@ -11,6 +9,8 @@ import com.belvia.penyourprayer.UI.MainActivity;
 import com.belvia.penyourprayer.WebAPI.InterfaceFriends;
 import com.belvia.penyourprayer.WebAPI.PrayerInterface;
 import com.belvia.penyourprayer.WebAPI.httpClient;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
 

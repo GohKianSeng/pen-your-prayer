@@ -2,6 +2,7 @@ package com.belvia.penyourprayer.Common.Model.ViewHolder;
 
 import android.widget.CheckBox;
 import android.widget.TextView;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**

@@ -11,10 +11,10 @@ import android.content.SharedPreferences;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.belvia.penyourprayer.QuickstartPreferences;
 import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
-import com.belvia.penyourprayer.QuickstartPreferences;
 
 import java.io.IOException;
 

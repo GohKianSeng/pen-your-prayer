@@ -9,8 +9,6 @@ import android.os.Build;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.belvia.penyourprayer.Common.Interface.InterfacePrayerCommentEditUpdated;
 import com.belvia.penyourprayer.Common.Interface.InterfacePrayerCommentListViewUpdated;
 import com.belvia.penyourprayer.Common.Interface.InterfacePrayerListUpdated;
@@ -30,6 +28,8 @@ import com.belvia.penyourprayer.WebAPI.InterfaceUploadFile;
 import com.belvia.penyourprayer.WebAPI.Model.SimpleJsonResponse;
 import com.belvia.penyourprayer.WebAPI.PrayerInterface;
 import com.belvia.penyourprayer.WebAPI.httpClient;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.File;
 import java.io.FileInputStream;

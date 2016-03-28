@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
 import com.belvia.penyourprayer.Common.Model.ModelFriendProfile;
 import com.belvia.penyourprayer.Common.Model.ViewHolder.ViewHolderTagFriendModel;
 import com.belvia.penyourprayer.Common.Utils;
@@ -18,7 +19,9 @@ import com.belvia.penyourprayer.QuickstartPreferences;
 import com.belvia.penyourprayer.R;
 import com.belvia.penyourprayer.UI.MainActivity;
 import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class AdapterListViewDrawerProfileFriend extends ArrayAdapter {

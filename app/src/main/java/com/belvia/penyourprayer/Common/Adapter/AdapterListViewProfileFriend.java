@@ -12,12 +12,13 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.Filter;
-import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.belvia.penyourprayer.Common.ImageLoad.ImageLoader;
 import com.belvia.penyourprayer.Common.Model.ModelFriendProfile;
 import com.belvia.penyourprayer.Common.Model.ViewHolder.ViewHolderTagFriendModel;
 import com.belvia.penyourprayer.R;
+
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
