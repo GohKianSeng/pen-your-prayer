@@ -1,6 +1,8 @@
 package com.belvia.penyourprayer.Common.Model;
 
-public class ModelFriendProfile {
+import java.io.Serializable;
+
+public class ModelFriendProfile implements Serializable{
 
     public enum ActionName {
         Logout, Settings

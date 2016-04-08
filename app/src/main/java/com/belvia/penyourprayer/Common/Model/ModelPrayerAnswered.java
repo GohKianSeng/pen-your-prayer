@@ -1,10 +1,12 @@
 package com.belvia.penyourprayer.Common.Model;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
-public class ModelPrayerAnswered {
+public class ModelPrayerAnswered implements Serializable {
 
     public String AnsweredID;
     public String OwnerPrayerID;
@@ -29,14 +31,12 @@ public class ModelPrayerAnswered {
     }
 
     public String toDBFormattedTouchedWhen(){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         return format.format(TouchedWhen);
     }
 
     public String toDBFormattedCreatedWhen(){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         return format.format(CreatedWhen);
     }
 }

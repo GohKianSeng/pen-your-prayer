@@ -1,11 +1,13 @@
 package com.belvia.penyourprayer.Common.Model;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
-public class ModelPrayerRequest {
+public class ModelPrayerRequest implements Serializable {
 
     public ArrayList<ModelPrayerRequestAttachement> attachments = new ArrayList<ModelPrayerRequestAttachement>();
     public String PrayerRequestID;
@@ -46,20 +48,17 @@ public class ModelPrayerRequest {
     }
 
     public String toDBFormattedTouchedWhen(){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         return format.format(TouchedWhen);
     }
 
     public String toDBFormattedCreatedWhen(){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         return format.format(CreatedWhen);
     }
 
     public String toDBFormattedAnsweredWhen(){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         return format.format(AnsweredWhen);
     }
 

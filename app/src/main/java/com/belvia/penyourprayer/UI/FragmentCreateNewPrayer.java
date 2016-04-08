@@ -392,6 +392,10 @@ public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragme
             o.GUID = UUID.randomUUID().toString().replace("-", "");
             o.FileName = f.getName();
             o.UserID = mainActivity.OwnerID;
+
+            if(mainActivity.attachment == null)
+                mainActivity.attachment = new ArrayList<ModelPrayerAttachement>();
+
             mainActivity.attachment.add(o);
 
             updateAttachmentView();

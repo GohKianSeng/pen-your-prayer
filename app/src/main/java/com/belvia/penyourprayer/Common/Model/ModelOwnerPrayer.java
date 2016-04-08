@@ -1,14 +1,16 @@
 package com.belvia.penyourprayer.Common.Model;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 /**
  * Created by sisgks on 19/10/2015.
  */
-public class ModelOwnerPrayer {
+public class ModelOwnerPrayer implements Serializable {
 
     public String PrayerID = "";
     public Date CreatedWhen = null;
@@ -44,14 +46,12 @@ public class ModelOwnerPrayer {
     }
 
     public String toDBFormattedTouchedWhen(){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         return format.format(TouchedWhen);
     }
 
     public String toDBFormattedCreatedWhen(){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         return format.format(CreatedWhen);
     }
 }

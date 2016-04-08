@@ -4,8 +4,9 @@ import com.belvia.penyourprayer.QuickstartPreferences;
 import com.belvia.penyourprayer.UI.MainActivity;
 
 import java.io.File;
+import java.io.Serializable;
 
-public class ModelPrayerRequestAttachement {
+public class ModelPrayerRequestAttachement implements Serializable {
 
     public String PrayerRequestID;
     public String OriginalFilePath;

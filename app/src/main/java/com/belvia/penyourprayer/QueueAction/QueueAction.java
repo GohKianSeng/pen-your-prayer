@@ -20,6 +20,7 @@ import com.belvia.penyourprayer.Common.Model.ModelPrayerComment;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerRequest;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerRequestAttachement;
 import com.belvia.penyourprayer.Common.Model.ModelQueueAction;
+import com.belvia.penyourprayer.Common.Utils;
 import com.belvia.penyourprayer.Database.Database;
 import com.belvia.penyourprayer.QuickstartPreferences;
 import com.belvia.penyourprayer.R;
@@ -139,6 +140,10 @@ public class QueueAction extends AsyncTask<String, Void, String> {
                 else if(p.Item == ModelQueueAction.ItemType.PrayerAnswered && p.Action == ModelQueueAction.ActionType.Insert){
                     submitnewPrayerAnswered(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
                 }
+                else if(p.Item == ModelQueueAction.ItemType.PrayerAnswered && p.Action == ModelQueueAction.ActionType.Update){
+                    ModelPrayerAnswered t = (ModelPrayerAnswered) Utils.deserialize(p.ItemID);
+                    submitUpdatePrayerAnswered(db, adapter, t, p.ID, p.IfExecutedGUID);
+                }
 
             }
             db.close();
@@ -233,6 +238,24 @@ public class QueueAction extends AsyncTask<String, Void, String> {
 
         PrayerInterface prayerInterface = adapter.create(PrayerInterface.class);
         SimpleJsonResponse response = prayerInterface.AddNewPrayerAnswered(IfExecutedGUID, p.OwnerPrayerID, p);
+        if (response.StatusCode == 200) {
+            if(response.Description.toUpperCase().startsWith("OK-") || response.Description.toUpperCase().startsWith("EXISTS-")){
+                String newAnsweredID = response.Description.substring(response.Description.indexOf("-") + 1);
+                db.UpdatePrayerAnsweredID(newAnsweredID, p.AnsweredID, p.OwnerPrayerID);
+                p.AnsweredID = newAnsweredID;
+            }
+
+
+            db.deleteQueue(QueueID);
+        }
+    }
+
+    private void submitUpdatePrayerAnswered(Database db, RestAdapter adapter, ModelPrayerAnswered p, int QueueID, String IfExecutedGUID){
+        if(p == null)
+            return;
+
+        PrayerInterface prayerInterface = adapter.create(PrayerInterface.class);
+        SimpleJsonResponse response = prayerInterface.UpdatePrayerAnswered(IfExecutedGUID, p.OwnerPrayerID, p);
         if (response.StatusCode == 200) {
             if(response.Description.toUpperCase().startsWith("OK-") || response.Description.toUpperCase().startsWith("EXISTS-")){
                 String newAnsweredID = response.Description.substring(response.Description.indexOf("-") + 1);

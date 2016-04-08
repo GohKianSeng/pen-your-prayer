@@ -19,6 +19,7 @@ import com.belvia.penyourprayer.Common.Utils;
 import com.belvia.penyourprayer.QuickstartPreferences;
 import com.belvia.penyourprayer.R;
 import com.belvia.penyourprayer.UI.MainActivity;
+import com.larswerkman.holocolorpicker.Util;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -96,7 +97,6 @@ public class AdapterListViewDrawerPrayerRequest extends ArrayAdapter {
                                 LoadImage(prayerRequest.get(position).attachments, x, p.image5, x);
                         }
                 }
-
 
                 return convertView;
         }

@@ -57,4 +57,9 @@ public class QuickstartPreferences {
 
     //create new prayer auto save content
     public static final String DraftNewPrayer = "DraftNewPrayer";
+
+    //
+    public static final String DraftNewPrayerRequest = "DraftNewPrayerRequest";
+    public static final String DraftNewPrayerRequestSubject = "DraftNewPrayerRequestSubject";
+    public static final String DraftNewPrayerRequestAttachment = "DraftNewPrayerRequestAttachment";
 }

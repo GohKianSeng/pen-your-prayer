@@ -7,14 +7,20 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.DisplayMetrics;
 
 import com.belvia.penyourprayer.QuickstartPreferences;
 import com.belvia.penyourprayer.UI.MainActivity;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.util.Objects;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -97,4 +103,32 @@ public class Utils {
 
         return connected;
     }
+
+    public static String serialize(Object obj){
+        String serializedObject = "";
+        try {
+            ByteArrayOutputStream bo = new ByteArrayOutputStream();
+            ObjectOutputStream so = new ObjectOutputStream(bo);
+            so.writeObject(obj);
+            so.flush();
+            serializedObject = Base64.encodeToString(bo.toByteArray(), Base64.DEFAULT);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return serializedObject;
+    }
+
+    public static Object deserialize(String data){
+        Object obj = null;
+        try {
+            byte b[] = Base64.decode(data, Base64.DEFAULT);
+            ByteArrayInputStream bi = new ByteArrayInputStream(b);
+            ObjectInputStream si = new ObjectInputStream(bi);
+            obj = si.readObject();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return obj;
+    }
+
 }

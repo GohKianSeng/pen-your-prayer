@@ -40,6 +40,8 @@ import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 public class FragmentCreateNewPrayerRequest extends Fragment implements InterfaceFragmentBackHandler {
@@ -205,6 +207,23 @@ public class FragmentCreateNewPrayerRequest extends Fragment implements Interfac
             }
         });
 
+        answerComment.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                checkIfAllowDoneActionButton();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
         if(prayerRequest != null){
             subject.setText(prayerRequest.Subject.substring(1));
             mRTMessageField.setRichTextEditing(true, prayerRequest.Description);
@@ -217,8 +236,6 @@ public class FragmentCreateNewPrayerRequest extends Fragment implements Interfac
                 answerComment.setText(prayerRequest.AnswerComment);
             }
             mainActivity.pr_attachment = prayerRequest.attachments;
-            updateAttachmentView();
-            checkIfAllowDoneActionButton();
         }
 
         if(answered){
@@ -228,6 +245,28 @@ public class FragmentCreateNewPrayerRequest extends Fragment implements Interfac
         else {
             InputMethodManager imm = (InputMethodManager) this.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.showSoftInput(subject, InputMethodManager.SHOW_IMPLICIT);
+        }
+
+        updateAttachmentView();
+        checkIfAllowDoneActionButton();
+        if(!isModification && (mainActivity.sharedPreferences.contains(QuickstartPreferences.DraftNewPrayerRequestSubject) || mainActivity.sharedPreferences.contains(QuickstartPreferences.DraftNewPrayerRequest))){
+            subject.setText(mainActivity.sharedPreferences.getString(QuickstartPreferences.DraftNewPrayerRequestSubject, ""));
+            mRTMessageField.setRichTextEditing(true, mainActivity.sharedPreferences.getString(QuickstartPreferences.DraftNewPrayerRequest, ""));
+
+            if(mainActivity.sharedPreferences.contains(QuickstartPreferences.DraftNewPrayerRequestAttachment)){
+                Set<String> res = new HashSet<String>();
+                res = mainActivity.sharedPreferences.getStringSet(QuickstartPreferences.DraftNewPrayerRequestAttachment, res);
+
+                for (String s : res) {
+                    if(s.startsWith("file://")){
+                        s = s.substring(7);
+                    }
+                    File f = new File(s);
+                    if(f.exists())
+                        addNewAttachment(f);
+                }
+            }
+
         }
     }
 
@@ -275,7 +314,7 @@ public class FragmentCreateNewPrayerRequest extends Fragment implements Interfac
     }
 
     private boolean checkIfContentfilled(){
-        if(mRTMessageField.getText().toString().trim().length() > 0){
+        if(mRTMessageField.getText().toString().trim().length() > 0 || subject.getText().toString().trim().length() > 0){
             return true;
         }
         else
@@ -283,29 +322,23 @@ public class FragmentCreateNewPrayerRequest extends Fragment implements Interfac
     }
 
     public void onBackPressed() {
-        if(checkIfContentfilled()){
-            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    switch (which){
-                        case DialogInterface.BUTTON_POSITIVE:
-                            mainActivity.popBackFragmentStack();
-                            break;
+        if(checkIfContentfilled() && !isModification){
 
-                        case DialogInterface.BUTTON_NEGATIVE:
-                            //No button clicked
-                            mainActivity.popBackFragmentStack();
-                            break;
-                    }
+            String content = mRTMessageField.getText(RTFormat.HTML);
+
+            if(mainActivity.pr_attachment != null && mainActivity.pr_attachment.size() > 0){
+                Set<String> set = new HashSet<String>();
+                for(int x=0; x<mainActivity.pr_attachment.size(); x++){
+                    set.add(mainActivity.pr_attachment.get(x).OriginalFilePath);
                 }
-            };
+                mainActivity.sharedPreferences.edit().putStringSet(QuickstartPreferences.DraftNewPrayerRequestAttachment, set).apply();
+            }
+            mainActivity.pr_attachment.clear();
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
-            builder.setMessage("Would you like to save and complete it later?").setTitle("To be continue?").setPositiveButton("Yes", dialogClickListener)
-                    .setNegativeButton("No", dialogClickListener).setNeutralButton("Cancel", dialogClickListener).show();
+            mainActivity.sharedPreferences.edit().putString(QuickstartPreferences.DraftNewPrayerRequest, content).apply();
+            mainActivity.sharedPreferences.edit().putString(QuickstartPreferences.DraftNewPrayerRequestSubject, subject.getText().toString().trim()).apply();
         }
-        else
-            mainActivity.popBackFragmentStack();
+        mainActivity.popBackFragmentStack();
     }
 
     private void saveNewPrayerRequest(){
@@ -313,6 +346,9 @@ public class FragmentCreateNewPrayerRequest extends Fragment implements Interfac
 
         Database db = new Database(mainActivity);
         db.AddNewPrayerRequest(subject.getText().toString(), description, mainActivity.pr_attachment);
+
+        mainActivity.sharedPreferences.edit().remove(QuickstartPreferences.DraftNewPrayerRequest).apply();
+        mainActivity.sharedPreferences.edit().remove(QuickstartPreferences.DraftNewPrayerRequestSubject).apply();
 
         mainActivity.prayerRequest = db.getAllUnansweredPrayerRequest();
         mainActivity.reloadPrayerRequest();
@@ -342,6 +378,8 @@ public class FragmentCreateNewPrayerRequest extends Fragment implements Interfac
         imageButton4.setOnClickListener(null);
         imageButton5.setOnClickListener(null);
 
+        if(mainActivity.pr_attachment == null)
+            return;
         for(int x=0; x<mainActivity.pr_attachment.size(); x++){
 
             actionbar_attachment_imageButton.setImageResource(R.drawable.ic_actionbar_image_attachment_w);
@@ -405,16 +443,23 @@ public class FragmentCreateNewPrayerRequest extends Fragment implements Interfac
 
         if (requestCode == PICK_IMAGE_REQUEST && data != null && resultCode == Activity.RESULT_OK) {
             File f = Utils.getAbsolutePath(data, mainActivity);
-
-            ModelPrayerRequestAttachement o = new ModelPrayerRequestAttachement();
-            o.OriginalFilePath = "file://" + f.getPath();
-            o.GUID = UUID.randomUUID().toString().replace("-", "");
-            o.FileName = f.getName();
-            o.UserID = mainActivity.OwnerID;
-            mainActivity.pr_attachment.add(o);
-
-            updateAttachmentView();
+            addNewAttachment(f);
 
         }
+    }
+
+    private void addNewAttachment(File f){
+        ModelPrayerRequestAttachement o = new ModelPrayerRequestAttachement();
+        o.OriginalFilePath = "file://" + f.getPath();
+        o.GUID = UUID.randomUUID().toString().replace("-", "");
+        o.FileName = f.getName();
+        o.UserID = mainActivity.OwnerID;
+
+        if(mainActivity.pr_attachment == null)
+            mainActivity.pr_attachment = new ArrayList<ModelPrayerRequestAttachement>();
+
+        mainActivity.pr_attachment.add(o);
+
+        updateAttachmentView();
     }
 }

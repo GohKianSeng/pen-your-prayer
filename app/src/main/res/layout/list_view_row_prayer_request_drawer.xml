@@ -2,7 +2,11 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></RelativeLayout>
 
     <ImageView
         android:layout_width="fill_parent"
@@ -93,6 +97,19 @@
             android:paddingRight="5dp" />
 
     </LinearLayout>
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/drawer_prayer_request_progressbar"
+        android:indeterminate="true"
+        android:indeterminateBehavior="repeat"
+        android:indeterminateOnly="true"
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentTop="true"
+        android:visibility="visible"
+        android:layout_marginTop="-7dp" />
 
 
 </RelativeLayout>

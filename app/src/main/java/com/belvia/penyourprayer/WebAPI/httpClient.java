@@ -60,8 +60,11 @@ public class httpClient extends OkHttpClient {
                 try {
                     String method = original.method();
                     String contentMD5 = "";
-                    if(method.toUpperCase() != "GET")
+                    if(method.toUpperCase() != "GET") {
+                        String useless = bodyToString(original.body());
+                        useless.toString();
                         contentMD5 = md5CheckSum(bodyToBytes(original.body())).toUpperCase();
+                    }
                     String queryContent = original.uri().getQuery();
                     if(queryContent == null)
                         queryContent = "";

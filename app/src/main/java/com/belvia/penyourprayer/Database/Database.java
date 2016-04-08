@@ -15,6 +15,7 @@ import com.belvia.penyourprayer.Common.Model.ModelPrayerComment;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerRequest;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerRequestAttachement;
 import com.belvia.penyourprayer.Common.Model.ModelQueueAction;
+import com.belvia.penyourprayer.Common.Utils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -129,6 +130,29 @@ public class Database extends SQLiteOpenHelper {
         db.delete("tb_QueueAction", "ID = " + String.valueOf(QueueID), null);
     }
 
+    public void addQueue(SQLiteDatabase db, ModelQueueAction.ActionType actionType, ModelQueueAction.ItemType itemType, Object obj){
+        if(!db.isOpen())
+            db = getWritableDatabase();
+
+        ContentValues cv = new ContentValues();
+        cv.put("Action", actionType.toString());
+        cv.put("Item", itemType.toString());
+        cv.put("ItemID", Utils.serialize(obj));
+        cv.put("IfExecutedGUID", UUID.randomUUID().toString());
+        db.insert("tb_QueueAction", null, cv);
+
+    }
+
+	public void addQueue(SQLiteDatabase db, ModelQueueAction.ActionType actionType, ModelQueueAction.ItemType itemType, String ItemID){
+		ContentValues cv = new ContentValues();
+        cv.put("Action", actionType.toString());
+        cv.put("Item", itemType.toString());
+        cv.put("ItemID", ItemID);
+        cv.put("IfExecutedGUID", UUID.randomUUID().toString());
+        db.insert("tb_QueueAction", null, cv);
+		
+	}
+
     /***********************************************
      *
      * Prayer Request section
@@ -140,20 +164,13 @@ public class Database extends SQLiteOpenHelper {
         db.delete("tb_PrayerRequest", "PrayerRequestID = '" + PrayerRequestID + "'", null);
         db.delete("tb_PrayerRequestAttachment", "PrayerRequestID = '" + PrayerRequestID + "'", null);
 
-
-        ContentValues cv = new ContentValues();
-        cv.put("Action", ModelQueueAction.ActionType.Delete.toString());
-        cv.put("Item", ModelQueueAction.ItemType.PrayerRequest.toString());
-        cv.put("ItemID", PrayerRequestID);
-        cv.put("IfExecutedGUID", UUID.randomUUID().toString());
-        db.insert("tb_QueueAction", null, cv);
+        addQueue(db, ModelQueueAction.ActionType.Delete, ModelQueueAction.ItemType.PrayerRequest, PrayerRequestID);
     }
 
     public void UpdatePrayerRequest(String PrayerRequestID, boolean answered, String answeredComment, String subject, String description) {
         SQLiteDatabase db = getWritableDatabase();
 
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        format.setTimeZone(TimeZone.getTimeZone("GMT"));
         String date =  format.format(new Date());
 
 
@@ -170,12 +187,7 @@ public class Database extends SQLiteOpenHelper {
 
         db.update("tb_PrayerRequest", cv, "PrayerRequestID = '" + PrayerRequestID + "'", null);
 
-        cv = new ContentValues();
-        cv.put("Action", ModelQueueAction.ActionType.Update.toString());
-        cv.put("Item", ModelQueueAction.ItemType.PrayerRequest.toString());
-        cv.put("ItemID", PrayerRequestID);
-        cv.put("IfExecutedGUID", UUID.randomUUID().toString());
-        db.insert("tb_QueueAction", null, cv);
+        addQueue(db, ModelQueueAction.ActionType.Update, ModelQueueAction.ItemType.PrayerRequest, PrayerRequestID);
     }
 
     public void AddNewPrayerRequest(String subject, String description, ArrayList<ModelPrayerRequestAttachement> attachment){
@@ -207,12 +219,7 @@ public class Database extends SQLiteOpenHelper {
             }
         }
 
-        ContentValues cv = new ContentValues();
-        cv.put("Action", ModelQueueAction.ActionType.Insert.toString());
-        cv.put("Item", ModelQueueAction.ItemType.PrayerRequest.toString());
-        cv.put("ItemID", tUUID);
-        cv.put("IfExecutedGUID", UUID.randomUUID().toString());
-        db.insert("tb_QueueAction", null, cv);
+        addQueue(db, ModelQueueAction.ActionType.Insert, ModelQueueAction.ItemType.PrayerRequest, tUUID);
     }
 
     public ArrayList<ModelPrayerRequest> getAllAnsweredPrayerRequest(){
@@ -403,12 +410,8 @@ public class Database extends SQLiteOpenHelper {
             }
         }
 
-        ContentValues cv = new ContentValues();
-        cv.put("Action", ModelQueueAction.ActionType.Insert.toString());
-        cv.put("Item", ModelQueueAction.ItemType.Prayer.toString());
-        cv.put("ItemID", tUUID);
-        cv.put("IfExecutedGUID", UUID.randomUUID().toString());
-        db.insert("tb_QueueAction", null, cv);
+        addQueue(db, ModelQueueAction.ActionType.Insert, ModelQueueAction.ItemType.Prayer, tUUID);
+
     }
 
     public ArrayList<ModelOwnerPrayer> getAllOwnerPrayer(String OwnerID){
@@ -474,7 +477,6 @@ public class Database extends SQLiteOpenHelper {
 
     public void deletePrayer(String PrayerID){
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        format.setTimeZone(TimeZone.getTimeZone("GMT"));
         String date =  format.format(new Date());
 
         SQLiteDatabase db = getWritableDatabase();
@@ -483,12 +485,8 @@ public class Database extends SQLiteOpenHelper {
         cv.put("TouchedWhen", date);
         db.update("tb_ownerPrayer", cv, "PrayerID = '" + PrayerID + "'", null);
 
-        cv = new ContentValues();
-        cv.put("Action", ModelQueueAction.ActionType.Delete.toString());
-        cv.put("Item", ModelQueueAction.ItemType.Prayer.toString());
-        cv.put("ItemID", PrayerID);
-        cv.put("IfExecutedGUID", UUID.randomUUID().toString());
-        db.insert("tb_QueueAction", null, cv);
+        addQueue(db, ModelQueueAction.ActionType.Delete, ModelQueueAction.ItemType.Prayer, PrayerID);
+
     }
 
     public String getLastPrayerIDFromServer(){
@@ -558,12 +556,8 @@ public class Database extends SQLiteOpenHelper {
             db.insert("tb_OwnerPrayerTagFriends", null, cv);
         }
 
-        ContentValues cv = new ContentValues();
-        cv.put("Action", ModelQueueAction.ActionType.Update.toString());
-        cv.put("Item", ModelQueueAction.ItemType.PrayerTagFriends.toString());
-        cv.put("ItemID", OwnerPrayerID);
-        cv.put("IfExecutedGUID", UUID.randomUUID().toString());
-        db.insert("tb_QueueAction", null, cv);
+        addQueue(db, ModelQueueAction.ActionType.Update, ModelQueueAction.ItemType.PrayerTagFriends, OwnerPrayerID);
+
     }
 
     public ArrayList<ModelFriendProfile> getAllFriends(String OwnerID){
@@ -614,12 +608,7 @@ public class Database extends SQLiteOpenHelper {
         cv.put("PublicView", publicView);
         db.update("tb_ownerPrayer", cv, "PrayerID = '" + PrayerID + "'", null);
 
-        cv = new ContentValues();
-        cv.put("Action", ModelQueueAction.ActionType.Update.toString());
-        cv.put("Item", ModelQueueAction.ItemType.PrayerPublicView.toString());
-        cv.put("ItemID", PrayerID);
-        cv.put("IfExecutedGUID", UUID.randomUUID().toString());
-        db.insert("tb_QueueAction", null, cv);
+        addQueue(db, ModelQueueAction.ActionType.Update, ModelQueueAction.ItemType.PrayerPublicView, PrayerID);
 
     }
 
@@ -668,22 +657,12 @@ public class Database extends SQLiteOpenHelper {
             db.delete("tb_OwnerPrayerAmen", "OwnerPrayerID" + "= '" + OwnerPrayerID + "' AND WhoID = '" + WhoID + "'", null);
             db.insert("tb_OwnerPrayerAmen", null, cv);
 
-            cv = new ContentValues();
-            cv.put("Action", ModelQueueAction.ActionType.Insert.toString());
-            cv.put("Item", ModelQueueAction.ItemType.PrayerAmen.toString());
-            cv.put("ItemID", OwnerPrayerID);
-            cv.put("IfExecutedGUID", UUID.randomUUID().toString());
-            db.insert("tb_QueueAction", null, cv);
+            addQueue(db, ModelQueueAction.ActionType.Insert, ModelQueueAction.ItemType.PrayerAmen, OwnerPrayerID);
         }
         else{
             db.delete("tb_OwnerPrayerAmen", "OwnerPrayerID" + "= '" + OwnerPrayerID + "' AND WhoID = '" + WhoID + "'", null);
 
-            ContentValues cv = new ContentValues();
-            cv.put("Action", ModelQueueAction.ActionType.Delete.toString());
-            cv.put("Item", ModelQueueAction.ItemType.PrayerAmen.toString());
-            cv.put("ItemID", OwnerPrayerID);
-            cv.put("IfExecutedGUID", UUID.randomUUID().toString());
-            db.insert("tb_QueueAction", null, cv);
+            addQueue(db, ModelQueueAction.ActionType.Delete, ModelQueueAction.ItemType.PrayerAmen, OwnerPrayerID);
         }
     }
 
@@ -802,17 +781,11 @@ public class Database extends SQLiteOpenHelper {
         cv.put("WhoProfilePicture", WhoProfilePicture);
         db.insert("tb_OwnerPrayerComment", null, cv);
 
-        cv = new ContentValues();
-        cv.put("Action", ModelQueueAction.ActionType.Insert.toString());
-        cv.put("Item", ModelQueueAction.ItemType.PrayerComment.toString());
-        cv.put("ItemID", CommentID);
-        cv.put("IfExecutedGUID", UUID.randomUUID().toString());
-        db.insert("tb_QueueAction", null, cv);
+        addQueue(db, ModelQueueAction.ActionType.Insert, ModelQueueAction.ItemType.PrayerComment, CommentID);
     }
 
     public void updateOwnerPrayerComment(ModelPrayerComment comment){
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        format.setTimeZone(TimeZone.getTimeZone("GMT"));
         String date =  format.format(new Date());
 
         SQLiteDatabase db = getWritableDatabase();
@@ -821,12 +794,7 @@ public class Database extends SQLiteOpenHelper {
         cv.put("TouchedWhen", date);
         db.update("tb_OwnerPrayerComment", cv, "OwnerPrayerID = '" + comment.OwnerPrayerID + "' AND CommentID = '" + comment.CommentID + "'", null);
 
-        cv = new ContentValues();
-        cv.put("Action", ModelQueueAction.ActionType.Update.toString());
-        cv.put("Item", ModelQueueAction.ItemType.PrayerComment.toString());
-        cv.put("ItemID", comment.CommentID);
-        cv.put("IfExecutedGUID", UUID.randomUUID().toString());
-        db.insert("tb_QueueAction", null, cv);
+        addQueue(db, ModelQueueAction.ActionType.Update, ModelQueueAction.ItemType.PrayerComment, comment.CommentID);
     }
 
     public ArrayList<ModelPrayerComment> getAllOwnerPrayerComment(String PrayerID){
@@ -900,13 +868,7 @@ public class Database extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
 
         db.delete("tb_OwnerPrayerComment", "CommentID = '" + CommentID + "'", null);
-
-        ContentValues cv = new ContentValues();
-        cv.put("Action", ModelQueueAction.ActionType.Delete.toString());
-        cv.put("Item", ModelQueueAction.ItemType.PrayerComment.toString());
-        cv.put("ItemID", CommentID);
-        cv.put("IfExecutedGUID", UUID.randomUUID().toString());
-        db.insert("tb_QueueAction", null, cv);
+        addQueue(db, ModelQueueAction.ActionType.Delete, ModelQueueAction.ItemType.PrayerComment, CommentID);
     }
 
     public void AddComments(SQLiteDatabase db, ArrayList<ModelPrayerComment> comments, String PrayerID){
@@ -960,7 +922,6 @@ public class Database extends SQLiteOpenHelper {
 
     public void updateOwnerPrayerAnswered(ModelPrayerAnswered ans){
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        format.setTimeZone(TimeZone.getTimeZone("GMT"));
         String date =  format.format(new Date());
 
         SQLiteDatabase db = getWritableDatabase();
@@ -969,12 +930,8 @@ public class Database extends SQLiteOpenHelper {
         cv.put("TouchedWhen", date);
         db.update("tb_OwnerPrayerAnswered", cv, "OwnerPrayerID = '" + ans.OwnerPrayerID + "' AND AnsweredID = '" + ans.AnsweredID + "'", null);
 
-        cv = new ContentValues();
-        cv.put("Action", ModelQueueAction.ActionType.Update.toString());
-        cv.put("Item", ModelQueueAction.ItemType.PrayerAnswered.toString());
-        cv.put("ItemID", ans.AnsweredID);
-        cv.put("IfExecutedGUID", UUID.randomUUID().toString());
-        db.insert("tb_QueueAction", null, cv);
+
+        addQueue(db, ModelQueueAction.ActionType.Update, ModelQueueAction.ItemType.PrayerAnswered, GetPrayerAnswered(ans.AnsweredID));
     }
 
     public void addOwnerPrayerAnswered(String PrayerID, String comment, String WhoID, String WhoName, String WhoProfilePicture){
@@ -990,12 +947,7 @@ public class Database extends SQLiteOpenHelper {
         cv.put("WhoProfilePicture", WhoProfilePicture);
         db.insert("tb_OwnerPrayerAnswered", null, cv);
 
-        cv = new ContentValues();
-        cv.put("Action", ModelQueueAction.ActionType.Insert.toString());
-        cv.put("Item", ModelQueueAction.ItemType.PrayerAnswered.toString());
-        cv.put("ItemID", AnsweredID);
-        cv.put("IfExecutedGUID", UUID.randomUUID().toString());
-        db.insert("tb_QueueAction", null, cv);
+        addQueue(db, ModelQueueAction.ActionType.Insert, ModelQueueAction.ItemType.PrayerAnswered, AnsweredID);
     }
 
     public void DeletePrayerAnswered(String AnsweredID){
@@ -1003,12 +955,7 @@ public class Database extends SQLiteOpenHelper {
 
         db.delete("tb_OwnerPrayerComment", "AnsweredID = '" + AnsweredID + "'", null);
 
-        ContentValues cv = new ContentValues();
-        cv.put("Action", ModelQueueAction.ActionType.Delete.toString());
-        cv.put("Item", ModelQueueAction.ItemType.PrayerAnswered.toString());
-        cv.put("ItemID", AnsweredID);
-        cv.put("IfExecutedGUID", UUID.randomUUID().toString());
-        db.insert("tb_QueueAction", null, cv);
+        addQueue(db, ModelQueueAction.ActionType.Delete, ModelQueueAction.ItemType.PrayerAnswered, AnsweredID);
     }
 
     public ModelPrayerAnswered GetPrayerAnswered(String AnsweredID){
@@ -1035,6 +982,7 @@ public class Database extends SQLiteOpenHelper {
         }
         if(c != null)
             c.close();
+        db.close();
         return f;
     }
 
