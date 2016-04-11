@@ -95,6 +95,8 @@ public class MainActivity extends AppCompatActivity {
     public TextView userProfileDisplayName;
     private boolean checkFbstatusNow = false;
     private Facebook fb;
+    private AdapterListViewDrawerProfileFriend adapter;
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -369,6 +371,17 @@ public class MainActivity extends AppCompatActivity {
             mDrawerLayout.openDrawer(LeftRight);
         else
             mDrawerLayout.closeDrawer(LeftRight);
+    }
+
+    public void refreshRightDrawer(){
+
+        Database db = new Database(this);
+
+        if (UnAnsweredType) {
+            pr_adapter.refreshAllItem(db.getAllUnansweredPrayerRequest());
+        } else {
+            pr_adapter.refreshAllItem(db.getAllAnsweredPrayerRequest());
+        }
     }
 
     public void reloadPrayerRequest() {

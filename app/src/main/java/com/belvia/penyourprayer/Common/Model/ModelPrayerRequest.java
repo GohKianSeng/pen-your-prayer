@@ -18,10 +18,11 @@ public class ModelPrayerRequest implements Serializable {
     public String AnswerComment;
     public Date CreatedWhen;
     public Date TouchedWhen;
+    public int InQueue = 0;
 
     public ModelPrayerRequest(){}
 
-    public ModelPrayerRequest(String ID, String subject, String desc, boolean ans, Date ansWhen, String answerComment, Date createdWhen, Date TouchedWhen){
+    public ModelPrayerRequest(String ID, String subject, String desc, boolean ans, Date ansWhen, String answerComment, int InQueue, Date createdWhen, Date TouchedWhen){
         this.PrayerRequestID = ID;
         this.Subject = subject;
         this.Description = desc;
@@ -30,6 +31,7 @@ public class ModelPrayerRequest implements Serializable {
         this.CreatedWhen = createdWhen;
         this.TouchedWhen = TouchedWhen;
         this.AnswerComment = answerComment;
+        this.InQueue = InQueue;
     }
 
     public String formattedAnsweredWhen(){

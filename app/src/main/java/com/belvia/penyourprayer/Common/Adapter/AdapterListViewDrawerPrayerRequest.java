@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.belvia.penyourprayer.Common.Model.ModelPrayerRequest;
@@ -47,6 +48,7 @@ public class AdapterListViewDrawerPrayerRequest extends ArrayAdapter {
                         convertView = inflater.inflate(R.layout.list_view_row_prayer_request_drawer, parent, false);
 
                         p.PrayerRequestID = prayerRequest.get(position).PrayerRequestID;
+                        p.progressBar = (ProgressBar) convertView.findViewById(R.id.drawer_prayer_request_progressbar);
                         p.subject_TextView = (TextView) convertView.findViewById(R.id.drawer_prayer_request_subject_textView);
                         p.createdwhen_TextView = (TextView) convertView.findViewById(R.id.drawer_prayer_request_createdwhen);
                         p.answered_ImageView = (ImageView) convertView.findViewById(R.id.drawer_prayer_request_answered);
@@ -62,6 +64,13 @@ public class AdapterListViewDrawerPrayerRequest extends ArrayAdapter {
                         convertView.setTag(p);
                 } else {
                         p = (ViewHolderPrayerRequestModel) convertView.getTag();
+                }
+
+                if(prayerRequest.get(position).InQueue > 0){
+                        p.progressBar.setVisibility(View.VISIBLE);
+                }
+                else{
+                        p.progressBar.setVisibility(View.INVISIBLE);
                 }
 
                 if(prayerRequest.get(position).CreatedWhen.compareTo(prayerRequest.get(position).TouchedWhen) == -1)

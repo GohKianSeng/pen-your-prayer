@@ -181,6 +181,9 @@ public class QueueAction extends AsyncTask<String, Void, String> {
             if (response.StatusCode == 200) {
 
                 db.deleteQueue(QueueID);
+                SystemClock.sleep(10000);
+                db.decrementPrayerRequestInQueue(p.PrayerRequestID);
+                mainActivity.refreshRightDrawer();
             }
 
         } catch (Exception e) {

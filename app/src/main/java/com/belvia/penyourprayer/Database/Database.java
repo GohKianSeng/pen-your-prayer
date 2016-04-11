@@ -30,7 +30,7 @@ public class Database extends SQLiteOpenHelper {
 
     // All Static variables
     // Database Version
-    private static final int DATABASE_VERSION = 47;
+    private static final int DATABASE_VERSION = 50;
 
     // Database Name
     private static final String DATABASE_NAME = "PenYourPrayerSQLite";
@@ -42,7 +42,7 @@ public class Database extends SQLiteOpenHelper {
     private static final String tb_ownerPrayer = "CREATE TABLE tb_ownerPrayer (PrayerID TEXT NOT NULL UNIQUE, CreatedWhen DATETIME NOT NULL DEFAULT (DATETIME('NOW','LOCALTIME')), TouchedWhen DATETIME NOT NULL DEFAULT (DATETIME('NOW','LOCALTIME')), Content TEXT NOT NULL, PublicView INTEGER NOT NULL DEFAULT 0, ServerSent INTEGER NOT NULL DEFAULT 0, Deleted INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(PrayerID))";
     private static final String tb_QueueAction = "CREATE TABLE tb_QueueAction (ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, Action TEXT NOT NULL, Item TEXT NOT NULL, ItemID TEXT NOT NULL, IfExecutedGUID TEXT NOT NULL)";
     private static final String tb_OwnerPrayerAttachment = "CREATE TABLE tb_OwnerPrayerAttachment (OwnerPrayerID TEXT NOT NULL, GUID TEXT NOT NULL, UserID TEXT NOT NULL, OriginalFilePath TEXT NOT NULL, FileName TEXT NOT NULL, PRIMARY KEY(OwnerPrayerID,GUID))";
-    private static final String tb_PrayerRequest = "CREATE TABLE tb_PrayerRequest (PrayerRequestID TEXT NOT NULL UNIQUE, Subject TEXT NOT NULL, Description TEXT, Answered NOT NULL DEFAULT 0, AnsweredWhen DATETIME, AnswerComment TEXT, CreatedWhen DATETIME DEFAULT (DATETIME('NOW','LOCALTIME')), TouchedWhen DATETIME DEFAULT (DATETIME('NOW','LOCALTIME')), PRIMARY KEY(PrayerRequestID))";
+    private static final String tb_PrayerRequest = "CREATE TABLE tb_PrayerRequest (PrayerRequestID TEXT NOT NULL UNIQUE, Subject TEXT NOT NULL, Description TEXT, Answered NOT NULL DEFAULT 0, AnsweredWhen DATETIME, AnswerComment TEXT, InQueue INTEGER NOT NULL DEFAULT 0, CreatedWhen DATETIME DEFAULT (DATETIME('NOW','LOCALTIME')), TouchedWhen DATETIME DEFAULT (DATETIME('NOW','LOCALTIME')), PRIMARY KEY(PrayerRequestID))";
     private static final String tb_PrayerRequestAttachment = "CREATE TABLE tb_PrayerRequestAttachment (PrayerRequestID TEXT NOT NULL, GUID TEXT NOT NULL, UserID TEXT NOT NULL, OriginalFilePath TEXT NOT NULL, FileName TEXT NOT NULL, PRIMARY KEY(PrayerRequestID, GUID))";
 
     public Database(Context context) {
@@ -185,6 +185,11 @@ public class Database extends SQLiteOpenHelper {
 
         }
 
+        String sql =    "UPDATE tb_PrayerRequest" +
+                        " SET InQueue = InQueue+1" +
+                        " WHERE PrayerRequestID = '" + PrayerRequestID + "'";
+
+        db.execSQL(sql);
         db.update("tb_PrayerRequest", cv, "PrayerRequestID = '" + PrayerRequestID + "'", null);
 
         addQueue(db, ModelQueueAction.ActionType.Update, ModelQueueAction.ItemType.PrayerRequest, PrayerRequestID);
@@ -225,11 +230,11 @@ public class Database extends SQLiteOpenHelper {
     public ArrayList<ModelPrayerRequest> getAllAnsweredPrayerRequest(){
         ArrayList<ModelPrayerRequest> pr = new ArrayList<ModelPrayerRequest>();
         SQLiteDatabase db = getReadableDatabase();
-        Cursor c = db.rawQuery("SELECT PrayerRequestID, Subject, Description, Answered, AnsweredWhen, AnswerComment, CreatedWhen, TouchedWhen FROM tb_PrayerRequest WHERE Answered = 1 ORDER BY CreatedWhen DESC", null);
+        Cursor c = db.rawQuery("SELECT PrayerRequestID, Subject, Description, Answered, AnsweredWhen, AnswerComment, CreatedWhen, TouchedWhen, InQueue FROM tb_PrayerRequest WHERE Answered = 1 ORDER BY CreatedWhen DESC", null);
 
         while (c.moveToNext()) {
 
-            ModelPrayerRequest p = new ModelPrayerRequest(c.getString(c.getColumnIndex("PrayerRequestID")), c.getString(c.getColumnIndex("Subject")), c.getString(c.getColumnIndex("Description")), convertToBoolean(c.getInt(c.getColumnIndex("Answered"))), convertToDateTime(c.getString(c.getColumnIndex("AnsweredWhen"))), c.getString(c.getColumnIndex("AnswerComment")), convertToDateTime(c.getString(c.getColumnIndex("CreatedWhen"))), convertToDateTime(c.getString(c.getColumnIndex("TouchedWhen"))));
+            ModelPrayerRequest p = new ModelPrayerRequest(c.getString(c.getColumnIndex("PrayerRequestID")), c.getString(c.getColumnIndex("Subject")), c.getString(c.getColumnIndex("Description")), convertToBoolean(c.getInt(c.getColumnIndex("Answered"))), convertToDateTime(c.getString(c.getColumnIndex("AnsweredWhen"))), c.getString(c.getColumnIndex("AnswerComment")), c.getInt(c.getColumnIndex("InQueue")), convertToDateTime(c.getString(c.getColumnIndex("CreatedWhen"))), convertToDateTime(c.getString(c.getColumnIndex("TouchedWhen"))));
             p.attachments = getPrayerRequestAttachment(p.PrayerRequestID, db);
 
             pr.add(p);
@@ -242,11 +247,11 @@ public class Database extends SQLiteOpenHelper {
     public ArrayList<ModelPrayerRequest> getAllUnansweredPrayerRequest(){
         ArrayList<ModelPrayerRequest> pr = new ArrayList<ModelPrayerRequest>();
         SQLiteDatabase db = getReadableDatabase();
-        Cursor c = db.rawQuery("SELECT PrayerRequestID, Subject, Description, Answered, AnsweredWhen, AnswerComment, CreatedWhen, TouchedWhen FROM tb_PrayerRequest WHERE Answered = 0 ORDER BY CreatedWhen DESC", null);
+        Cursor c = db.rawQuery("SELECT PrayerRequestID, Subject, Description, Answered, AnsweredWhen, AnswerComment, CreatedWhen, TouchedWhen, InQueue FROM tb_PrayerRequest WHERE Answered = 0 ORDER BY CreatedWhen DESC", null);
 
         while (c.moveToNext()) {
 
-            ModelPrayerRequest p = new ModelPrayerRequest(c.getString(c.getColumnIndex("PrayerRequestID")), c.getString(c.getColumnIndex("Subject")), c.getString(c.getColumnIndex("Description")), convertToBoolean(c.getInt(c.getColumnIndex("Answered"))), convertToDateTime(c.getString(c.getColumnIndex("AnsweredWhen"))), c.getString(c.getColumnIndex("AnswerComment")), convertToDateTime(c.getString(c.getColumnIndex("CreatedWhen"))), convertToDateTime(c.getString(c.getColumnIndex("TouchedWhen"))));
+            ModelPrayerRequest p = new ModelPrayerRequest(c.getString(c.getColumnIndex("PrayerRequestID")), c.getString(c.getColumnIndex("Subject")), c.getString(c.getColumnIndex("Description")), convertToBoolean(c.getInt(c.getColumnIndex("Answered"))), convertToDateTime(c.getString(c.getColumnIndex("AnsweredWhen"))), c.getString(c.getColumnIndex("AnswerComment")), c.getInt(c.getColumnIndex("InQueue")), convertToDateTime(c.getString(c.getColumnIndex("CreatedWhen"))), convertToDateTime(c.getString(c.getColumnIndex("TouchedWhen"))));
             p.attachments = getPrayerRequestAttachment(p.PrayerRequestID, db);
 
             pr.add(p);
@@ -256,13 +261,24 @@ public class Database extends SQLiteOpenHelper {
         return pr;
     }
 
+    public void decrementPrayerRequestInQueue(String PrayerRequestID){
+        SQLiteDatabase db = getWritableDatabase();
+
+        String sql =    "UPDATE tb_PrayerRequest" +
+                        " SET InQueue = InQueue - 1" +
+                         " WHERE PrayerRequestID = '" + PrayerRequestID + "'";
+
+        db.execSQL(sql);
+        db.close();
+    }
+
     public ModelPrayerRequest GetPrayerRequest(String PrayerRequestID){
         ModelPrayerRequest pr = new ModelPrayerRequest();
         SQLiteDatabase db = getReadableDatabase();
-        Cursor c = db.rawQuery("SELECT PrayerRequestID, Subject, Description, Answered, AnsweredWhen, AnswerComment, CreatedWhen, TouchedWhen FROM tb_PrayerRequest WHERE PrayerRequestID = '" + PrayerRequestID + "' ORDER BY CreatedWhen DESC", null);
+        Cursor c = db.rawQuery("SELECT PrayerRequestID, Subject, Description, Answered, AnsweredWhen, AnswerComment, CreatedWhen, TouchedWhen, InQueue FROM tb_PrayerRequest WHERE PrayerRequestID = '" + PrayerRequestID + "' ORDER BY CreatedWhen DESC", null);
 
         while (c.moveToNext()) {
-            pr = new ModelPrayerRequest(c.getString(c.getColumnIndex("PrayerRequestID")), c.getString(c.getColumnIndex("Subject")), c.getString(c.getColumnIndex("Description")), convertToBoolean(c.getInt(c.getColumnIndex("Answered"))), convertToDateTime(c.getString(c.getColumnIndex("AnsweredWhen"))), c.getString(c.getColumnIndex("AnswerComment")), convertToDateTime(c.getString(c.getColumnIndex("CreatedWhen"))), convertToDateTime(c.getString(c.getColumnIndex("TouchedWhen"))));
+            pr = new ModelPrayerRequest(c.getString(c.getColumnIndex("PrayerRequestID")), c.getString(c.getColumnIndex("Subject")), c.getString(c.getColumnIndex("Description")), convertToBoolean(c.getInt(c.getColumnIndex("Answered"))), convertToDateTime(c.getString(c.getColumnIndex("AnsweredWhen"))), c.getString(c.getColumnIndex("AnswerComment")), c.getInt(c.getColumnIndex("InQueue")),convertToDateTime(c.getString(c.getColumnIndex("CreatedWhen"))), convertToDateTime(c.getString(c.getColumnIndex("TouchedWhen"))));
             pr.attachments = getPrayerRequestAttachment(pr.PrayerRequestID, db);
 
 

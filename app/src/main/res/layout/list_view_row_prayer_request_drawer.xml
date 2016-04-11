@@ -108,7 +108,7 @@
         android:indeterminateOnly="true"
         android:layout_alignParentBottom="false"
         android:layout_alignParentTop="true"
-        android:visibility="visible"
+        android:visibility="invisible"
         android:layout_marginTop="-7dp" />
 
 
