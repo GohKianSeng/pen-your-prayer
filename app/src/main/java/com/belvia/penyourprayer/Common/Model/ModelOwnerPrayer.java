@@ -17,7 +17,7 @@ public class ModelOwnerPrayer implements Serializable {
     public Date TouchedWhen = null;
     public String Content = "";
     public boolean publicView = false;
-    public boolean ServerSent = false;
+    public int InQueue = 0;
     public boolean deleted = false;
     public long numberOfFriendsTag = 0;
     public long numberOfAmen = 0;

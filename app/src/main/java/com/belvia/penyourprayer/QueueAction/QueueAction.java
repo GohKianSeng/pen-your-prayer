@@ -9,6 +9,8 @@ import android.os.Build;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 
+import com.belvia.penyourprayer.Common.Interface.InterfacePrayerAnsweredEditUpdated;
+import com.belvia.penyourprayer.Common.Interface.InterfacePrayerAnsweredListViewUpdated;
 import com.belvia.penyourprayer.Common.Interface.InterfacePrayerCommentEditUpdated;
 import com.belvia.penyourprayer.Common.Interface.InterfacePrayerCommentListViewUpdated;
 import com.belvia.penyourprayer.Common.Interface.InterfacePrayerListUpdated;
@@ -181,9 +183,8 @@ public class QueueAction extends AsyncTask<String, Void, String> {
             if (response.StatusCode == 200) {
 
                 db.deleteQueue(QueueID);
-                SystemClock.sleep(10000);
                 db.decrementPrayerRequestInQueue(p.PrayerRequestID);
-                mainActivity.refreshRightDrawer();
+                mainActivity.onPrayerRequestUpdated();
             }
 
         } catch (Exception e) {
@@ -221,10 +222,11 @@ public class QueueAction extends AsyncTask<String, Void, String> {
                     String newPrayerRequestID = response.Description.substring(response.Description.indexOf("-") + 1);
                     db.UpdatePrayerRequestID(newPrayerRequestID, p.PrayerRequestID);
                     p.PrayerRequestID = newPrayerRequestID;
+                    db.decrementPrayerRequestInQueue(p.PrayerRequestID);
                 }
 
-
                 db.deleteQueue(QueueID);
+                mainActivity.onPrayerRequestUpdated();
             }
 
         } catch (Exception e) {
@@ -248,8 +250,16 @@ public class QueueAction extends AsyncTask<String, Void, String> {
                 p.AnsweredID = newAnsweredID;
             }
 
-
+            db.decrementPrayerAnsweredInQueue(p.AnsweredID);
             db.deleteQueue(QueueID);
+
+            Fragment f = mainActivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
+            if (f instanceof InterfacePrayerAnsweredListViewUpdated && mainActivity.OwnerID.length() > 0) {
+                ((InterfacePrayerAnsweredListViewUpdated) f).onAnswerUpdate(db.getAllOwnerPrayerAnswered(p.OwnerPrayerID));
+            }
+            else if (f instanceof InterfacePrayerAnsweredEditUpdated && mainActivity.OwnerID.length() > 0) {
+                ((InterfacePrayerAnsweredEditUpdated) f).onAnswerUpdate(p);
+            }
         }
     }
 
@@ -266,8 +276,16 @@ public class QueueAction extends AsyncTask<String, Void, String> {
                 p.AnsweredID = newAnsweredID;
             }
 
-
+            db.decrementPrayerAnsweredInQueue(p.AnsweredID);
             db.deleteQueue(QueueID);
+
+            Fragment f = mainActivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
+            if (f instanceof InterfacePrayerAnsweredListViewUpdated && mainActivity.OwnerID.length() > 0) {
+                ((InterfacePrayerAnsweredListViewUpdated) f).onAnswerUpdate(db.getAllOwnerPrayerAnswered(p.OwnerPrayerID));
+            }
+            else if (f instanceof InterfacePrayerAnsweredEditUpdated && mainActivity.OwnerID.length() > 0) {
+                ((InterfacePrayerAnsweredEditUpdated) f).onAnswerUpdate(p);
+            }
         }
     }
 
@@ -296,6 +314,7 @@ public class QueueAction extends AsyncTask<String, Void, String> {
         SimpleJsonResponse response = prayerInterface.UpdatePrayerComment(IfExecutedGUID, p);
         if (response.StatusCode == 200) {
             db.deleteQueue(QueueID);
+            db.decrementPrayerCommentInQueue(p.CommentID);
 
             Fragment f = mainActivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
             if (f instanceof InterfacePrayerCommentListViewUpdated && mainActivity.OwnerID.length() > 0) {
@@ -331,6 +350,8 @@ public class QueueAction extends AsyncTask<String, Void, String> {
                 db.UpdatePrayerCommentID(newCommentID, p.CommentID, p.OwnerPrayerID);
                 p.CommentID = newCommentID;
             }
+            db.decrementPrayerCommentInQueue(p.CommentID);
+            db.deleteQueue(QueueID);
 
             Fragment f = mainActivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
             if (f instanceof InterfacePrayerCommentListViewUpdated && mainActivity.OwnerID.length() > 0) {
@@ -339,7 +360,6 @@ public class QueueAction extends AsyncTask<String, Void, String> {
             else if (f instanceof InterfacePrayerCommentEditUpdated && mainActivity.OwnerID.length() > 0) {
                 ((InterfacePrayerCommentEditUpdated) f).onCommentUpdate(p);
             }
-            db.deleteQueue(QueueID);
         }
     }
 
@@ -413,13 +433,15 @@ public class QueueAction extends AsyncTask<String, Void, String> {
             }
 
             db.updateOwnerPrayerSent(p.PrayerID, newPrayerID);
+            db.deleteQueue(QueueID);
+            db.decrementPrayerInQueue(String.valueOf(newPrayerID));
 
             Fragment f = mainActivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
             if (f instanceof InterfacePrayerListUpdated && mainActivity.OwnerID.length() > 0) {
                 ((InterfacePrayerListUpdated) f).onListUpdate(db.getAllOwnerPrayer(mainActivity.OwnerID));
             }
 
-            db.deleteQueue(QueueID);
+
 
         } catch (Exception e) {
             String sdf = e.getMessage();

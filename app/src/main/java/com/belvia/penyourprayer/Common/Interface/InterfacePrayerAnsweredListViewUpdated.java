@@ -9,5 +9,5 @@ import java.util.ArrayList;
  */
 
 public interface InterfacePrayerAnsweredListViewUpdated {
-    public void onCommentUpdate(ArrayList<ModelPrayerAnswered> answered);
+    public void onAnswerUpdate(ArrayList<ModelPrayerAnswered> answered);
 }

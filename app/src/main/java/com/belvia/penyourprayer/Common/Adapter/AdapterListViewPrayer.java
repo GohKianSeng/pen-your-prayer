@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.belvia.penyourprayer.Common.Model.ModelOwnerPrayer;
@@ -71,7 +72,7 @@ public class AdapterListViewPrayer extends ArrayAdapter {
                         p.publicView_imageButton = (ImageButton) convertView.findViewById(R.id.card_ui_publicview_imageButton);
                         p.answered_imageButton = (ImageButton) convertView.findViewById(R.id.card_ui_answered_imageButton);
                         p.delete_imageButton = (ImageButton) convertView.findViewById(R.id.card_ui_delete_imageButton);
-                        p.serversent_textview = (TextView) convertView.findViewById(R.id.card_ui_serversent_textview);
+                        p.progressBar = (ProgressBar) convertView.findViewById(R.id.card_ui_progressbar);
                         p.createdwhen_textview = (TextView) convertView.findViewById(R.id.card_ui_createdwhen);
 
                         p.amen_count_textview = (TextView) convertView.findViewById(R.id.card_ui_amen_count_textview);
@@ -223,10 +224,14 @@ public class AdapterListViewPrayer extends ArrayAdapter {
 
                 p.createdwhen_textview.setText("Pen Date: " + resources.get(position).formattedCreatedWhen());
 
-                if(resources.get(position).ServerSent)
-                        p.serversent_textview.setText("Synced.");
-                else
-                        p.serversent_textview.setText("Saved.");
+                if(resources.get(position).InQueue > 0) {
+                        p.progressBar.setVisibility(View.VISIBLE);
+                        p.createdwhen_textview.setVisibility(View.GONE);
+                }
+                else {
+                        p.progressBar.setVisibility(View.INVISIBLE);
+                        p.createdwhen_textview.setVisibility(View.VISIBLE);
+                }
                 //set all the content to the components
                 if(resources.get(position).numberOfFriendsTag > 0)
                         p.tagfriend_imageButton.setImageResource(R.drawable.tagfriend_2);

@@ -38,7 +38,7 @@ public class FragmentPrayerAnswered extends Fragment implements InterfacePrayerA
 
     public static FragmentPrayerAnswered newInstance(ArrayList<ModelPrayerAnswered> answer, String PrayerID) {
         FragmentPrayerAnswered fragment = new FragmentPrayerAnswered();
-        fragment.answered = answer;
+        //fragment.answered = answer;
         fragment.PrayerID = PrayerID;
         return fragment;
     }
@@ -60,6 +60,8 @@ public class FragmentPrayerAnswered extends Fragment implements InterfacePrayerA
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Database db = new Database(mainActivity);
+        answered = db.getAllOwnerPrayerAnswered(PrayerID);
 
         answered_editText = (EditText) view.findViewById(R.id.answered_editText);
         answered_editText.addTextChangedListener(new TextWatcher() {
@@ -137,10 +139,10 @@ public class FragmentPrayerAnswered extends Fragment implements InterfacePrayerA
     }
 
     @Override
-    public void onCommentUpdate(final ArrayList<ModelPrayerAnswered> comment){
+    public void onAnswerUpdate(final ArrayList<ModelPrayerAnswered> answer){
         Runnable run = new Runnable(){
             public void run(){
-                adapterListViewAnswered.updateCommentList(comment);
+                adapterListViewAnswered.updateCommentList(answer);
             }
         };
         mainActivity.runOnUiThread(run);

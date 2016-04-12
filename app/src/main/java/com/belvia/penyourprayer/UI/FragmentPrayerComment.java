@@ -45,7 +45,7 @@ public class FragmentPrayerComment extends Fragment implements InterfacePrayerCo
 
     public static FragmentPrayerComment newInstance(ArrayList<ModelPrayerComment> comment, String PrayerID) {
         FragmentPrayerComment fragment = new FragmentPrayerComment();
-        fragment.comment = comment;
+        //fragment.comment = comment;
         fragment.PrayerID = PrayerID;
         return fragment;
     }
@@ -72,6 +72,9 @@ public class FragmentPrayerComment extends Fragment implements InterfacePrayerCo
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Database db = new Database(mainActivity);
+        comment = db.getAllOwnerPrayerComment(PrayerID);
+
 
         comment_editText = (EditText) view.findViewById(R.id.comment_editText);
         comment_editText.addTextChangedListener(new TextWatcher() {

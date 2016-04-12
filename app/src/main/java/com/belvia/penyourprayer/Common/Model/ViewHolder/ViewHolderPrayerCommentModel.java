@@ -1,6 +1,7 @@
 package com.belvia.penyourprayer.Common.Model.ViewHolder;
 
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 /**
@@ -10,6 +11,8 @@ public class ViewHolderPrayerCommentModel {
 
     public TextView touchedwhen_textView, displayname_textview, comment_textview;
     public ImageView profilePicture_imageView;
+    public ProgressBar progressBar;
+    public String CommentID;
     public ViewHolderPrayerCommentModel(){
 
     }

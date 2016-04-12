@@ -7,5 +7,5 @@ import com.belvia.penyourprayer.Common.Model.ModelPrayerAnswered;
  */
 
 public interface InterfacePrayerAnsweredEditUpdated {
-    public void onCommentUpdate(ModelPrayerAnswered answered);
+    public void onAnswerUpdate(ModelPrayerAnswered answered);
 }

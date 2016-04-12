@@ -85,31 +85,38 @@
             android:scaleType="fitCenter" />
     </LinearLayout>
 
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="10 Aug 2015 03:34 PM"
-            android:id="@+id/drawer_prayer_request_createdwhen"
-            android:layout_weight="1"
-            android:gravity="right"
-            android:textSize="10sp"
-            android:paddingRight="5dp" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ProgressBar
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/drawer_prayer_request_progressbar"
+                android:indeterminate="true"
+                android:indeterminateBehavior="repeat"
+                android:indeterminateOnly="true"
+                android:layout_alignParentBottom="false"
+                android:layout_alignParentTop="true"
+                android:visibility="invisible"
+                android:indeterminateTintMode="src_atop"
+                android:indeterminateTint="#800080"
+                android:layout_weight="1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="10 Aug 2015 03:34 PM"
+                android:id="@+id/drawer_prayer_request_createdwhen"
+                android:gravity="right"
+                android:textSize="10sp"
+                android:paddingRight="5dp" />
+        </LinearLayout>
 
     </LinearLayout>
-
-    <ProgressBar
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/drawer_prayer_request_progressbar"
-        android:indeterminate="true"
-        android:indeterminateBehavior="repeat"
-        android:indeterminateOnly="true"
-        android:layout_alignParentBottom="false"
-        android:layout_alignParentTop="true"
-        android:visibility="invisible"
-        android:layout_marginTop="-7dp" />
 
 
 </RelativeLayout>

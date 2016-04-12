@@ -16,7 +16,7 @@ public class ModelPrayerComment implements Serializable {
     public String Comment;
     public Date CreatedWhen;
     public Date TouchedWhen;
-    public boolean ServerSent;
+    public int InQueue;
 
     public ModelPrayerComment(){}
 

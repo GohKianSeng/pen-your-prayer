@@ -66,9 +66,9 @@ public class FragmentPrayerAnsweredEdit extends Fragment implements InterfacePra
             @Override
             public void onClick(View v) {
                 if(dirty) {
-                    answer.Answered = answered_editText.getText().toString();
                     Database db = new Database(mainActivity);
                     db.updateOwnerPrayerAnswered(answer);
+                    answer = db.GetPrayerAnswered(answer.OwnerPrayerID);
                 }
                 mainActivity.popBackFragmentStack();
             }
@@ -115,7 +115,7 @@ public class FragmentPrayerAnsweredEdit extends Fragment implements InterfacePra
     }
 
     @Override
-    public void onCommentUpdate(ModelPrayerAnswered a){
+    public void onAnswerUpdate(ModelPrayerAnswered a){
         this.answer = a;
     }
 }

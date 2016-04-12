@@ -209,6 +209,25 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
     }
 
+    public void onPrayerRequestUpdated(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                updateRightDrawer();
+            }
+        });
+    }
+
+    private void updateRightDrawer(){
+        Database db = new Database(this);
+
+        if (UnAnsweredType) {
+            pr_adapter.refreshAllItem(db.getAllUnansweredPrayerRequest());
+        } else {
+            pr_adapter.refreshAllItem(db.getAllAnsweredPrayerRequest());
+        }
+    }
+
     private boolean checkPlayServices() {
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
         if (resultCode != ConnectionResult.SUCCESS) {

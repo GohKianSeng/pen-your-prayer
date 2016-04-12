@@ -66,9 +66,9 @@ public class FragmentPrayerCommentEdit extends Fragment implements InterfacePray
             @Override
             public void onClick(View v) {
                 if(dirty) {
-                    comment.Comment = comment_editText.getText().toString();
                     Database db = new Database(mainActivity);
                     db.updateOwnerPrayerComment(comment);
+                    comment = db.GetPrayerComment(comment.CommentID);
                 }
                 mainActivity.popBackFragmentStack();
             }

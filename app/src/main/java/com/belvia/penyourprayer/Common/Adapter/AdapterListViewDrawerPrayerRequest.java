@@ -65,20 +65,12 @@ public class AdapterListViewDrawerPrayerRequest extends ArrayAdapter {
                 } else {
                         p = (ViewHolderPrayerRequestModel) convertView.getTag();
                 }
-
-                if(prayerRequest.get(position).InQueue > 0){
-                        p.progressBar.setVisibility(View.VISIBLE);
-                }
-                else{
-                        p.progressBar.setVisibility(View.INVISIBLE);
-                }
+                p.subject_TextView.setText(prayerRequest.get(position).Subject);
 
                 if(prayerRequest.get(position).CreatedWhen.compareTo(prayerRequest.get(position).TouchedWhen) == -1)
                         p.createdwhen_TextView.setText(prayerRequest.get(position).formattedTouchedWhen());
                 else
                         p.createdwhen_TextView.setText(prayerRequest.get(position).formattedCreatedWhen());
-
-                p.subject_TextView.setText(prayerRequest.get(position).Subject);
 
                 if(prayerRequest.get(position).Answered) {
                         p.answered_ImageView.setVisibility(View.VISIBLE);
@@ -87,6 +79,15 @@ public class AdapterListViewDrawerPrayerRequest extends ArrayAdapter {
                 else
                         p.answered_ImageView.setVisibility(View.INVISIBLE);
 
+
+                if(prayerRequest.get(position).InQueue > 0){
+                        p.progressBar.setVisibility(View.VISIBLE);
+                        p.createdwhen_TextView.setVisibility(View.GONE);
+                }
+                else{
+                        p.progressBar.setVisibility(View.INVISIBLE);
+                        p.createdwhen_TextView.setVisibility(View.VISIBLE);
+                }
 
                 for(int x=0; x<prayerRequest.get(position).attachments.size(); x++){
 

@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.belvia.penyourprayer.Common.Model.ModelPrayerAnswered;
@@ -36,12 +37,14 @@ public class AdapterListViewAnswered extends ArrayAdapter {
                 ViewHolderPrayerAnsweredModel p = new ViewHolderPrayerAnsweredModel();
 
                 LayoutInflater inflater = ((Activity)mainactivity).getLayoutInflater();
-                if(convertView == null) {
+                if(convertView == null || ((ViewHolderPrayerAnsweredModel)convertView.getTag()).AnsweredID.compareToIgnoreCase(answered.get(position).AnsweredID) != 0) {
                         convertView = inflater.inflate(R.layout.list_view_row_prayer_comment, parent, false);
                         p.answered_textview = (TextView) convertView.findViewById(R.id.comment_textView);
                         p.displayname_textview = (TextView) convertView.findViewById(R.id.comment_profile_name_textView);
                         p.touchedwhen_textView = (TextView) convertView.findViewById(R.id.comment_touchedwhen_textView);
                         p.profilePicture_imageView = (ImageView) convertView.findViewById(R.id.comment_profile_img_imageView);
+                        p.progressBar = (ProgressBar) convertView.findViewById(R.id.comment_progressbar);
+                        p.AnsweredID = answered.get(position).AnsweredID;
                         convertView.setTag(p);
                 }
                 else{
@@ -59,8 +62,16 @@ public class AdapterListViewAnswered extends ArrayAdapter {
                 String modification = "";
                 if(answered.get(position).CreatedWhen.compareTo(answered.get(position).TouchedWhen) != 0)
                         modification = "Edited: ";
-                if(answered.get(position).ServerSent)
+
+                if(answered.get(position).InQueue > 0) {
+                        p.progressBar.setVisibility(View.VISIBLE);
+                        p.touchedwhen_textView.setVisibility(View.GONE);
+                }
+                else{
                         modification = "Synced, " + modification;
+                        p.progressBar.setVisibility(View.INVISIBLE);
+                        p.touchedwhen_textView.setVisibility(View.VISIBLE);
+                }
 
                 p.answered_textview.setText(answered.get(position).Answered);
                 p.displayname_textview.setText(answered.get(position).WhoName);

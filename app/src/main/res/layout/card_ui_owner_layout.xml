@@ -54,18 +54,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
+        <ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:textSize="10sp"
-            android:paddingLeft="5dp"
-            android:text="Saved"
-            android:id="@+id/card_ui_serversent_textview"
+            android:id="@+id/card_ui_progressbar"
+            android:indeterminate="true"
             android:layout_weight="1"
-            android:textColor="#800080" />
+            android:visibility="invisible"
+            android:indeterminateTintMode="src_atop"
+            android:indeterminateTint="#800080"/>
 
         <TextView
-                android:layout_width="fill_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:text="10 Aug 2015 03:34 PM"
                 android:id="@+id/card_ui_createdwhen"
@@ -73,8 +74,7 @@
                 android:layout_gravity="right"
                 android:gravity="bottom|right"
                 android:textSize="10sp"
-                android:paddingRight="5dp"
-            android:layout_weight="1" />
+                android:paddingRight="5dp" />
     </LinearLayout>
 
     <LinearLayout
