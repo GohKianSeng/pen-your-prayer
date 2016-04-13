@@ -83,6 +83,7 @@ public class AdapterListViewAnswered extends ArrayAdapter {
 
         public void addComment(ModelPrayerAnswered a){
                 this.insert(a, 0);
+                this.answered.add(0, a);
                 this.notifyDataSetChanged();
         }
 

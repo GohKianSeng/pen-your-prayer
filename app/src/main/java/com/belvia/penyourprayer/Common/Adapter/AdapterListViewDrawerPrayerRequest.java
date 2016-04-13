@@ -67,27 +67,32 @@ public class AdapterListViewDrawerPrayerRequest extends ArrayAdapter {
                 }
                 p.subject_TextView.setText(prayerRequest.get(position).Subject);
 
+                String modification = "";
                 if(prayerRequest.get(position).CreatedWhen != prayerRequest.get(position).TouchedWhen)
-                        p.createdwhen_TextView.setText(Utils.UnixTimeReadableString(prayerRequest.get(position).TouchedWhen));
-                else
-                        p.createdwhen_TextView.setText(Utils.UnixTimeReadableString(prayerRequest.get(position).CreatedWhen));
-
-                if(prayerRequest.get(position).Answered) {
-                        p.answered_ImageView.setVisibility(View.VISIBLE);
-                        p.createdwhen_TextView.setText(Utils.UnixTimeReadableString(prayerRequest.get(position).AnsweredWhen));
-                }
-                else
-                        p.answered_ImageView.setVisibility(View.INVISIBLE);
-
+                        modification = "Edited: ";
 
                 if(prayerRequest.get(position).InQueue > 0){
                         p.progressBar.setVisibility(View.VISIBLE);
                         p.createdwhen_TextView.setVisibility(View.GONE);
                 }
                 else{
+                        modification = "Synced, " + modification;
                         p.progressBar.setVisibility(View.INVISIBLE);
                         p.createdwhen_TextView.setVisibility(View.VISIBLE);
                 }
+
+                if(prayerRequest.get(position).CreatedWhen != prayerRequest.get(position).TouchedWhen)
+                        p.createdwhen_TextView.setText(modification + Utils.UnixTimeReadableString(prayerRequest.get(position).TouchedWhen));
+                else
+                        p.createdwhen_TextView.setText(modification + Utils.UnixTimeReadableString(prayerRequest.get(position).CreatedWhen));
+
+                if(prayerRequest.get(position).Answered) {
+                        p.answered_ImageView.setVisibility(View.VISIBLE);
+                        p.createdwhen_TextView.setText("Synced, Answered " + Utils.UnixTimeReadableString(prayerRequest.get(position).AnsweredWhen));
+                }
+                else
+                        p.answered_ImageView.setVisibility(View.INVISIBLE);
+
 
                 for(int x=0; x<prayerRequest.get(position).attachments.size(); x++){
 
