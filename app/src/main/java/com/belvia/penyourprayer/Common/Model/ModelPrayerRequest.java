@@ -14,15 +14,15 @@ public class ModelPrayerRequest implements Serializable {
     public String Subject;
     public String Description;
     public boolean Answered;
-    public Date AnsweredWhen;
+    public long AnsweredWhen;
     public String AnswerComment;
-    public Date CreatedWhen;
-    public Date TouchedWhen;
+    public long CreatedWhen;
+    public long TouchedWhen;
     public int InQueue = 0;
 
     public ModelPrayerRequest(){}
 
-    public ModelPrayerRequest(String ID, String subject, String desc, boolean ans, Date ansWhen, String answerComment, int InQueue, Date createdWhen, Date TouchedWhen){
+    public ModelPrayerRequest(String ID, String subject, String desc, boolean ans, long ansWhen, String answerComment, int InQueue, long createdWhen, long TouchedWhen){
         this.PrayerRequestID = ID;
         this.Subject = subject;
         this.Description = desc;
@@ -33,35 +33,4 @@ public class ModelPrayerRequest implements Serializable {
         this.AnswerComment = answerComment;
         this.InQueue = InQueue;
     }
-
-    public String formattedAnsweredWhen(){
-        SimpleDateFormat format = new SimpleDateFormat("dd MMM yyyy hh:mm:ss aa");
-        return format.format(AnsweredWhen);
-    }
-
-    public String formattedCreatedWhen(){
-        SimpleDateFormat format = new SimpleDateFormat("dd MMM yyyy hh:mm:ss aa");
-        return format.format(CreatedWhen);
-    }
-
-    public String formattedTouchedWhen(){
-        SimpleDateFormat format = new SimpleDateFormat("dd MMM yyyy hh:mm:ss aa");
-        return format.format(TouchedWhen);
-    }
-
-    public String toDBFormattedTouchedWhen(){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-        return format.format(TouchedWhen);
-    }
-
-    public String toDBFormattedCreatedWhen(){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-        return format.format(CreatedWhen);
-    }
-
-    public String toDBFormattedAnsweredWhen(){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-        return format.format(AnsweredWhen);
-    }
-
 }

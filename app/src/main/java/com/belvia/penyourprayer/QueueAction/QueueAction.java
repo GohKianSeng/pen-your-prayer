@@ -83,6 +83,12 @@ public class QueueAction extends AsyncTask<String, Void, String> {
 
     public void StartHttpTranmissionQueue(){
         paused = false;
+
+        if(mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerLoginType, "").length() <=0 ||
+           mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerUserName, "").length() <=0 ||
+           mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerHMACKey, "").length() <=0)
+            return ;
+
         if(this.getStatus() != AsyncTask.Status.RUNNING) {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
                 this.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerLoginType, ""),
@@ -145,6 +151,9 @@ public class QueueAction extends AsyncTask<String, Void, String> {
                 else if(p.Item == ModelQueueAction.ItemType.PrayerAnswered && p.Action == ModelQueueAction.ActionType.Update){
                     ModelPrayerAnswered t = (ModelPrayerAnswered) Utils.deserialize(p.ItemID);
                     submitUpdatePrayerAnswered(db, adapter, t, p.ID, p.IfExecutedGUID);
+                }
+                else if(p.Item == ModelQueueAction.ItemType.PrayerAnswered && p.Action == ModelQueueAction.ActionType.Delete){
+                    submitDeletePrayerAnswered(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
                 }
 
             }
@@ -286,6 +295,20 @@ public class QueueAction extends AsyncTask<String, Void, String> {
             else if (f instanceof InterfacePrayerAnsweredEditUpdated && mainActivity.OwnerID.length() > 0) {
                 ((InterfacePrayerAnsweredEditUpdated) f).onAnswerUpdate(p);
             }
+        }
+    }
+
+    private void submitDeletePrayerAnswered(Database db, RestAdapter adapter, String AnsweredID, int QueueID, String IfExecutedGUID){
+
+        PrayerInterface prayerInterface = adapter.create(PrayerInterface.class);
+        SimpleJsonResponse response = prayerInterface.DeletePrayerAnswered(IfExecutedGUID, AnsweredID);
+        if (response.StatusCode == 200) {
+            if(response.Description.toUpperCase().compareToIgnoreCase("NOTEXISTS") == 0){
+                return;
+            }
+
+            db.deleteQueue(QueueID);
+            //update the commentID from server
         }
     }
 

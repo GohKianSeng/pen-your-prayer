@@ -204,7 +204,7 @@ public class FragmentLogin extends Fragment  {
                         mainActivity.sharedPreferences.edit().putString(QuickstartPreferences.OwnerUserName, model.UserName).apply();
 
                         mainActivity.loadInitialLaunchData();
-
+                        mainActivity.qa.StartHttpTranmissionQueue();
 
                     }
                 }

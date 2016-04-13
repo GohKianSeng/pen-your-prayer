@@ -8,6 +8,7 @@ public class QuickstartPreferences {
     public static final int thumbnailDPsize = 70;
 
     public static final String DefaultTimeFormat = "yyyy-MM-dd'T'HH:mm:sszzz";
+    public static final String DefaultReadableTimeFormat = "dd MMM yyyy hh:mm:ss aa";
 
     //OwnerGUID
     public static final String OwnerLoginType = "OwnerLoginType";

@@ -30,19 +30,19 @@ public class Database extends SQLiteOpenHelper {
 
     // All Static variables
     // Database Version
-    private static final int DATABASE_VERSION = 53;
+    private static final int DATABASE_VERSION = 54;
 
     // Database Name
     private static final String DATABASE_NAME = "PenYourPrayerSQLite";
     private static final String tb_Friends = "CREATE TABLE tb_Friends ('UserID' TEXT NOT NULL, 'OwnerID' TEXT NOT NULL, 'DisplayName' TEXT NOT NULL, 'ProfilePictureURL' TEXT, PRIMARY KEY(UserID, OwnerID))";
-    private static final String tb_OwnerPrayerAmen = "CREATE TABLE tb_OwnerPrayerAmen ('OwnerPrayerID' TEXT NOT NULL,'WhoID' TEXT NOT NULL,'WhoName' TEXT NOT NULL,'WhoProfilePicture' TEXT, 'CreatedWhen' DATETIME DEFAULT (DATETIME('NOW','LOCALTIME')), PRIMARY KEY(OwnerPrayerID,WhoID))";
-    private static final String tb_OwnerPrayerComment = "CREATE TABLE tb_OwnerPrayerComment (CommentID TEXT NOT NULL UNIQUE, OwnerPrayerID TEXT NOT NULL, WhoID TEXT NOT NULL, WhoName TEXT NOT NULL,WhoProfilePicture TEXT, Comment TEXT NOT NULL, ServerSent INTEGER NOT NULL DEFAULT 0, InQueue INTEGER NOT NULL DEFAULT 0, CreatedWhen DATETIME DEFAULT (DATETIME('NOW','LOCALTIME')), TouchedWhen DATETIME DEFAULT (DATETIME('NOW','LOCALTIME')), PRIMARY KEY(CommentID,OwnerPrayerID))";
-    private static final String tb_OwnerPrayerAnswered = "CREATE TABLE tb_OwnerPrayerAnswered (AnsweredID TEXT NOT NULL UNIQUE, OwnerPrayerID TEXT NOT NULL, WhoID TEXT NOT NULL, WhoName TEXT NOT NULL,WhoProfilePicture TEXT, Answered TEXT NOT NULL, ServerSent INTEGER NOT NULL DEFAULT 0, InQueue INTEGER NOT NULL DEFAULT 0, CreatedWhen DATETIME DEFAULT (DATETIME('NOW','LOCALTIME')), TouchedWhen DATETIME DEFAULT (DATETIME('NOW','LOCALTIME')), PRIMARY KEY(AnsweredID,OwnerPrayerID))";
+    private static final String tb_OwnerPrayerAmen = "CREATE TABLE tb_OwnerPrayerAmen ('OwnerPrayerID' TEXT NOT NULL,'WhoID' TEXT NOT NULL,'WhoName' TEXT NOT NULL,'WhoProfilePicture' TEXT, 'CreatedWhen' INTEGER NOT NULL, PRIMARY KEY(OwnerPrayerID,WhoID))";
+    private static final String tb_OwnerPrayerComment = "CREATE TABLE tb_OwnerPrayerComment (CommentID TEXT NOT NULL UNIQUE, OwnerPrayerID TEXT NOT NULL, WhoID TEXT NOT NULL, WhoName TEXT NOT NULL,WhoProfilePicture TEXT, Comment TEXT NOT NULL, ServerSent INTEGER NOT NULL DEFAULT 0, InQueue INTEGER NOT NULL DEFAULT 0, CreatedWhen INTEGER NOT NULL, TouchedWhen INTEGER NOT NULL, PRIMARY KEY(CommentID,OwnerPrayerID))";
+    private static final String tb_OwnerPrayerAnswered = "CREATE TABLE tb_OwnerPrayerAnswered (AnsweredID TEXT NOT NULL UNIQUE, OwnerPrayerID TEXT NOT NULL, WhoID TEXT NOT NULL, WhoName TEXT NOT NULL,WhoProfilePicture TEXT, Answered TEXT NOT NULL, ServerSent INTEGER NOT NULL DEFAULT 0, InQueue INTEGER NOT NULL DEFAULT 0, CreatedWhen INTEGER NOT NULL, TouchedWhen INTEGER NOT NULL, PRIMARY KEY(AnsweredID,OwnerPrayerID))";
     private static final String tb_OwnerPrayerTagFriends = "CREATE TABLE tb_OwnerPrayerTagFriends ( OwnerPrayerID TEXT NOT NULL, WhoID TEXT NOT NULL, PRIMARY KEY(OwnerPrayerID,WhoID))";
-    private static final String tb_ownerPrayer = "CREATE TABLE tb_ownerPrayer (PrayerID TEXT NOT NULL UNIQUE, CreatedWhen DATETIME NOT NULL DEFAULT (DATETIME('NOW','LOCALTIME')), TouchedWhen DATETIME NOT NULL DEFAULT (DATETIME('NOW','LOCALTIME')), Content TEXT NOT NULL, PublicView INTEGER NOT NULL DEFAULT 0, ServerSent INTEGER NOT NULL DEFAULT 0, InQueue INTEGER NOT NULL DEFAULT 0, Deleted INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(PrayerID))";
-    private static final String tb_QueueAction = "CREATE TABLE tb_QueueAction (ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, Action TEXT NOT NULL, Item TEXT NOT NULL, ItemID TEXT NOT NULL, IfExecutedGUID TEXT NOT NULL)";
+    private static final String tb_ownerPrayer = "CREATE TABLE tb_ownerPrayer (PrayerID TEXT NOT NULL UNIQUE, CreatedWhen INTEGER NOT NULL, TouchedWhen INTEGER NOT NULL, Content TEXT NOT NULL, PublicView INTEGER NOT NULL DEFAULT 0, ServerSent INTEGER NOT NULL DEFAULT 0, InQueue INTEGER NOT NULL DEFAULT 0, Deleted INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(PrayerID))";
+    private static final String tb_QueueAction = "CREATE TABLE tb_QueueAction (ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, Action TEXT NOT NULL, Item TEXT NOT NULL, ItemID TEXT NOT NULL, IfExecutedGUID TEXT NOT NULL, CreatedWhen INTEGER NOT NULL DEFAULT (STRFTIME('%s', 'now')))";
     private static final String tb_OwnerPrayerAttachment = "CREATE TABLE tb_OwnerPrayerAttachment (OwnerPrayerID TEXT NOT NULL, GUID TEXT NOT NULL, UserID TEXT NOT NULL, OriginalFilePath TEXT NOT NULL, FileName TEXT NOT NULL, PRIMARY KEY(OwnerPrayerID,GUID))";
-    private static final String tb_PrayerRequest = "CREATE TABLE tb_PrayerRequest (PrayerRequestID TEXT NOT NULL UNIQUE, Subject TEXT NOT NULL, Description TEXT, Answered NOT NULL DEFAULT 0, AnsweredWhen DATETIME, AnswerComment TEXT, InQueue INTEGER NOT NULL DEFAULT 0, CreatedWhen DATETIME DEFAULT (DATETIME('NOW','LOCALTIME')), TouchedWhen DATETIME DEFAULT (DATETIME('NOW','LOCALTIME')), PRIMARY KEY(PrayerRequestID))";
+    private static final String tb_PrayerRequest = "CREATE TABLE tb_PrayerRequest (PrayerRequestID TEXT NOT NULL UNIQUE, Subject TEXT NOT NULL, Description TEXT, Answered NOT NULL DEFAULT 0, AnsweredWhen INTEGER, AnswerComment TEXT, InQueue INTEGER NOT NULL DEFAULT 0, CreatedWhen INTEGER NOT NULL, TouchedWhen INTEGER NOT NULL, PRIMARY KEY(PrayerRequestID))";
     private static final String tb_PrayerRequestAttachment = "CREATE TABLE tb_PrayerRequestAttachment (PrayerRequestID TEXT NOT NULL, GUID TEXT NOT NULL, UserID TEXT NOT NULL, OriginalFilePath TEXT NOT NULL, FileName TEXT NOT NULL, PRIMARY KEY(PrayerRequestID, GUID))";
 
     public Database(Context context) {
@@ -169,19 +169,15 @@ public class Database extends SQLiteOpenHelper {
 
     public void UpdatePrayerRequest(String PrayerRequestID, boolean answered, String answeredComment, String subject, String description) {
         SQLiteDatabase db = getWritableDatabase();
-
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String date =  format.format(new Date());
-
-
+        long timestamp = Utils.getCurrentUnixDatetime();
         ContentValues cv = new ContentValues();
         cv.put("Subject", "#" + subject);
         cv.put("Description", description);
-        cv.put("TouchedWhen", date);
+        cv.put("TouchedWhen", timestamp);
         cv.put("Answered", answered);
         if(answered) {
             cv.put("AnswerComment", answeredComment);
-            cv.put("AnsweredWhen", date);
+            cv.put("AnsweredWhen", timestamp);
 
         }
 
@@ -206,6 +202,8 @@ public class Database extends SQLiteOpenHelper {
             cv.put("Subject", "#" + subject);
             cv.put("Description", description);
             cv.put("InQueue", 1);
+            cv.put("CreatedWhen", Utils.getCurrentUnixDatetime());
+            cv.put("TouchedWhen", Utils.getCurrentUnixDatetime());
             id = db.insert("tb_PrayerRequest", null, cv);
         }
         if(attachment != null) {
@@ -234,7 +232,7 @@ public class Database extends SQLiteOpenHelper {
 
         while (c.moveToNext()) {
 
-            ModelPrayerRequest p = new ModelPrayerRequest(c.getString(c.getColumnIndex("PrayerRequestID")), c.getString(c.getColumnIndex("Subject")), c.getString(c.getColumnIndex("Description")), convertToBoolean(c.getInt(c.getColumnIndex("Answered"))), convertToDateTime(c.getString(c.getColumnIndex("AnsweredWhen"))), c.getString(c.getColumnIndex("AnswerComment")), c.getInt(c.getColumnIndex("InQueue")), convertToDateTime(c.getString(c.getColumnIndex("CreatedWhen"))), convertToDateTime(c.getString(c.getColumnIndex("TouchedWhen"))));
+            ModelPrayerRequest p = new ModelPrayerRequest(c.getString(c.getColumnIndex("PrayerRequestID")), c.getString(c.getColumnIndex("Subject")), c.getString(c.getColumnIndex("Description")), convertToBoolean(c.getInt(c.getColumnIndex("Answered"))), c.getInt(c.getColumnIndex("AnsweredWhen")), c.getString(c.getColumnIndex("AnswerComment")), c.getInt(c.getColumnIndex("InQueue")), c.getInt(c.getColumnIndex("CreatedWhen")), c.getInt(c.getColumnIndex("TouchedWhen")));
             p.attachments = getPrayerRequestAttachment(p.PrayerRequestID, db);
 
             pr.add(p);
@@ -251,7 +249,7 @@ public class Database extends SQLiteOpenHelper {
 
         while (c.moveToNext()) {
 
-            ModelPrayerRequest p = new ModelPrayerRequest(c.getString(c.getColumnIndex("PrayerRequestID")), c.getString(c.getColumnIndex("Subject")), c.getString(c.getColumnIndex("Description")), convertToBoolean(c.getInt(c.getColumnIndex("Answered"))), convertToDateTime(c.getString(c.getColumnIndex("AnsweredWhen"))), c.getString(c.getColumnIndex("AnswerComment")), c.getInt(c.getColumnIndex("InQueue")), convertToDateTime(c.getString(c.getColumnIndex("CreatedWhen"))), convertToDateTime(c.getString(c.getColumnIndex("TouchedWhen"))));
+            ModelPrayerRequest p = new ModelPrayerRequest(c.getString(c.getColumnIndex("PrayerRequestID")), c.getString(c.getColumnIndex("Subject")), c.getString(c.getColumnIndex("Description")), convertToBoolean(c.getInt(c.getColumnIndex("Answered"))), c.getInt(c.getColumnIndex("AnsweredWhen")), c.getString(c.getColumnIndex("AnswerComment")), c.getInt(c.getColumnIndex("InQueue")), c.getInt(c.getColumnIndex("CreatedWhen")), c.getInt(c.getColumnIndex("TouchedWhen")));
             p.attachments = getPrayerRequestAttachment(p.PrayerRequestID, db);
 
             pr.add(p);
@@ -278,7 +276,7 @@ public class Database extends SQLiteOpenHelper {
         Cursor c = db.rawQuery("SELECT PrayerRequestID, Subject, Description, Answered, AnsweredWhen, AnswerComment, CreatedWhen, TouchedWhen, InQueue FROM tb_PrayerRequest WHERE PrayerRequestID = '" + PrayerRequestID + "' ORDER BY CreatedWhen DESC", null);
 
         while (c.moveToNext()) {
-            pr = new ModelPrayerRequest(c.getString(c.getColumnIndex("PrayerRequestID")), c.getString(c.getColumnIndex("Subject")), c.getString(c.getColumnIndex("Description")), convertToBoolean(c.getInt(c.getColumnIndex("Answered"))), convertToDateTime(c.getString(c.getColumnIndex("AnsweredWhen"))), c.getString(c.getColumnIndex("AnswerComment")), c.getInt(c.getColumnIndex("InQueue")),convertToDateTime(c.getString(c.getColumnIndex("CreatedWhen"))), convertToDateTime(c.getString(c.getColumnIndex("TouchedWhen"))));
+            pr = new ModelPrayerRequest(c.getString(c.getColumnIndex("PrayerRequestID")), c.getString(c.getColumnIndex("Subject")), c.getString(c.getColumnIndex("Description")), convertToBoolean(c.getInt(c.getColumnIndex("Answered"))), c.getInt(c.getColumnIndex("AnsweredWhen")), c.getString(c.getColumnIndex("AnswerComment")), c.getInt(c.getColumnIndex("InQueue")),c.getInt(c.getColumnIndex("CreatedWhen")), c.getInt(c.getColumnIndex("TouchedWhen")));
             pr.attachments = getPrayerRequestAttachment(pr.PrayerRequestID, db);
 
 
@@ -330,10 +328,10 @@ public class Database extends SQLiteOpenHelper {
             cv.put("Answered", pr.get(x).Answered);
             cv.put("AnswerComment", pr.get(x).AnswerComment);
             if(pr.get(x).Answered)
-                cv.put("AnsweredWhen", pr.get(x).toDBFormattedAnsweredWhen());
+                cv.put("AnsweredWhen", pr.get(x).AnsweredWhen);
 
-            cv.put("CreatedWhen", pr.get(x).toDBFormattedCreatedWhen());
-            cv.put("TouchedWhen", pr.get(x).toDBFormattedTouchedWhen());
+            cv.put("CreatedWhen", pr.get(x).CreatedWhen);
+            cv.put("TouchedWhen", pr.get(x).TouchedWhen);
             db.insert("tb_PrayerRequest", null, cv);
 
             if (pr.get(x).attachments != null){
@@ -382,8 +380,8 @@ public class Database extends SQLiteOpenHelper {
             cv.put("PublicView", prayers.get(x).publicView);
             cv.put("ServerSent", true);
             cv.put("InQueue", 0);
-            cv.put("CreatedWhen", prayers.get(x).toDBFormattedCreatedWhen());
-            cv.put("TouchedWhen", prayers.get(x).toDBFormattedTouchedWhen());
+            cv.put("CreatedWhen", prayers.get(x).CreatedWhen);
+            cv.put("TouchedWhen", prayers.get(x).TouchedWhen);
             db.insert("tb_ownerPrayer", null, cv);
 
             if(prayers.get(x).amen != null)
@@ -410,6 +408,8 @@ public class Database extends SQLiteOpenHelper {
             cv.put("Content", prayer);
             cv.put("PublicView", publicView);
             cv.put("InQueue", 1);
+            cv.put("TouchedWhen", Utils.getCurrentUnixDatetime());
+            cv.put("CreatedWhen", Utils.getCurrentUnixDatetime());
             id = db.insert("tb_ownerPrayer", null, cv);
         }
         for(int x=0; x<selectedFriends.size(); x++){
@@ -461,8 +461,8 @@ public class Database extends SQLiteOpenHelper {
             ModelOwnerPrayer o = new ModelOwnerPrayer();
             o.PrayerID = c.getString(c.getColumnIndex("PrayerID"));
             //2015-10-18 23:28:21
-            o.CreatedWhen = convertToDateTime(c.getString(c.getColumnIndex("CreatedWhen")));
-            o.TouchedWhen = convertToDateTime(c.getString(c.getColumnIndex("TouchedWhen")));
+            o.CreatedWhen = c.getLong(c.getColumnIndex("CreatedWhen"));
+            o.TouchedWhen = c.getLong(c.getColumnIndex("TouchedWhen"));
             o.Content = c.getString(c.getColumnIndex("Content"));
             o.publicView = convertToBoolean(c.getInt(c.getColumnIndex("PublicView")));
             o.InQueue = c.getInt(c.getColumnIndex("InQueue"));
@@ -491,8 +491,8 @@ public class Database extends SQLiteOpenHelper {
         ModelOwnerPrayer o = new ModelOwnerPrayer();
         if(c.moveToNext()) {
             o.PrayerID = c.getString(c.getColumnIndex("PrayerID"));
-            o.CreatedWhen = convertToDateTime(c.getString(c.getColumnIndex("CreatedWhen")));
-            o.TouchedWhen = convertToDateTime(c.getString(c.getColumnIndex("TouchedWhen")));
+            o.CreatedWhen = c.getLong(c.getColumnIndex("CreatedWhen"));
+            o.TouchedWhen = c.getLong(c.getColumnIndex("TouchedWhen"));
             o.Content = c.getString(c.getColumnIndex("Content"));
             o.publicView = convertToBoolean(c.getInt(c.getColumnIndex("PublicView")));
             o.InQueue = c.getInt(c.getColumnIndex("InQueue"));
@@ -504,13 +504,11 @@ public class Database extends SQLiteOpenHelper {
     }
 
     public void deletePrayer(String PrayerID){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String date =  format.format(new Date());
 
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put("Deleted", 1);
-        cv.put("TouchedWhen", date);
+        cv.put("TouchedWhen", Utils.getCurrentUnixDatetime());
         db.update("tb_ownerPrayer", cv, "PrayerID = '" + PrayerID + "'", null);
 
         addQueue(db, ModelQueueAction.ActionType.Delete, ModelQueueAction.ItemType.Prayer, PrayerID);
@@ -682,6 +680,7 @@ public class Database extends SQLiteOpenHelper {
             cv.put("WhoName", whoName);
             cv.put("WhoProfilePicture", whoProfilePicture);
             cv.put("OwnerPrayerID", OwnerPrayerID);
+            cv.put("CreatedWhen", Utils.getCurrentUnixDatetime());
             db.delete("tb_OwnerPrayerAmen", "OwnerPrayerID" + "= '" + OwnerPrayerID + "' AND WhoID = '" + WhoID + "'", null);
             db.insert("tb_OwnerPrayerAmen", null, cv);
 
@@ -701,7 +700,7 @@ public class Database extends SQLiteOpenHelper {
             cv.put("WhoID", amen.get(x).WhoID);
             cv.put("WhoName", amen.get(x).WhoName);
             cv.put("WhoProfilePicture", amen.get(x).WhoProfilePicture);
-            cv.put("CreatedWhen", amen.get(x).toDBFormattedCreatedWhen());
+            cv.put("CreatedWhen", amen.get(x).CreatedWhen);
             db.insert("tb_OwnerPrayerAmen", null, cv);
         }
     }
@@ -808,19 +807,18 @@ public class Database extends SQLiteOpenHelper {
         cv.put("WhoName", WhoName);
         cv.put("WhoProfilePicture", WhoProfilePicture);
         cv.put("InQueue", 1);
+        cv.put("TouchedWhen", Utils.getCurrentUnixDatetime());
+        cv.put("CreatedWhen", Utils.getCurrentUnixDatetime());
         db.insert("tb_OwnerPrayerComment", null, cv);
 
         addQueue(db, ModelQueueAction.ActionType.Insert, ModelQueueAction.ItemType.PrayerComment, CommentID);
     }
 
     public void updateOwnerPrayerComment(ModelPrayerComment comment){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String date =  format.format(new Date());
-
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put("Comment", comment.Comment);
-        cv.put("TouchedWhen", date);
+        cv.put("TouchedWhen", Utils.getCurrentUnixDatetime());
         db.update("tb_OwnerPrayerComment", cv, "OwnerPrayerID = '" + comment.OwnerPrayerID + "' AND CommentID = '" + comment.CommentID + "'", null);
 
         String sql =    "UPDATE tb_OwnerPrayerComment" +
@@ -852,8 +850,8 @@ public class Database extends SQLiteOpenHelper {
             f.WhoProfilePicture = c.getString(c.getColumnIndex("WhoProfilePicture"));
             f.Comment = c.getString(c.getColumnIndex("Comment"));
             f.InQueue = c.getInt(c.getColumnIndex("InQueue"));
-            f.CreatedWhen = convertToDateTime(c.getString(c.getColumnIndex("CreatedWhen")));
-            f.TouchedWhen = convertToDateTime(c.getString(c.getColumnIndex("TouchedWhen")));
+            f.CreatedWhen = c.getInt(c.getColumnIndex("CreatedWhen"));
+            f.TouchedWhen = c.getInt(c.getColumnIndex("TouchedWhen"));
             comments.add(f);
         }
         if(c != null)
@@ -878,8 +876,8 @@ public class Database extends SQLiteOpenHelper {
             f.WhoProfilePicture = c.getString(c.getColumnIndex("WhoProfilePicture"));
             f.Comment = c.getString(c.getColumnIndex("Comment"));
             f.InQueue = c.getInt(c.getColumnIndex("InQueue"));
-            f.CreatedWhen = convertToDateTime(c.getString(c.getColumnIndex("CreatedWhen")));
-            f.TouchedWhen = convertToDateTime(c.getString(c.getColumnIndex("TouchedWhen")));
+            f.CreatedWhen = c.getInt(c.getColumnIndex("CreatedWhen"));
+            f.TouchedWhen = c.getInt(c.getColumnIndex("TouchedWhen"));
 
 
         }
@@ -918,8 +916,8 @@ public class Database extends SQLiteOpenHelper {
             cv.put("WhoProfilePicture", comments.get(x).WhoProfilePicture);
             cv.put("Comment", comments.get(x).Comment);
             cv.put("ServerSent", true);
-            cv.put("TouchedWhen", comments.get(x).toDBFormattedTouchedWhen());
-            cv.put("CreatedWhen", comments.get(x).toDBFormattedCreatedWhen());
+            cv.put("TouchedWhen", comments.get(x).TouchedWhen);
+            cv.put("CreatedWhen", comments.get(x).CreatedWhen);
             db.insert("tb_OwnerPrayerComment", null, cv);
         }
     }
@@ -959,8 +957,8 @@ public class Database extends SQLiteOpenHelper {
             f.WhoProfilePicture = c.getString(c.getColumnIndex("WhoProfilePicture"));
             f.Answered = c.getString(c.getColumnIndex("Answered"));
             f.InQueue = c.getInt(c.getColumnIndex("InQueue"));
-            f.CreatedWhen = convertToDateTime(c.getString(c.getColumnIndex("CreatedWhen")));
-            f.TouchedWhen = convertToDateTime(c.getString(c.getColumnIndex("TouchedWhen")));
+            f.CreatedWhen = c.getInt(c.getColumnIndex("CreatedWhen"));
+            f.TouchedWhen = c.getInt(c.getColumnIndex("TouchedWhen"));
             comments.add(f);
         }
         if(c != null)
@@ -969,13 +967,10 @@ public class Database extends SQLiteOpenHelper {
     }
 
     public void updateOwnerPrayerAnswered(ModelPrayerAnswered ans){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String date =  format.format(new Date());
-
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put("Answered", ans.Answered);
-        cv.put("TouchedWhen", date);
+        cv.put("TouchedWhen", Utils.getCurrentUnixDatetime());
         db.update("tb_OwnerPrayerAnswered", cv, "OwnerPrayerID = '" + ans.OwnerPrayerID + "' AND AnsweredID = '" + ans.AnsweredID + "'", null);
 
         String sql =    "UPDATE tb_OwnerPrayerAnswered" +
@@ -998,6 +993,8 @@ public class Database extends SQLiteOpenHelper {
         cv.put("WhoName", WhoName);
         cv.put("WhoProfilePicture", WhoProfilePicture);
         cv.put("InQueue", 1);
+        cv.put("TouchedWhen", Utils.getCurrentUnixDatetime());
+        cv.put("CreatedWhen", Utils.getCurrentUnixDatetime());
         db.insert("tb_OwnerPrayerAnswered", null, cv);
 
         addQueue(db, ModelQueueAction.ActionType.Insert, ModelQueueAction.ItemType.PrayerAnswered, AnsweredID);
@@ -1006,7 +1003,7 @@ public class Database extends SQLiteOpenHelper {
     public void DeletePrayerAnswered(String AnsweredID){
         SQLiteDatabase db = getWritableDatabase();
 
-        db.delete("tb_OwnerPrayerComment", "AnsweredID = '" + AnsweredID + "'", null);
+        db.delete("tb_OwnerPrayerAnswered", "AnsweredID = '" + AnsweredID + "'", null);
 
         addQueue(db, ModelQueueAction.ActionType.Delete, ModelQueueAction.ItemType.PrayerAnswered, AnsweredID);
     }
@@ -1028,8 +1025,8 @@ public class Database extends SQLiteOpenHelper {
             f.WhoProfilePicture = c.getString(c.getColumnIndex("WhoProfilePicture"));
             f.Answered = c.getString(c.getColumnIndex("Answered"));
             f.InQueue = c.getInt(c.getColumnIndex("InQueue"));
-            f.CreatedWhen = convertToDateTime(c.getString(c.getColumnIndex("CreatedWhen")));
-            f.TouchedWhen = convertToDateTime(c.getString(c.getColumnIndex("TouchedWhen")));
+            f.CreatedWhen = c.getInt(c.getColumnIndex("CreatedWhen"));
+            f.TouchedWhen = c.getInt(c.getColumnIndex("TouchedWhen"));
 
 
         }
@@ -1062,8 +1059,8 @@ public class Database extends SQLiteOpenHelper {
             cv.put("WhoProfilePicture", ProfilePictureURL);
             cv.put("Answered", answers.get(x).Answered);
             cv.put("ServerSent", true);
-            cv.put("TouchedWhen", answers.get(x).toDBFormattedTouchedWhen());
-            cv.put("CreatedWhen", answers.get(x).toDBFormattedCreatedWhen());
+            cv.put("TouchedWhen", answers.get(x).TouchedWhen);
+            cv.put("CreatedWhen", answers.get(x).CreatedWhen);
             db.insert("tb_OwnerPrayerAnswered", null, cv);
         }
     }

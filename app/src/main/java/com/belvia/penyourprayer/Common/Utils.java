@@ -20,6 +20,9 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Objects;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -41,6 +44,16 @@ public class Utils {
             }
         }
         catch(Exception ex){}
+    }
+
+    public static long getCurrentUnixDatetime(){
+        return System.currentTimeMillis()/1000;
+    }
+
+    public static String UnixTimeReadableString(long unixTime){
+        Date date = new Date(unixTime*1000);
+        SimpleDateFormat format = new SimpleDateFormat(QuickstartPreferences.DefaultReadableTimeFormat);
+        return format.format(date);
     }
 
     public static String TempUserID(MainActivity mainActivity){

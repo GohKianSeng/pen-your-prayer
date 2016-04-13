@@ -14,29 +14,10 @@ public class ModelPrayerAnswered implements Serializable {
     public String WhoName;
     public String WhoProfilePicture;
     public String Answered;
-    public Date CreatedWhen;
-    public Date TouchedWhen;
+    public long CreatedWhen;
+    public long TouchedWhen;
     public int InQueue;
 
     public ModelPrayerAnswered(){}
 
-    public String formattedCreatedWhen(){
-        SimpleDateFormat format = new SimpleDateFormat("dd MMM yyyy hh:mm:ss aa");
-        return format.format(CreatedWhen);
-    }
-
-    public String formattedTouchedWhen(){
-        SimpleDateFormat format = new SimpleDateFormat("dd MMM yyyy hh:mm:ss aa");
-        return format.format(TouchedWhen);
-    }
-
-    public String toDBFormattedTouchedWhen(){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-        return format.format(TouchedWhen);
-    }
-
-    public String toDBFormattedCreatedWhen(){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-        return format.format(CreatedWhen);
-    }
 }

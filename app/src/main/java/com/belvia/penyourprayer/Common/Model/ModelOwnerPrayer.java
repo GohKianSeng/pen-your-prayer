@@ -1,5 +1,8 @@
 package com.belvia.penyourprayer.Common.Model;
 
+import com.belvia.penyourprayer.Common.Utils;
+import com.belvia.penyourprayer.QuickstartPreferences;
+
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,8 +16,8 @@ import java.util.TimeZone;
 public class ModelOwnerPrayer implements Serializable {
 
     public String PrayerID = "";
-    public Date CreatedWhen = null;
-    public Date TouchedWhen = null;
+    public long CreatedWhen = 0;
+    public long TouchedWhen = 0;
     public String Content = "";
     public boolean publicView = false;
     public int InQueue = 0;
@@ -36,22 +39,6 @@ public class ModelOwnerPrayer implements Serializable {
     public ModelOwnerPrayer(){}
 
     public String formattedCreatedWhen(){
-        SimpleDateFormat format = new SimpleDateFormat("dd MMM yyyy hh:mm:ss aa");
-        return format.format(CreatedWhen);
-    }
-
-    public String formattedTouchedWhen(){
-        SimpleDateFormat format = new SimpleDateFormat("dd MMM yyyy hh:mm:ss aa");
-        return format.format(TouchedWhen);
-    }
-
-    public String toDBFormattedTouchedWhen(){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-        return format.format(TouchedWhen);
-    }
-
-    public String toDBFormattedCreatedWhen(){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-        return format.format(CreatedWhen);
+        return Utils.UnixTimeReadableString(CreatedWhen);
     }
 }

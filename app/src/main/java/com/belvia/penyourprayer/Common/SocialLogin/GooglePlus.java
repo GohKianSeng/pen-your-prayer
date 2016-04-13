@@ -200,7 +200,7 @@ public class GooglePlus implements
                     mainActivity.sharedPreferences.edit().putString(QuickstartPreferences.OwnerUserName, model.UserName).apply();
 
                     mainActivity.loadInitialLaunchData();
-
+                    mainActivity.qa.StartHttpTranmissionQueue();
 
                 }
             }

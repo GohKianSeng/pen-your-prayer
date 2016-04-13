@@ -67,14 +67,14 @@ public class AdapterListViewDrawerPrayerRequest extends ArrayAdapter {
                 }
                 p.subject_TextView.setText(prayerRequest.get(position).Subject);
 
-                if(prayerRequest.get(position).CreatedWhen.compareTo(prayerRequest.get(position).TouchedWhen) == -1)
-                        p.createdwhen_TextView.setText(prayerRequest.get(position).formattedTouchedWhen());
+                if(prayerRequest.get(position).CreatedWhen != prayerRequest.get(position).TouchedWhen)
+                        p.createdwhen_TextView.setText(Utils.UnixTimeReadableString(prayerRequest.get(position).TouchedWhen));
                 else
-                        p.createdwhen_TextView.setText(prayerRequest.get(position).formattedCreatedWhen());
+                        p.createdwhen_TextView.setText(Utils.UnixTimeReadableString(prayerRequest.get(position).CreatedWhen));
 
                 if(prayerRequest.get(position).Answered) {
                         p.answered_ImageView.setVisibility(View.VISIBLE);
-                        p.createdwhen_TextView.setText(prayerRequest.get(position).formattedAnsweredWhen());
+                        p.createdwhen_TextView.setText(Utils.UnixTimeReadableString(prayerRequest.get(position).AnsweredWhen));
                 }
                 else
                         p.answered_ImageView.setVisibility(View.INVISIBLE);

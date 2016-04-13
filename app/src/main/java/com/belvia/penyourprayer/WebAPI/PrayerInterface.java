@@ -54,6 +54,9 @@ public interface PrayerInterface {
     @POST("/api/Prayer/UpdatePrayerAnswered")
     SimpleJsonResponse UpdatePrayerAnswered(@Query("QueueActionGUID") String QueueActionGUID, @Query("PrayerID") String PrayerID, @Body ModelPrayerAnswered body);
 
+    @GET("/api/Prayer/DeletePrayerAnswered")
+    SimpleJsonResponse DeletePrayerAnswered(@Query("QueueActionGUID") String QueueActionGUID, @Query("AnsweredID") String AnsweredID);
+
     @POST("/api/Prayer/AddNewPrayerRequest")
     SimpleJsonResponse AddNewPrayerRequest(@Query("QueueActionGUID") String QueueActionGUID, @Body ModelPrayerRequest body);
 

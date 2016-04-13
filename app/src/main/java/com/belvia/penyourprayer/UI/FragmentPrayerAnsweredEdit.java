@@ -66,6 +66,7 @@ public class FragmentPrayerAnsweredEdit extends Fragment implements InterfacePra
             @Override
             public void onClick(View v) {
                 if(dirty) {
+                    answer.Answered = answered_editText.getText().toString().trim();
                     Database db = new Database(mainActivity);
                     db.updateOwnerPrayerAnswered(answer);
                     answer = db.GetPrayerAnswered(answer.OwnerPrayerID);

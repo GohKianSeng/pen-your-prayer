@@ -60,6 +60,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
+import com.larswerkman.holocolorpicker.Util;
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
@@ -86,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
     public SharedPreferences sharedPreferences;
     public ArrayList<ModelPrayerAttachement> attachment;
     public ArrayList<ModelPrayerRequestAttachement> pr_attachment;
-    private QueueAction qa;
+    public QueueAction qa;
     private boolean UnAnsweredType = true;
     private ImageButton PrayerRequestType;
     public GoogleApiClient mGoogleApiClient;
@@ -124,6 +125,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         sharedPreferences = this.getSharedPreferences("PenYourPrayer.SharePreference", Context.MODE_PRIVATE);
+
+        String sdf = Utils.UnixTimeReadableString(Utils.getCurrentUnixDatetime());
+        sdf.toString();
+
+
 
         FacebookSdk.sdkInitialize(this.getApplicationContext());
 
@@ -198,7 +204,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        qa.StartHttpTranmissionQueue();
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                 new IntentFilter(QuickstartPreferences.BroadcastMessage));
     }

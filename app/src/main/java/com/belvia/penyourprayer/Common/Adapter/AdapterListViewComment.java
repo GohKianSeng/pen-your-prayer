@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.belvia.penyourprayer.Common.Model.ModelPrayerComment;
 import com.belvia.penyourprayer.Common.Model.ViewHolder.ViewHolderPrayerCommentModel;
+import com.belvia.penyourprayer.Common.Utils;
 import com.belvia.penyourprayer.R;
 import com.belvia.penyourprayer.UI.MainActivity;
 
@@ -60,7 +61,7 @@ public class AdapterListViewComment extends ArrayAdapter {
 
 
                 String modification = "";
-                if(comment.get(position).CreatedWhen.compareTo(comment.get(position).TouchedWhen) != 0)
+                if(comment.get(position).CreatedWhen != comment.get(position).TouchedWhen)
                         modification = "Edited: ";
 
                 if(comment.get(position).InQueue > 0) {
@@ -75,7 +76,7 @@ public class AdapterListViewComment extends ArrayAdapter {
 
                 p.comment_textview.setText(comment.get(position).Comment);
                 p.displayname_textview.setText(comment.get(position).WhoName);
-                p.touchedwhen_textView.setText(modification + comment.get(position).formattedTouchedWhen());
+                p.touchedwhen_textView.setText(modification + Utils.UnixTimeReadableString(comment.get(position).TouchedWhen));
 
                 return convertView;
         }
