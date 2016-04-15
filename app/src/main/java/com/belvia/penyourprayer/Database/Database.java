@@ -16,6 +16,7 @@ import com.belvia.penyourprayer.Common.Model.ModelPrayerRequest;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerRequestAttachement;
 import com.belvia.penyourprayer.Common.Model.ModelQueueAction;
 import com.belvia.penyourprayer.Common.Utils;
+import com.belvia.penyourprayer.UI.MainActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import java.util.UUID;
  */
 public class Database extends SQLiteOpenHelper {
 
+    private MainActivity mainActivity;
     // All Static variables
     // Database Version
     private static final int DATABASE_VERSION = 54;
@@ -47,6 +49,7 @@ public class Database extends SQLiteOpenHelper {
 
     public Database(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        mainActivity = (MainActivity) context;
         try {
             openConnection();
         }catch(Exception e){
@@ -130,7 +133,7 @@ public class Database extends SQLiteOpenHelper {
         db.delete("tb_QueueAction", "ID = " + String.valueOf(QueueID), null);
     }
 
-    public void addQueue(SQLiteDatabase db, ModelQueueAction.ActionType actionType, ModelQueueAction.ItemType itemType, Object obj){
+    private void addQueue(SQLiteDatabase db, ModelQueueAction.ActionType actionType, ModelQueueAction.ItemType itemType, Object obj){
         if(!db.isOpen())
             db = getWritableDatabase();
 
@@ -143,7 +146,7 @@ public class Database extends SQLiteOpenHelper {
 
     }
 
-	public void addQueue(SQLiteDatabase db, ModelQueueAction.ActionType actionType, ModelQueueAction.ItemType itemType, String ItemID){
+	private void addQueue(SQLiteDatabase db, ModelQueueAction.ActionType actionType, ModelQueueAction.ItemType itemType, String ItemID){
 		ContentValues cv = new ContentValues();
         cv.put("Action", actionType.toString());
         cv.put("Item", itemType.toString());
@@ -188,7 +191,7 @@ public class Database extends SQLiteOpenHelper {
         db.execSQL(sql);
         db.update("tb_PrayerRequest", cv, "PrayerRequestID = '" + PrayerRequestID + "'", null);
 
-        addQueue(db, ModelQueueAction.ActionType.Update, ModelQueueAction.ItemType.PrayerRequest, PrayerRequestID);
+        addQueue(db, ModelQueueAction.ActionType.Update, ModelQueueAction.ItemType.PrayerRequest, GetPrayerRequest(PrayerRequestID));
     }
 
     public void AddNewPrayerRequest(String subject, String description, ArrayList<ModelPrayerRequestAttachement> attachment){
@@ -222,7 +225,7 @@ public class Database extends SQLiteOpenHelper {
             }
         }
 
-        addQueue(db, ModelQueueAction.ActionType.Insert, ModelQueueAction.ItemType.PrayerRequest, tUUID);
+        addQueue(db, ModelQueueAction.ActionType.Insert, ModelQueueAction.ItemType.PrayerRequest, GetPrayerRequest(tUUID));
     }
 
     public ArrayList<ModelPrayerRequest> getAllAnsweredPrayerRequest(){
@@ -438,7 +441,7 @@ public class Database extends SQLiteOpenHelper {
             }
         }
 
-        addQueue(db, ModelQueueAction.ActionType.Insert, ModelQueueAction.ItemType.Prayer, tUUID);
+        addQueue(db, ModelQueueAction.ActionType.Insert, ModelQueueAction.ItemType.Prayer, GetPrayer(tUUID));
 
     }
 
@@ -582,7 +585,11 @@ public class Database extends SQLiteOpenHelper {
             db.insert("tb_OwnerPrayerTagFriends", null, cv);
         }
 
-        addQueue(db, ModelQueueAction.ActionType.Update, ModelQueueAction.ItemType.PrayerTagFriends, OwnerPrayerID);
+        ModelOwnerPrayer p = new ModelOwnerPrayer();
+        p.PrayerID = OwnerPrayerID;
+        p.selectedFriends = selectedFriends;
+
+        addQueue(db, ModelQueueAction.ActionType.Update, ModelQueueAction.ItemType.PrayerTagFriends, p);
 
     }
 
@@ -634,7 +641,7 @@ public class Database extends SQLiteOpenHelper {
         cv.put("PublicView", publicView);
         db.update("tb_ownerPrayer", cv, "PrayerID = '" + PrayerID + "'", null);
 
-        addQueue(db, ModelQueueAction.ActionType.Update, ModelQueueAction.ItemType.PrayerPublicView, PrayerID);
+        addQueue(db, ModelQueueAction.ActionType.Update, ModelQueueAction.ItemType.PrayerPublicView, GetPrayer(PrayerID));
 
     }
 
@@ -811,7 +818,7 @@ public class Database extends SQLiteOpenHelper {
         cv.put("CreatedWhen", Utils.getCurrentUnixDatetime());
         db.insert("tb_OwnerPrayerComment", null, cv);
 
-        addQueue(db, ModelQueueAction.ActionType.Insert, ModelQueueAction.ItemType.PrayerComment, CommentID);
+        addQueue(db, ModelQueueAction.ActionType.Insert, ModelQueueAction.ItemType.PrayerComment, GetPrayerComment(CommentID));
     }
 
     public void updateOwnerPrayerComment(ModelPrayerComment comment){
@@ -829,7 +836,7 @@ public class Database extends SQLiteOpenHelper {
 
 
 
-        addQueue(db, ModelQueueAction.ActionType.Update, ModelQueueAction.ItemType.PrayerComment, comment.CommentID);
+        addQueue(db, ModelQueueAction.ActionType.Update, ModelQueueAction.ItemType.PrayerComment, GetPrayerComment(comment.CommentID));
     }
 
     public ArrayList<ModelPrayerComment> getAllOwnerPrayerComment(String PrayerID){
@@ -997,7 +1004,7 @@ public class Database extends SQLiteOpenHelper {
         cv.put("CreatedWhen", Utils.getCurrentUnixDatetime());
         db.insert("tb_OwnerPrayerAnswered", null, cv);
 
-        addQueue(db, ModelQueueAction.ActionType.Insert, ModelQueueAction.ItemType.PrayerAnswered, AnsweredID);
+        addQueue(db, ModelQueueAction.ActionType.Insert, ModelQueueAction.ItemType.PrayerAnswered, GetPrayerAnswered(AnsweredID));
     }
 
     public void DeletePrayerAnswered(String AnsweredID){

@@ -110,34 +110,41 @@ public class QueueAction extends AsyncTask<String, Void, String> {
                 ModelQueueAction p = queue.get(x);
 
                 if (p.Item == ModelQueueAction.ItemType.PrayerRequest && p.Action == ModelQueueAction.ActionType.Insert) {
-                    submitNewPrayerRequest(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
+                    ModelPrayerRequest t = (ModelPrayerRequest) Utils.deserialize(p.ItemID);
+                    submitNewPrayerRequest(db, adapter, t, p.ID, p.IfExecutedGUID);
                 }
                 else if(p.Item == ModelQueueAction.ItemType.PrayerRequest && p.Action == ModelQueueAction.ActionType.Delete){
                     submitDeletePrayerRequest(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
                 }
                 if (p.Item == ModelQueueAction.ItemType.PrayerRequest && p.Action == ModelQueueAction.ActionType.Update) {
-                    submitUpdatePrayerRequest(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
+                    ModelPrayerRequest t = (ModelPrayerRequest) Utils.deserialize(p.ItemID);
+                    submitUpdatePrayerRequest(db, adapter, t, p.ID, p.IfExecutedGUID);
                 }
                 else if (p.Item == ModelQueueAction.ItemType.Prayer && p.Action == ModelQueueAction.ActionType.Insert) {
-                    submitNewPrayer(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
+                    ModelOwnerPrayer t = (ModelOwnerPrayer) Utils.deserialize(p.ItemID);
+                    submitNewPrayer(db, adapter, t, p.ID, p.IfExecutedGUID);
                 }
                 else if (p.Item == ModelQueueAction.ItemType.Prayer && p.Action == ModelQueueAction.ActionType.Delete) {
                     submitDeletePrayer(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
                 }
                 else if(p.Item == ModelQueueAction.ItemType.PrayerPublicView && p.Action == ModelQueueAction.ActionType.Update){
-                    submitUpdatePrayerPublicView(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
+                    ModelOwnerPrayer t = (ModelOwnerPrayer) Utils.deserialize(p.ItemID);
+                    submitUpdatePrayerPublicView(db, adapter,t, p.ID, p.IfExecutedGUID);
                 }
                 else if(p.Item == ModelQueueAction.ItemType.PrayerTagFriends && p.Action == ModelQueueAction.ActionType.Update){
-                    submitUpdatePrayerTagFriends(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
+                    ModelOwnerPrayer t = (ModelOwnerPrayer) Utils.deserialize(p.ItemID);
+                    submitUpdatePrayerTagFriends(db, adapter, t, p.ID, p.IfExecutedGUID);
                 }
                 else if(p.Item == ModelQueueAction.ItemType.PrayerComment && p.Action == ModelQueueAction.ActionType.Insert){
-                    submitnewPrayerComment(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
+                    ModelPrayerComment t = (ModelPrayerComment) Utils.deserialize(p.ItemID);
+                    submitnewPrayerComment(db, adapter, t, p.ID, p.IfExecutedGUID);
                 }
                 else if(p.Item == ModelQueueAction.ItemType.PrayerComment && p.Action == ModelQueueAction.ActionType.Delete){
                     submitDeletePrayerComment(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
                 }
                 else if(p.Item == ModelQueueAction.ItemType.PrayerComment && p.Action == ModelQueueAction.ActionType.Update){
-                    submitUpdatePrayerComment(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
+                    ModelPrayerComment t = (ModelPrayerComment) Utils.deserialize(p.ItemID);
+                    submitUpdatePrayerComment(db, adapter, t, p.ID, p.IfExecutedGUID);
                 }
                 else if(p.Item == ModelQueueAction.ItemType.PrayerAmen && p.Action == ModelQueueAction.ActionType.Insert){
                     submitNewPrayerAmen(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
@@ -146,7 +153,8 @@ public class QueueAction extends AsyncTask<String, Void, String> {
                     submitDeletePrayerAmen(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
                 }
                 else if(p.Item == ModelQueueAction.ItemType.PrayerAnswered && p.Action == ModelQueueAction.ActionType.Insert){
-                    submitnewPrayerAnswered(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
+                    ModelPrayerAnswered t = (ModelPrayerAnswered) Utils.deserialize(p.ItemID);
+                    submitnewPrayerAnswered(db, adapter, t, p.ID, p.IfExecutedGUID);
                 }
                 else if(p.Item == ModelQueueAction.ItemType.PrayerAnswered && p.Action == ModelQueueAction.ActionType.Update){
                     ModelPrayerAnswered t = (ModelPrayerAnswered) Utils.deserialize(p.ItemID);
@@ -179,8 +187,7 @@ public class QueueAction extends AsyncTask<String, Void, String> {
         }
     }
 
-    private void submitUpdatePrayerRequest(Database db, RestAdapter adapter, String PrayerRequestID, int QueueID, String IfExecutedGUID) {
-        ModelPrayerRequest p = db.GetPrayerRequest(PrayerRequestID);
+    private void submitUpdatePrayerRequest(Database db, RestAdapter adapter, ModelPrayerRequest p, int QueueID, String IfExecutedGUID) {
         if(p == null)
             return;
 
@@ -201,8 +208,7 @@ public class QueueAction extends AsyncTask<String, Void, String> {
         }
     }
 
-    private void submitNewPrayerRequest(Database db, RestAdapter adapter, String PrayerRequestID, int QueueID, String IfExecutedGUID) {
-        ModelPrayerRequest p = db.GetPrayerRequest(PrayerRequestID);
+    private void submitNewPrayerRequest(Database db, RestAdapter adapter, ModelPrayerRequest p, int QueueID, String IfExecutedGUID) {
         if(p == null)
             return;
 
@@ -245,8 +251,7 @@ public class QueueAction extends AsyncTask<String, Void, String> {
 
     }
 
-    private void submitnewPrayerAnswered(Database db, RestAdapter adapter, String AnsweredID, int QueueID, String IfExecutedGUID){
-        ModelPrayerAnswered p = db.GetPrayerAnswered(AnsweredID);
+    private void submitnewPrayerAnswered(Database db, RestAdapter adapter, ModelPrayerAnswered p, int QueueID, String IfExecutedGUID){
         if(p == null)
             return;
 
@@ -328,8 +333,7 @@ public class QueueAction extends AsyncTask<String, Void, String> {
         }
     }
 
-    private void submitUpdatePrayerComment(Database db, RestAdapter adapter, String CommentID, int QueueID, String IfExecutedGUID){
-        ModelPrayerComment p = db.GetPrayerComment(CommentID);
+    private void submitUpdatePrayerComment(Database db, RestAdapter adapter, ModelPrayerComment p, int QueueID, String IfExecutedGUID){
         if(p == null)
             return;
 
@@ -360,8 +364,7 @@ public class QueueAction extends AsyncTask<String, Void, String> {
         }
     }
 
-    private void submitnewPrayerComment(Database db, RestAdapter adapter, String CommentID, int QueueID, String IfExecutedGUID){
-        ModelPrayerComment p = db.GetPrayerComment(CommentID);
+    private void submitnewPrayerComment(Database db, RestAdapter adapter, ModelPrayerComment p, int QueueID, String IfExecutedGUID){
         if(p == null)
             return;
 
@@ -386,25 +389,23 @@ public class QueueAction extends AsyncTask<String, Void, String> {
         }
     }
 
-    private void submitUpdatePrayerPublicView(Database db, RestAdapter adapter, String PrayerID, int QueueID, String IfExecutedGUID){
-        ModelOwnerPrayer p = db.GetPrayer(PrayerID);
+    private void submitUpdatePrayerPublicView(Database db, RestAdapter adapter, ModelOwnerPrayer p, int QueueID, String IfExecutedGUID){
         if(p == null)
             return;
 
         PrayerInterface prayerInterface = adapter.create(PrayerInterface.class);
-        SimpleJsonResponse response = prayerInterface.UpdatePublicView(IfExecutedGUID, PrayerID, p.publicView);
+        SimpleJsonResponse response = prayerInterface.UpdatePublicView(IfExecutedGUID, p.PrayerID, p.publicView);
         if (response.StatusCode == 200 && response.Description.toUpperCase().compareToIgnoreCase("NOTEXISTS") != 0) {
             db.deleteQueue(QueueID);
         }
     }
 
-    private void submitUpdatePrayerTagFriends(Database db, RestAdapter adapter, String PrayerID, int QueueID, String IfExecutedGUID){
-        ArrayList<ModelFriendProfile> selectedFriends = db.getSelectedTagFriend(PrayerID, mainActivity.OwnerID);
-        if(selectedFriends == null)
+    private void submitUpdatePrayerTagFriends(Database db, RestAdapter adapter, ModelOwnerPrayer p, int QueueID, String IfExecutedGUID){
+        if(p.selectedFriends == null)
             return;
 
         PrayerInterface prayerInterface = adapter.create(PrayerInterface.class);
-        SimpleJsonResponse response = prayerInterface.UpdateTagFriends(IfExecutedGUID, PrayerID, selectedFriends);
+        SimpleJsonResponse response = prayerInterface.UpdateTagFriends(IfExecutedGUID, p.PrayerID, p.selectedFriends);
         if (response.StatusCode == 200 && response.Description.toUpperCase().compareToIgnoreCase("NOTEXISTS") != 0) {
             db.deleteQueue(QueueID);
         }
@@ -419,9 +420,7 @@ public class QueueAction extends AsyncTask<String, Void, String> {
         }
     }
 
-    private void submitNewPrayer(Database db, RestAdapter adapter, String PrayerID, int QueueID, String IfExecutedGUID){
-
-        ModelOwnerPrayer p = db.GetPrayer(PrayerID);
+    private void submitNewPrayer(Database db, RestAdapter adapter, ModelOwnerPrayer p, int QueueID, String IfExecutedGUID){
         if(p == null)
             return;
         p.selectedFriends = db.getSelectedTagFriend(p.PrayerID, mainActivity.OwnerID);
