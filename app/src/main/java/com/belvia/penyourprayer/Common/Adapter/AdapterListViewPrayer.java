@@ -145,6 +145,7 @@ public class AdapterListViewPrayer extends ArrayAdapter {
                                         db.updateOwnerPrayerPublicView(resources.get(position).PrayerID, true);
                                         ((ImageButton) v).setImageResource(R.drawable.public_2);
                                 }
+                                updateItem(position, db.GetPrayer(resources.get(position).PrayerID));
                         }
                 });
 
@@ -161,6 +162,7 @@ public class AdapterListViewPrayer extends ArrayAdapter {
                                         db.AmenOwnerPrayer(resources.get(position).PrayerID, mainactivity.OwnerID, mainactivity.OwnerDisplayName, mainactivity.OwnerProfilePictureURL, true);
                                         ((ImageButton) v).setImageResource(R.drawable.amen_2);
                                 }
+                                updateItem(position, db.GetPrayer(resources.get(position).PrayerID));
                         }
                 });
 
@@ -277,6 +279,11 @@ public class AdapterListViewPrayer extends ArrayAdapter {
 
         public void updatePrayerList(ArrayList<ModelOwnerPrayer> allprayers){
                 this.resources = allprayers;
+                this.notifyDataSetChanged();
+        }
+
+        private void updateItem(int index, ModelOwnerPrayer p){
+                this.resources.set(index, p);
                 this.notifyDataSetChanged();
         }
 

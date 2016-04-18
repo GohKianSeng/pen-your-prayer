@@ -322,6 +322,12 @@ public class QueueAction extends AsyncTask<String, Void, String> {
         SimpleJsonResponse response = prayerInterface.DeletePrayerAmen(IfExecutedGUID, PrayerID);
         if (response.StatusCode == 200) {
             db.deleteQueue(QueueID);
+
+            db.decrementPrayerInQueue(String.valueOf(PrayerID));
+            Fragment f = mainActivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
+            if (f instanceof InterfacePrayerListUpdated && mainActivity.OwnerID.length() > 0) {
+                ((InterfacePrayerListUpdated) f).onListUpdate(db.getAllOwnerPrayer(mainActivity.OwnerID));
+            }
         }
     }
 
@@ -330,6 +336,12 @@ public class QueueAction extends AsyncTask<String, Void, String> {
         SimpleJsonResponse response = prayerInterface.AddNewPrayerAmen(IfExecutedGUID, PrayerID);
         if (response.StatusCode == 200) {
             db.deleteQueue(QueueID);
+
+            db.decrementPrayerInQueue(String.valueOf(PrayerID));
+            Fragment f = mainActivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
+            if (f instanceof InterfacePrayerListUpdated && mainActivity.OwnerID.length() > 0) {
+                ((InterfacePrayerListUpdated) f).onListUpdate(db.getAllOwnerPrayer(mainActivity.OwnerID));
+            }
         }
     }
 
@@ -397,6 +409,12 @@ public class QueueAction extends AsyncTask<String, Void, String> {
         SimpleJsonResponse response = prayerInterface.UpdatePublicView(IfExecutedGUID, p.PrayerID, p.publicView);
         if (response.StatusCode == 200 && response.Description.toUpperCase().compareToIgnoreCase("NOTEXISTS") != 0) {
             db.deleteQueue(QueueID);
+
+            db.decrementPrayerInQueue(String.valueOf(p.PrayerID));
+            Fragment f = mainActivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
+            if (f instanceof InterfacePrayerListUpdated && mainActivity.OwnerID.length() > 0) {
+                ((InterfacePrayerListUpdated) f).onListUpdate(db.getAllOwnerPrayer(mainActivity.OwnerID));
+            }
         }
     }
 
@@ -408,6 +426,12 @@ public class QueueAction extends AsyncTask<String, Void, String> {
         SimpleJsonResponse response = prayerInterface.UpdateTagFriends(IfExecutedGUID, p.PrayerID, p.selectedFriends);
         if (response.StatusCode == 200 && response.Description.toUpperCase().compareToIgnoreCase("NOTEXISTS") != 0) {
             db.deleteQueue(QueueID);
+
+            db.decrementPrayerInQueue(String.valueOf(p.PrayerID));
+            Fragment f = mainActivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
+            if (f instanceof InterfacePrayerListUpdated && mainActivity.OwnerID.length() > 0) {
+                ((InterfacePrayerListUpdated) f).onListUpdate(db.getAllOwnerPrayer(mainActivity.OwnerID));
+            }
         }
     }
 

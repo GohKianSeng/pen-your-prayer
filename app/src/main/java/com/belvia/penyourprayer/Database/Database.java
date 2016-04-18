@@ -589,6 +589,11 @@ public class Database extends SQLiteOpenHelper {
         p.PrayerID = OwnerPrayerID;
         p.selectedFriends = selectedFriends;
 
+        String sql =    "UPDATE tb_ownerPrayer" +
+                " SET InQueue = InQueue+1" +
+                " WHERE PrayerID = '" + OwnerPrayerID + "'";
+        db.execSQL(sql);
+
         addQueue(db, ModelQueueAction.ActionType.Update, ModelQueueAction.ItemType.PrayerTagFriends, p);
 
     }
@@ -641,6 +646,11 @@ public class Database extends SQLiteOpenHelper {
         cv.put("PublicView", publicView);
         db.update("tb_ownerPrayer", cv, "PrayerID = '" + PrayerID + "'", null);
 
+        String sql =    "UPDATE tb_ownerPrayer" +
+                " SET InQueue = InQueue+1" +
+                " WHERE PrayerID = '" + PrayerID + "'";
+        db.execSQL(sql);
+
         addQueue(db, ModelQueueAction.ActionType.Update, ModelQueueAction.ItemType.PrayerPublicView, GetPrayer(PrayerID));
 
     }
@@ -690,6 +700,11 @@ public class Database extends SQLiteOpenHelper {
             cv.put("CreatedWhen", Utils.getCurrentUnixDatetime());
             db.delete("tb_OwnerPrayerAmen", "OwnerPrayerID" + "= '" + OwnerPrayerID + "' AND WhoID = '" + WhoID + "'", null);
             db.insert("tb_OwnerPrayerAmen", null, cv);
+
+            String sql =    "UPDATE tb_ownerPrayer" +
+                    " SET InQueue = InQueue+1" +
+                    " WHERE PrayerID = '" + OwnerPrayerID + "'";
+            db.execSQL(sql);
 
             addQueue(db, ModelQueueAction.ActionType.Insert, ModelQueueAction.ItemType.PrayerAmen, OwnerPrayerID);
         }
