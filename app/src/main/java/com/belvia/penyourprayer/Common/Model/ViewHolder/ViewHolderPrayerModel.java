@@ -1,10 +1,13 @@
 package com.belvia.penyourprayer.Common.Model.ViewHolder;
 
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.facebook.ads.MediaView;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 
 /**
@@ -22,6 +25,20 @@ public class ViewHolderPrayerModel {
 
     public ExpandableTextView expandableTextView;
     public String PrayerID;
+
+
+    /*
+    *
+    * for Native ads
+    *
+    * */
+
+    public ImageView nativeAdIcon;
+    public TextView nativeAdTitle;
+    public TextView nativeAdBody;
+    public MediaView nativeAdMedia;
+    public TextView nativeAdSocialContext;
+    public Button nativeAdCallToAction;
 
     public ViewHolderPrayerModel(){
 

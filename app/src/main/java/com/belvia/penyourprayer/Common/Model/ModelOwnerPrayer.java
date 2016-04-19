@@ -2,6 +2,7 @@ package com.belvia.penyourprayer.Common.Model;
 
 import com.belvia.penyourprayer.Common.Utils;
 import com.belvia.penyourprayer.QuickstartPreferences;
+import com.facebook.ads.NativeAd;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -34,9 +35,20 @@ public class ModelOwnerPrayer implements Serializable {
     public ArrayList<ModelPrayerAnswered> answers = new ArrayList<ModelPrayerAnswered>();
     public ArrayList<ModelPrayerAmen> amen = new ArrayList<ModelPrayerAmen>();
 
+    public boolean isNativeAd = false;
+    private transient NativeAd nativeAd;
+
     public String IfExecutedGUID;
 
     public ModelOwnerPrayer(){}
+
+    public void setFacebookNativeAd(NativeAd ads){
+        this.nativeAd = ads;
+    }
+
+    public NativeAd getFacebookNativeAds(){
+        return nativeAd;
+    }
 
     public String formattedCreatedWhen(){
         return Utils.UnixTimeReadableString(CreatedWhen);

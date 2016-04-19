@@ -12,7 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -30,21 +32,29 @@ import com.belvia.penyourprayer.UI.FragmentPrayerList;
 import com.belvia.penyourprayer.UI.MainActivity;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 import com.squareup.picasso.Picasso;
-
+import com.facebook.ads.*;
 import java.util.ArrayList;
+import java.util.UUID;
 
-public class AdapterListViewPrayer extends ArrayAdapter {
+public class AdapterListViewPrayer extends ArrayAdapter implements NativeAdsManager.Listener{
         private MainActivity mainactivity;
         private ArrayList<ModelOwnerPrayer> resources;
         int witdthHeight = 1;
         private FragmentPrayerList prayerlistView;
+        private NativeAdsManager manager;
+
         public AdapterListViewPrayer(FragmentPrayerList fpl, Context context, int resourcesID, ArrayList<ModelOwnerPrayer> allprayers) {
                 super(context, resourcesID, allprayers);
+
                 prayerlistView = fpl;
                 // TODO Auto-generated constructor stub
                 this.mainactivity = (MainActivity)context;
                 resources = allprayers;
                 witdthHeight = Utils.dpToPx(mainactivity, QuickstartPreferences.thumbnailDPsize);
+
+                manager = new NativeAdsManager(mainactivity, "1643913965854375_1719107795001658", 5);
+                manager.setListener(this);
+                manager.loadAds();
         }
 
         @Override
@@ -56,7 +66,37 @@ public class AdapterListViewPrayer extends ArrayAdapter {
                 if(convertView == null || ((ViewHolderPrayerModel)convertView.getTag()).PrayerID.compareToIgnoreCase(resources.get(position).PrayerID)!=0 ) {
                         p.PrayerID = resources.get(position).PrayerID;
                         p.isPrayerAnswered = resources.get(position).numberOfAnswered > 0;
-                        if(p.isPrayerAnswered) {
+                        if(resources.get(position).isNativeAd){
+
+                                convertView = inflater.inflate(R.layout.list_view_row_facebook_nativeads, parent, false);
+                                p.nativeAdIcon = (ImageView)convertView.findViewById(R.id.native_ad_icon);
+                                p.nativeAdTitle = (TextView)convertView.findViewById(R.id.native_ad_title);
+                                p.nativeAdBody = (TextView)convertView.findViewById(R.id.native_ad_body);
+                                p.nativeAdMedia = (MediaView)convertView.findViewById(R.id.native_ad_media);
+                                p.nativeAdSocialContext = (TextView)convertView.findViewById(R.id.native_ad_social_context);
+                                p.nativeAdCallToAction = (Button)convertView.findViewById(R.id.native_ad_call_to_action);
+
+                                NativeAd nativeAd = resources.get(position).getFacebookNativeAds();
+
+                                p.nativeAdSocialContext.setText(nativeAd.getAdSocialContext());
+                                p.nativeAdCallToAction.setText(nativeAd.getAdCallToAction());
+                                p.nativeAdTitle.setText(nativeAd.getAdTitle());
+                                p.nativeAdBody.setText(nativeAd.getAdBody());
+
+                                // Downloading and setting the ad icon.
+                                NativeAd.Image adIcon = nativeAd.getAdIcon();
+                                NativeAd.downloadAndDisplayImage(adIcon, p.nativeAdIcon);
+
+                                // Download and setting the cover image.
+                                NativeAd.Image adCoverImage = nativeAd.getAdCoverImage();
+                                p.nativeAdMedia.setNativeAd(nativeAd);
+
+                                nativeAd.registerViewForInteraction(convertView);
+
+                                convertView.setTag(p);
+                                return convertView;
+                        }
+                        else if(p.isPrayerAnswered) {
                                 convertView = inflater.inflate(R.layout.card_ui_answered_owner_layout, parent, false);
                                 p.expandableTextView = (ExpandableTextView) convertView.findViewById(R.id.expandable_textview);
                                 p.prayer_textView = (TextView) convertView.findViewById(R.id.card_ui_answered_prayer_textView);
@@ -285,6 +325,21 @@ public class AdapterListViewPrayer extends ArrayAdapter {
         private void updateItem(int index, ModelOwnerPrayer p){
                 this.resources.set(index, p);
                 this.notifyDataSetChanged();
+        }
+
+        @Override
+        public void onAdsLoaded(){
+                ModelOwnerPrayer prayer = new ModelOwnerPrayer();
+                prayer.isNativeAd = true;
+                prayer.setFacebookNativeAd(manager.nextNativeAd());
+                prayer.PrayerID = UUID.randomUUID().toString();
+                this.resources.add(0, prayer);
+                this.notifyDataSetChanged();
+        }
+
+        @Override
+        public void onAdError(AdError var1){
+
         }
 
 }
