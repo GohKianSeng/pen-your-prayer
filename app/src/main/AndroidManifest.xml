@@ -33,6 +33,7 @@
         </activity>
         <activity android:name="com.onegravity.rteditor.media.choose.MediaChooserActivity" />
         <activity android:name="com.onegravity.rteditor.media.crop.CropImageActivity" />
+        <activity android:name="com.avocarrot.androidsdk.RedirectActivity" />
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
             android:exported="true"

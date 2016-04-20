@@ -75,26 +75,6 @@ public class AdapterListViewPrayer extends ArrayAdapter implements NativeAdsMana
                                 p.nativeAdMedia = (MediaView)convertView.findViewById(R.id.native_ad_media);
                                 p.nativeAdSocialContext = (TextView)convertView.findViewById(R.id.native_ad_social_context);
                                 p.nativeAdCallToAction = (Button)convertView.findViewById(R.id.native_ad_call_to_action);
-
-                                NativeAd nativeAd = resources.get(position).getFacebookNativeAds();
-
-                                p.nativeAdSocialContext.setText(nativeAd.getAdSocialContext());
-                                p.nativeAdCallToAction.setText(nativeAd.getAdCallToAction());
-                                p.nativeAdTitle.setText(nativeAd.getAdTitle());
-                                p.nativeAdBody.setText(nativeAd.getAdBody());
-
-                                // Downloading and setting the ad icon.
-                                NativeAd.Image adIcon = nativeAd.getAdIcon();
-                                NativeAd.downloadAndDisplayImage(adIcon, p.nativeAdIcon);
-
-                                // Download and setting the cover image.
-                                NativeAd.Image adCoverImage = nativeAd.getAdCoverImage();
-                                p.nativeAdMedia.setNativeAd(nativeAd);
-
-                                nativeAd.registerViewForInteraction(convertView);
-
-                                convertView.setTag(p);
-                                return convertView;
                         }
                         else if(p.isPrayerAnswered) {
                                 convertView = inflater.inflate(R.layout.card_ui_answered_owner_layout, parent, false);
@@ -105,35 +85,54 @@ public class AdapterListViewPrayer extends ArrayAdapter implements NativeAdsMana
                                 convertView = inflater.inflate(R.layout.card_ui_owner_layout, parent, false);
                                 p.prayer_textView = (TextView) convertView.findViewById(R.id.card_ui_prayer_textView);
                         }
-                        p.thumbnailHorizontalView = (LinearLayout) convertView.findViewById(R.id.attachment_linearlayout);
-                        p.amen_imageButton = (ImageButton) convertView.findViewById(R.id.card_ui_amen_imageButton);
-                        p.comment_imageButton = (ImageButton) convertView.findViewById(R.id.card_ui_comment_imageButton);
-                        p.tagfriend_imageButton = (ImageButton) convertView.findViewById(R.id.card_ui_tagfriend_imageButton);
-                        p.publicView_imageButton = (ImageButton) convertView.findViewById(R.id.card_ui_publicview_imageButton);
-                        p.answered_imageButton = (ImageButton) convertView.findViewById(R.id.card_ui_answered_imageButton);
-                        p.delete_imageButton = (ImageButton) convertView.findViewById(R.id.card_ui_delete_imageButton);
-                        p.progressBar = (ProgressBar) convertView.findViewById(R.id.card_ui_progressbar);
-                        p.createdwhen_textview = (TextView) convertView.findViewById(R.id.card_ui_createdwhen);
+                        if(!resources.get(position).isNativeAd) {
 
-                        p.amen_count_textview = (TextView) convertView.findViewById(R.id.card_ui_amen_count_textview);
-                        //p.att  = db.getAllOwnerPrayerAttachment(resources.get(position).PrayerID);
-                        p.containAttachment = resources.get(position).attachments.size() > 0;
-                        p.image1 = (ImageButton) convertView.findViewById(R.id.prayerlist_imageButton1);
-                        p.image2 = (ImageButton) convertView.findViewById(R.id.prayerlist_imageButton2);
-                        p.image3 = (ImageButton) convertView.findViewById(R.id.prayerlist_imageButton3);
-                        p.image4 = (ImageButton) convertView.findViewById(R.id.prayerlist_imageButton4);
-                        p.image5 = (ImageButton) convertView.findViewById(R.id.prayerlist_imageButton5);
-                        if(p.containAttachment)
-                                p.thumbnailHorizontalView.setVisibility(View.VISIBLE);
-                        else
-                                p.thumbnailHorizontalView.setVisibility(View.GONE);
+                                p.thumbnailHorizontalView = (LinearLayout) convertView.findViewById(R.id.attachment_linearlayout);
+                                p.amen_imageButton = (ImageButton) convertView.findViewById(R.id.card_ui_amen_imageButton);
+                                p.comment_imageButton = (ImageButton) convertView.findViewById(R.id.card_ui_comment_imageButton);
+                                p.tagfriend_imageButton = (ImageButton) convertView.findViewById(R.id.card_ui_tagfriend_imageButton);
+                                p.publicView_imageButton = (ImageButton) convertView.findViewById(R.id.card_ui_publicview_imageButton);
+                                p.answered_imageButton = (ImageButton) convertView.findViewById(R.id.card_ui_answered_imageButton);
+                                p.delete_imageButton = (ImageButton) convertView.findViewById(R.id.card_ui_delete_imageButton);
+                                p.progressBar = (ProgressBar) convertView.findViewById(R.id.card_ui_progressbar);
+                                p.createdwhen_textview = (TextView) convertView.findViewById(R.id.card_ui_createdwhen);
 
+                                p.amen_count_textview = (TextView) convertView.findViewById(R.id.card_ui_amen_count_textview);
+                                //p.att  = db.getAllOwnerPrayerAttachment(resources.get(position).PrayerID);
+                                p.containAttachment = resources.get(position).attachments.size() > 0;
+                                p.image1 = (ImageButton) convertView.findViewById(R.id.prayerlist_imageButton1);
+                                p.image2 = (ImageButton) convertView.findViewById(R.id.prayerlist_imageButton2);
+                                p.image3 = (ImageButton) convertView.findViewById(R.id.prayerlist_imageButton3);
+                                p.image4 = (ImageButton) convertView.findViewById(R.id.prayerlist_imageButton4);
+                                p.image5 = (ImageButton) convertView.findViewById(R.id.prayerlist_imageButton5);
+                                if (p.containAttachment)
+                                        p.thumbnailHorizontalView.setVisibility(View.VISIBLE);
+                                else
+                                        p.thumbnailHorizontalView.setVisibility(View.GONE);
+                        }
                         convertView.setTag(p);
                 }
                 else{
                         p = (ViewHolderPrayerModel)convertView.getTag();
                 }
 
+                if(resources.get(position).isNativeAd) {
+                        NativeAd nativeAd = resources.get(position).getFacebookNativeAds();
+
+                        p.nativeAdSocialContext.setText(nativeAd.getAdSocialContext());
+                        p.nativeAdCallToAction.setText(nativeAd.getAdCallToAction());
+                        p.nativeAdTitle.setText(nativeAd.getAdTitle());
+                        p.nativeAdBody.setText(nativeAd.getAdBody());
+
+                        // Downloading and setting the ad icon.
+                        NativeAd.Image adIcon = nativeAd.getAdIcon();
+                        NativeAd.downloadAndDisplayImage(adIcon, p.nativeAdIcon);
+
+                        p.nativeAdMedia.setNativeAd(nativeAd);
+
+                        nativeAd.registerViewForInteraction(convertView);
+                        return convertView;
+                }
                 p.delete_imageButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {

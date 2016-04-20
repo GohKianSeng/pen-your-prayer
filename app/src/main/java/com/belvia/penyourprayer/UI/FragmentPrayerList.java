@@ -163,8 +163,19 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
 
         prayerArrayAdapter = new AdapterListViewPrayer(this, this.getActivity(), R.layout.card_ui_owner_layout, allprayers);
 
+        //com.avocarrot.androidsdk.AvocarrotInstream avocarrotInstream = new com.avocarrot.androidsdk.AvocarrotInstream(
+        //        prayerArrayAdapter,      /* pass your listAdapter */
+        //        mainActivity,                   /* reference to your Activity */
+        //        "2bb732efafeccd92443dfc7cf43254d070b2e701",       /* replace with your Avocarrot API Key */
+        //        "e9bbc6ccbec01a2eb69baf7ce0986043bae8242e"  /* replace with your Avocarrot Placement Key */
+        //);
+        //avocarrotInstream.setLogger(true, "ALL");
+        //avocarrotInstream.setSandbox(false);
+        //avocarrotInstream.setFrequency(1,2);
+
         listView = (ListView) view.findViewById(R.id.prayer_listView);
         listView.setFastScrollEnabled(true);
+        //listView.setAdapter(avocarrotInstream);
         listView.setAdapter(prayerArrayAdapter);
 
 
