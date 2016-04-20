@@ -1,5 +1,6 @@
 package com.belvia.penyourprayer.Common.Model;
 
+import com.avocarrot.androidsdk.CustomModel;
 import com.belvia.penyourprayer.Common.Utils;
 import com.belvia.penyourprayer.QuickstartPreferences;
 import com.facebook.ads.NativeAd;
@@ -35,20 +36,16 @@ public class ModelOwnerPrayer implements Serializable {
     public ArrayList<ModelPrayerAnswered> answers = new ArrayList<ModelPrayerAnswered>();
     public ArrayList<ModelPrayerAmen> amen = new ArrayList<ModelPrayerAmen>();
 
-    public boolean isNativeAd = false;
-    private transient NativeAd nativeAd;
+    public transient boolean isNativeAd = false;
+    public enum AdNetwork {Facebook, Avocarrot };
+    public transient AdNetwork adNetwork;
+    public transient NativeAd facebook_nativeAd;
+    public transient CustomModel avocarrot_nativeAds;
+
 
     public String IfExecutedGUID;
 
     public ModelOwnerPrayer(){}
-
-    public void setFacebookNativeAd(NativeAd ads){
-        this.nativeAd = ads;
-    }
-
-    public NativeAd getFacebookNativeAds(){
-        return nativeAd;
-    }
 
     public String formattedCreatedWhen(){
         return Utils.UnixTimeReadableString(CreatedWhen);

@@ -19,6 +19,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.avocarrot.androidsdk.AvocarrotCustomListener;
+import com.avocarrot.androidsdk.CustomModel;
 import com.belvia.penyourprayer.Common.Model.ModelOwnerPrayer;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerAnswered;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerAttachement;
@@ -34,6 +36,7 @@ import com.ms.square.android.expandabletextview.ExpandableTextView;
 import com.squareup.picasso.Picasso;
 import com.facebook.ads.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class AdapterListViewPrayer extends ArrayAdapter implements NativeAdsManager.Listener{
@@ -117,7 +120,7 @@ public class AdapterListViewPrayer extends ArrayAdapter implements NativeAdsMana
                 }
 
                 if(resources.get(position).isNativeAd) {
-                        NativeAd nativeAd = resources.get(position).getFacebookNativeAds();
+                        NativeAd nativeAd = resources.get(position).facebook_nativeAd;
 
                         p.nativeAdSocialContext.setText(nativeAd.getAdSocialContext());
                         p.nativeAdCallToAction.setText(nativeAd.getAdCallToAction());
@@ -205,15 +208,15 @@ public class AdapterListViewPrayer extends ArrayAdapter implements NativeAdsMana
                         }
                 });
 
-                p.tagfriend_imageButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                                Database db = new Database(mainactivity);
-                                resources.get(position).selectedFriends = db.getSelectedTagFriend(resources.get(position).PrayerID, mainactivity.OwnerID);
-                                mainactivity.selectedFriends = resources.get(position).selectedFriends;
-                                mainactivity.replaceWithTagAFriend(resources.get(position).PrayerID);
-                        }
-                });
+                        p.tagfriend_imageButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                        Database db = new Database(mainactivity);
+                                        resources.get(position).selectedFriends = db.getSelectedTagFriend(resources.get(position).PrayerID, mainactivity.OwnerID);
+                                        mainactivity.selectedFriends = resources.get(position).selectedFriends;
+                                        mainactivity.replaceWithTagAFriend(resources.get(position).PrayerID);
+                                }
+                        });
 
 
 
@@ -245,7 +248,7 @@ public class AdapterListViewPrayer extends ArrayAdapter implements NativeAdsMana
                         if(x==3) {
                                 LoadImage(resources.get(position).attachments, x, p.image4, x);
                         }
-                        if(x==4) {
+                        if(x == 4) {
                                 LoadImage(resources.get(position).attachments, x, p.image5, x);
                         }
                 }
@@ -330,9 +333,15 @@ public class AdapterListViewPrayer extends ArrayAdapter implements NativeAdsMana
         public void onAdsLoaded(){
                 ModelOwnerPrayer prayer = new ModelOwnerPrayer();
                 prayer.isNativeAd = true;
-                prayer.setFacebookNativeAd(manager.nextNativeAd());
+                prayer.facebook_nativeAd = manager.nextNativeAd();
                 prayer.PrayerID = UUID.randomUUID().toString();
                 this.resources.add(0, prayer);
+
+                prayer = new ModelOwnerPrayer();
+                prayer.isNativeAd = true;
+                prayer.facebook_nativeAd = manager.nextNativeAd();
+                prayer.PrayerID = UUID.randomUUID().toString();
+                this.resources.add(prayer);
                 this.notifyDataSetChanged();
         }
 
