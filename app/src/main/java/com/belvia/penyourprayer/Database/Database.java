@@ -450,7 +450,7 @@ public class Database extends SQLiteOpenHelper {
 
     }
 
-    public ArrayList<ModelPrayer> getAllPublicPrayer(){
+    public ArrayList<ModelPrayer> getAllPrayer_CustomQuery(String conditions){
         ArrayList<ModelPrayer> prayer = new ArrayList<ModelPrayer>();
 
         SQLiteDatabase db = getReadableDatabase();
@@ -462,7 +462,7 @@ public class Database extends SQLiteOpenHelper {
                 "(SELECT COUNT(1) FROM tb_OwnerPrayerAmen WHERE OwnerPrayerID = A.PrayerID) AS NumberOfAmen, " +
                 "(SELECT COUNT(1) FROM tb_OwnerPrayerAmen WHERE OwnerPrayerID = A.PrayerID AND WhoID = '" + OwnerID + "') AS OwnerAmen " +
 
-                "from tb_ownerPrayer AS A WHERE Deleted = 0 AND UserID <> '" + OwnerID + "' ORDER BY TouchedWhen DESC";
+                "from tb_ownerPrayer AS A WHERE " + conditions;
 
         Cursor c = db.rawQuery(query, new String[]{});
         while (c.moveToNext()) {
@@ -490,44 +490,12 @@ public class Database extends SQLiteOpenHelper {
         return prayer;
     }
 
+    public ArrayList<ModelPrayer> getAllPublicPrayer(){
+        return getAllPrayer_CustomQuery("Deleted = 0 AND UserID <> '" + OwnerID + "'  ORDER BY CreatedWhen, PrayerID DESC");
+    }
+
     public ArrayList<ModelPrayer> getAllOwnerPrayer(String OwnerID){
-        ArrayList<ModelPrayer> prayer = new ArrayList<ModelPrayer>();
-
-        SQLiteDatabase db = getReadableDatabase();
-        String query = "SELECT UserID, PrayerID, CreatedWhen, TouchedWhen, Content, PublicView, InQueue, Deleted, " +
-                "(SELECT COUNT(1) FROM tb_OwnerPrayerTagFriends WHERE OwnerPrayerID = A.PrayerID) AS NumberOfFriendsTag, " +
-                "(SELECT COUNT(1) FROM tb_OwnerPrayerComment WHERE OwnerPrayerID = A.PrayerID) AS NumberOfComment, " +
-                "(SELECT COUNT(1) FROM tb_OwnerPrayerAnswered WHERE OwnerPrayerID = A.PrayerID) AS NumberOfAnswered, " +
-                "ifnull((SELECT Answered FROM tb_OwnerPrayerAnswered WHERE OwnerPrayerID = A.PrayerID ORDER BY CreatedWhen DESC LIMIT 1),'') AS Answered, " +
-                "(SELECT COUNT(1) FROM tb_OwnerPrayerAmen WHERE OwnerPrayerID = A.PrayerID) AS NumberOfAmen, " +
-                "(SELECT COUNT(1) FROM tb_OwnerPrayerAmen WHERE OwnerPrayerID = A.PrayerID AND WhoID = '" + OwnerID + "') AS OwnerAmen " +
-
-                "from tb_ownerPrayer AS A WHERE Deleted = 0 AND UserID = '" + OwnerID + "' ORDER BY TouchedWhen DESC";
-
-        Cursor c = db.rawQuery(query, new String[]{});
-        while (c.moveToNext()) {
-            ModelPrayer o = new ModelPrayer();
-            o.PrayerID = c.getString(c.getColumnIndex("PrayerID"));
-            //2015-10-18 23:28:21
-            o.UserID = c.getString(c.getColumnIndex("UserID"));
-            o.CreatedWhen = c.getLong(c.getColumnIndex("CreatedWhen"));
-            o.TouchedWhen = c.getLong(c.getColumnIndex("TouchedWhen"));
-            o.Content = c.getString(c.getColumnIndex("Content"));
-            o.publicView = convertToBoolean(c.getInt(c.getColumnIndex("PublicView")));
-            o.InQueue = c.getInt(c.getColumnIndex("InQueue"));
-            o.deleted = convertToBoolean(c.getInt(c.getColumnIndex("Deleted")));
-            o.numberOfFriendsTag = c.getLong(c.getColumnIndex("NumberOfFriendsTag"));
-            o.numberOfAmen = c.getLong(c.getColumnIndex("NumberOfAmen"));
-            o.numberOfComment = c.getLong(c.getColumnIndex("NumberOfComment"));
-            o.numberOfAnswered = c.getLong(c.getColumnIndex("NumberOfAnswered"));
-            o.Answered = c.getString(c.getColumnIndex("Answered"));
-            o.ownerAmen = convertToBoolean(c.getInt(c.getColumnIndex("OwnerAmen")));
-            o.attachments = getAllOwnerPrayerAttachment(o.PrayerID, db);
-            prayer.add(o);
-        }
-        if(c != null)
-            c.close();
-        return prayer;
+        return getAllPrayer_CustomQuery("Deleted = 0 AND UserID = '" + OwnerID + "' ORDER BY TouchedWhen DESC");
     }
 
     public ModelPrayer GetPrayer(String PrayerID){

@@ -765,10 +765,18 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void success(ArrayList<ModelPrayer> prayers, Response response) {
                     db.AddPrayers(prayers);
+                    String condition = "PrayerID IN (";
+                    for(int x=0; x<prayers.size(); x++){
+                        condition += "'" + prayers.get(x).PrayerID + "', ";
+                    }
+                    condition = condition.substring(0, condition.length() - 2);
+                    condition += ")";
 
                     Fragment f = temp_mainactivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
-                    if (f instanceof InterfacePrayerListUpdated && temp_mainactivity.OwnerID.length() > 0) {
-                        ((InterfacePrayerListUpdated) f).onListUpdate(currentCategory);
+                    if (f instanceof FragmentPrayerList) {
+                        ArrayList<ModelPrayer> p = db.getAllPrayer_CustomQuery(condition);
+                        ((FragmentPrayerList) f).prayerArrayAdapter.appendItems(p);
+                        ((FragmentPrayerList) f).onListUpdate(currentCategory);
                     }
                 }
 

@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -24,7 +23,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.belvia.penyourprayer.Common.Adapter.AdapterListViewPrayer;
-import com.belvia.penyourprayer.Common.Adapter.EndlessScrollListener;
 import com.belvia.penyourprayer.Common.Interface.InterfacePrayerListUpdated;
 import com.belvia.penyourprayer.Common.Model.ModelPrayer;
 import com.belvia.penyourprayer.Database.Database;
@@ -46,14 +44,17 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
     private ImageButton prayer_list_prayer_request_option_ImageButton, prayer_list_friend_option_ImageButton;
     private SwipeRefreshLayout prayer_list_swiperefresh;
     private View previousPrayerListCategory = null;
-    private AdapterListViewPrayer prayerArrayAdapter;
+    public AdapterListViewPrayer prayerArrayAdapter;
     public FragmentPrayerList() {
         // Required empty public constructor
     }
     private ArrayList<ModelPrayer> allprayers;
     private ListView listView;
     private int currentCategory = R.id.prayerlist_category_mine;
-    private EndlessScrollListener endlessScrollListener;
+    private boolean loading = false;
+    private int visibleThreshold = 2;
+    private int previousTotal = 0;
+    private AbsListView.OnScrollListener mainScrollListener;
     @Override
     public void onCreate(Bundle safeInstanceState){
         super.onCreate(safeInstanceState);
@@ -118,6 +119,8 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
 
         mainActivity.lockDrawer(false);
 
+        previousPrayerListCategory = view.findViewById(currentCategory);
+
         View.OnClickListener prayerCategoryListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -172,8 +175,6 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
         //false the category to refresh
         onChangePrayerCategory(temp);
 
-
-
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
         fab.attachToListView(listView);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -203,7 +204,7 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
 
                     if(scrollCount < -1) {
                         fab.hide(true);
-                        //actionBar.hide();
+                        actionBar.hide();
                     }
                 }
                 if(mLastFirstVisibleItem>firstVisibleItem)
@@ -215,7 +216,7 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
 
                     if(scrollCount > 1) {
                         fab.show(true);
-                        //actionBar.show();
+                        actionBar.show();
                     }
                 }
                 mLastFirstVisibleItem=firstVisibleItem;
@@ -224,10 +225,29 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
                 int topRowVerticalPosition =
                         (listView == null || listView.getChildCount() == 0) ?
                                 0 : listView.getChildAt(0).getTop();
-                prayer_list_swiperefresh.setEnabled(firstVisibleItem == 0 && topRowVerticalPosition >= 0);
+                if(currentCategory != R.id.prayerlist_category_mine)
+                    prayer_list_swiperefresh.setEnabled(firstVisibleItem == 0 && topRowVerticalPosition >= 0);
+                else{
+                    prayer_list_swiperefresh.setEnabled(false);
+                }
+
+
+                if(currentCategory != R.id.prayerlist_category_mine) {
+                    if (loading) {
+                        if (totalItemCount > previousTotal) {
+                            loading = false;
+                            previousTotal = totalItemCount;
+                        }
+                    }
+                    if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
+                        // I load the next page of gigs using a background task,
+                        // but you can call any function here.
+                        mainActivity.getMorePrayers(currentCategory);
+                        loading = true;
+                    }
+                }
             }
         });
-
     }
 
     public void removeItem(int position){
@@ -258,8 +278,7 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
 
         listView.setFastScrollEnabled(true);
         listView.setAdapter(prayerArrayAdapter);
-        endlessScrollListener = new EndlessScrollListener(mainActivity, 2, currentCategory);
-        listView.setOnScrollListener(endlessScrollListener);
+        prayer_list_swiperefresh.setEnabled(false);
     }
 
     private void getCategoryMinePrayer(){
@@ -270,7 +289,7 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
 
         listView.setFastScrollEnabled(true);
         listView.setAdapter(prayerArrayAdapter);
-        listView.setOnScrollListener(null);
+        prayer_list_swiperefresh.setEnabled(false);
     }
 
     @Override
@@ -284,10 +303,7 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
                     prayerArrayAdapter.updatePrayerList(allprayers);
                 }
                 else if (selectedCategory == R.id.prayerlist_category_public && currentCategory == selectedCategory) {
-
-                    ArrayList<ModelPrayer> allprayers = db.getAllPublicPrayer();
-                    prayerArrayAdapter.updatePrayerList(allprayers);
-                    endlessScrollListener.loading = false;
+                    loading = false;
                 }
             }
         };
