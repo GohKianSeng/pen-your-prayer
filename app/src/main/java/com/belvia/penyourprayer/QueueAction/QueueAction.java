@@ -14,8 +14,7 @@ import com.belvia.penyourprayer.Common.Interface.InterfacePrayerAnsweredListView
 import com.belvia.penyourprayer.Common.Interface.InterfacePrayerCommentEditUpdated;
 import com.belvia.penyourprayer.Common.Interface.InterfacePrayerCommentListViewUpdated;
 import com.belvia.penyourprayer.Common.Interface.InterfacePrayerListUpdated;
-import com.belvia.penyourprayer.Common.Model.ModelFriendProfile;
-import com.belvia.penyourprayer.Common.Model.ModelOwnerPrayer;
+import com.belvia.penyourprayer.Common.Model.ModelPrayer;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerAnswered;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerAttachement;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerComment;
@@ -121,18 +120,18 @@ public class QueueAction extends AsyncTask<String, Void, String> {
                     submitUpdatePrayerRequest(db, adapter, t, p.ID, p.IfExecutedGUID);
                 }
                 else if (p.Item == ModelQueueAction.ItemType.Prayer && p.Action == ModelQueueAction.ActionType.Insert) {
-                    ModelOwnerPrayer t = (ModelOwnerPrayer) Utils.deserialize(p.ItemID);
+                    ModelPrayer t = (ModelPrayer) Utils.deserialize(p.ItemID);
                     submitNewPrayer(db, adapter, t, p.ID, p.IfExecutedGUID);
                 }
                 else if (p.Item == ModelQueueAction.ItemType.Prayer && p.Action == ModelQueueAction.ActionType.Delete) {
                     submitDeletePrayer(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
                 }
                 else if(p.Item == ModelQueueAction.ItemType.PrayerPublicView && p.Action == ModelQueueAction.ActionType.Update){
-                    ModelOwnerPrayer t = (ModelOwnerPrayer) Utils.deserialize(p.ItemID);
+                    ModelPrayer t = (ModelPrayer) Utils.deserialize(p.ItemID);
                     submitUpdatePrayerPublicView(db, adapter,t, p.ID, p.IfExecutedGUID);
                 }
                 else if(p.Item == ModelQueueAction.ItemType.PrayerTagFriends && p.Action == ModelQueueAction.ActionType.Update){
-                    ModelOwnerPrayer t = (ModelOwnerPrayer) Utils.deserialize(p.ItemID);
+                    ModelPrayer t = (ModelPrayer) Utils.deserialize(p.ItemID);
                     submitUpdatePrayerTagFriends(db, adapter, t, p.ID, p.IfExecutedGUID);
                 }
                 else if(p.Item == ModelQueueAction.ItemType.PrayerComment && p.Action == ModelQueueAction.ActionType.Insert){
@@ -326,7 +325,7 @@ public class QueueAction extends AsyncTask<String, Void, String> {
             db.decrementPrayerInQueue(String.valueOf(PrayerID));
             Fragment f = mainActivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
             if (f instanceof InterfacePrayerListUpdated && mainActivity.OwnerID.length() > 0) {
-                ((InterfacePrayerListUpdated) f).onListUpdate(db.getAllOwnerPrayer(mainActivity.OwnerID));
+                ((InterfacePrayerListUpdated) f).onListUpdate(R.id.prayerlist_category_mine);
             }
         }
     }
@@ -340,7 +339,7 @@ public class QueueAction extends AsyncTask<String, Void, String> {
             db.decrementPrayerInQueue(String.valueOf(PrayerID));
             Fragment f = mainActivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
             if (f instanceof InterfacePrayerListUpdated && mainActivity.OwnerID.length() > 0) {
-                ((InterfacePrayerListUpdated) f).onListUpdate(db.getAllOwnerPrayer(mainActivity.OwnerID));
+                ((InterfacePrayerListUpdated) f).onListUpdate(R.id.prayerlist_category_mine);
             }
         }
     }
@@ -401,7 +400,7 @@ public class QueueAction extends AsyncTask<String, Void, String> {
         }
     }
 
-    private void submitUpdatePrayerPublicView(Database db, RestAdapter adapter, ModelOwnerPrayer p, int QueueID, String IfExecutedGUID){
+    private void submitUpdatePrayerPublicView(Database db, RestAdapter adapter, ModelPrayer p, int QueueID, String IfExecutedGUID){
         if(p == null)
             return;
 
@@ -413,12 +412,12 @@ public class QueueAction extends AsyncTask<String, Void, String> {
             db.decrementPrayerInQueue(String.valueOf(p.PrayerID));
             Fragment f = mainActivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
             if (f instanceof InterfacePrayerListUpdated && mainActivity.OwnerID.length() > 0) {
-                ((InterfacePrayerListUpdated) f).onListUpdate(db.getAllOwnerPrayer(mainActivity.OwnerID));
+                ((InterfacePrayerListUpdated) f).onListUpdate(R.id.prayerlist_category_mine);
             }
         }
     }
 
-    private void submitUpdatePrayerTagFriends(Database db, RestAdapter adapter, ModelOwnerPrayer p, int QueueID, String IfExecutedGUID){
+    private void submitUpdatePrayerTagFriends(Database db, RestAdapter adapter, ModelPrayer p, int QueueID, String IfExecutedGUID){
         if(p.selectedFriends == null)
             return;
 
@@ -430,7 +429,7 @@ public class QueueAction extends AsyncTask<String, Void, String> {
             db.decrementPrayerInQueue(String.valueOf(p.PrayerID));
             Fragment f = mainActivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
             if (f instanceof InterfacePrayerListUpdated && mainActivity.OwnerID.length() > 0) {
-                ((InterfacePrayerListUpdated) f).onListUpdate(db.getAllOwnerPrayer(mainActivity.OwnerID));
+                ((InterfacePrayerListUpdated) f).onListUpdate(R.id.prayerlist_category_mine);
             }
         }
     }
@@ -444,7 +443,7 @@ public class QueueAction extends AsyncTask<String, Void, String> {
         }
     }
 
-    private void submitNewPrayer(Database db, RestAdapter adapter, ModelOwnerPrayer p, int QueueID, String IfExecutedGUID){
+    private void submitNewPrayer(Database db, RestAdapter adapter, ModelPrayer p, int QueueID, String IfExecutedGUID){
         if(p == null)
             return;
         p.selectedFriends = db.getSelectedTagFriend(p.PrayerID, mainActivity.OwnerID);
@@ -484,7 +483,7 @@ public class QueueAction extends AsyncTask<String, Void, String> {
 
             Fragment f = mainActivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
             if (f instanceof InterfacePrayerListUpdated && mainActivity.OwnerID.length() > 0) {
-                ((InterfacePrayerListUpdated) f).onListUpdate(db.getAllOwnerPrayer(mainActivity.OwnerID));
+                ((InterfacePrayerListUpdated) f).onListUpdate(R.id.prayerlist_category_mine);
             }
 
 

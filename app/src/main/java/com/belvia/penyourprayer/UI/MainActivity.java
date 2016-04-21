@@ -38,7 +38,9 @@ import com.belvia.penyourprayer.Common.DataLoading;
 import com.belvia.penyourprayer.Common.Interface.InterfaceFragmentBackHandler;
 import com.belvia.penyourprayer.Common.Interface.InterfaceFragmentFriendsHandler;
 import com.belvia.penyourprayer.Common.Interface.InterfaceFragmentPrayerRequestHandler;
+import com.belvia.penyourprayer.Common.Interface.InterfacePrayerListUpdated;
 import com.belvia.penyourprayer.Common.Model.ModelFriendProfile;
+import com.belvia.penyourprayer.Common.Model.ModelPrayer;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerAnswered;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerAttachement;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerComment;
@@ -53,6 +55,8 @@ import com.belvia.penyourprayer.GoogleCloudMessaging.RegistrationIntentService;
 import com.belvia.penyourprayer.QueueAction.QueueAction;
 import com.belvia.penyourprayer.QuickstartPreferences;
 import com.belvia.penyourprayer.R;
+import com.belvia.penyourprayer.WebAPI.PrayerInterface;
+import com.belvia.penyourprayer.WebAPI.httpClient;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
@@ -60,6 +64,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.larswerkman.holocolorpicker.Util;
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.Twitter;
@@ -70,6 +76,11 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 import io.fabric.sdk.android.Fabric;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.OkClient;
+import retrofit.client.Response;
+import retrofit.converter.GsonConverter;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -731,6 +742,42 @@ public class MainActivity extends AppCompatActivity {
 
         };
         task.execute();
+    }
+
+    public void getMorePrayers(final int currentCategory){
+        String loginType = sharedPreferences.getString(QuickstartPreferences.OwnerLoginType, "");
+        String HMacKey = sharedPreferences.getString(QuickstartPreferences.OwnerHMACKey, "");
+        String username = sharedPreferences.getString(QuickstartPreferences.OwnerUserName, "");
+
+        Gson gson = new GsonBuilder().setDateFormat(QuickstartPreferences.DefaultTimeFormat).create();
+        RestAdapter adapter = new RestAdapter.Builder()
+                .setConverter(new GsonConverter(gson))
+                .setEndpoint(QuickstartPreferences.api_server)
+                .setClient(new OkClient(new httpClient(loginType, username, HMacKey)))
+                .build();
+
+        if(currentCategory == R.id.prayerlist_category_public){
+            PrayerInterface int_pr = adapter.create(PrayerInterface.class);
+            final Database db = new Database(this);
+            String temp_prayerid = db.getLastOthersPrayerID();
+            final MainActivity temp_mainactivity = this;
+            int_pr.GetPastOthersPrayers(temp_prayerid, new retrofit.Callback<ArrayList<ModelPrayer>>() {
+                @Override
+                public void success(ArrayList<ModelPrayer> prayers, Response response) {
+                    db.AddPrayers(prayers);
+
+                    Fragment f = temp_mainactivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
+                    if (f instanceof InterfacePrayerListUpdated && temp_mainactivity.OwnerID.length() > 0) {
+                        ((InterfacePrayerListUpdated) f).onListUpdate(currentCategory);
+                    }
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+
+                }
+            });
+        }
     }
 
     public void logout(){

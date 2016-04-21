@@ -1,6 +1,6 @@
 package com.belvia.penyourprayer.Common.Interface;
 
-import com.belvia.penyourprayer.Common.Model.ModelOwnerPrayer;
+import com.belvia.penyourprayer.Common.Model.ModelPrayer;
 
 import java.util.ArrayList;
 
@@ -9,5 +9,5 @@ import java.util.ArrayList;
  */
 
 public interface InterfacePrayerListUpdated {
-    public void onListUpdate(ArrayList<ModelOwnerPrayer> allprayers);
+    public void onListUpdate(int category);
 }

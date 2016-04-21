@@ -19,9 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.avocarrot.androidsdk.AvocarrotCustomListener;
-import com.avocarrot.androidsdk.CustomModel;
-import com.belvia.penyourprayer.Common.Model.ModelOwnerPrayer;
+import com.belvia.penyourprayer.Common.Model.ModelPrayer;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerAnswered;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerAttachement;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerComment;
@@ -36,17 +34,16 @@ import com.ms.square.android.expandabletextview.ExpandableTextView;
 import com.squareup.picasso.Picasso;
 import com.facebook.ads.*;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public class AdapterListViewPrayer extends ArrayAdapter implements NativeAdsManager.Listener{
         private MainActivity mainactivity;
-        private ArrayList<ModelOwnerPrayer> resources;
+        private ArrayList<ModelPrayer> resources;
         int witdthHeight = 1;
         private FragmentPrayerList prayerlistView;
         private NativeAdsManager manager;
 
-        public AdapterListViewPrayer(FragmentPrayerList fpl, Context context, int resourcesID, ArrayList<ModelOwnerPrayer> allprayers) {
+        public AdapterListViewPrayer(FragmentPrayerList fpl, Context context, int resourcesID, ArrayList<ModelPrayer> allprayers) {
                 super(context, resourcesID, allprayers);
 
                 prayerlistView = fpl;
@@ -57,7 +54,7 @@ public class AdapterListViewPrayer extends ArrayAdapter implements NativeAdsMana
 
                 manager = new NativeAdsManager(mainactivity, "1643913965854375_1719107795001658", 5);
                 manager.setListener(this);
-                manager.loadAds();
+                //manager.loadAds();
         }
 
         @Override
@@ -319,25 +316,25 @@ public class AdapterListViewPrayer extends ArrayAdapter implements NativeAdsMana
                 mainactivity.replaceWithAttachmentViewImage(page, att, false);
         }
 
-        public void updatePrayerList(ArrayList<ModelOwnerPrayer> allprayers){
+        public void updatePrayerList(ArrayList<ModelPrayer> allprayers){
                 this.resources = allprayers;
                 this.notifyDataSetChanged();
         }
 
-        private void updateItem(int index, ModelOwnerPrayer p){
+        private void updateItem(int index, ModelPrayer p){
                 this.resources.set(index, p);
                 this.notifyDataSetChanged();
         }
 
         @Override
         public void onAdsLoaded(){
-                ModelOwnerPrayer prayer = new ModelOwnerPrayer();
+                ModelPrayer prayer = new ModelPrayer();
                 prayer.isNativeAd = true;
                 prayer.facebook_nativeAd = manager.nextNativeAd();
                 prayer.PrayerID = UUID.randomUUID().toString();
                 this.resources.add(0, prayer);
 
-                prayer = new ModelOwnerPrayer();
+                prayer = new ModelPrayer();
                 prayer.isNativeAd = true;
                 prayer.facebook_nativeAd = manager.nextNativeAd();
                 prayer.PrayerID = UUID.randomUUID().toString();

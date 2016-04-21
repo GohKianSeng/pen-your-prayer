@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -23,8 +24,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.belvia.penyourprayer.Common.Adapter.AdapterListViewPrayer;
+import com.belvia.penyourprayer.Common.Adapter.EndlessScrollListener;
 import com.belvia.penyourprayer.Common.Interface.InterfacePrayerListUpdated;
-import com.belvia.penyourprayer.Common.Model.ModelOwnerPrayer;
+import com.belvia.penyourprayer.Common.Model.ModelPrayer;
 import com.belvia.penyourprayer.Database.Database;
 import com.belvia.penyourprayer.R;
 import com.melnykov.fab.FloatingActionButton;
@@ -48,9 +50,10 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
     public FragmentPrayerList() {
         // Required empty public constructor
     }
-    private ArrayList<ModelOwnerPrayer> allprayers;
+    private ArrayList<ModelPrayer> allprayers;
     private ListView listView;
-
+    private int currentCategory = R.id.prayerlist_category_mine;
+    private EndlessScrollListener endlessScrollListener;
     @Override
     public void onCreate(Bundle safeInstanceState){
         super.onCreate(safeInstanceState);
@@ -157,15 +160,18 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
         //int listImages[] = new int[]{R.drawable.angry_1, R.drawable.angry_2,
         //        R.drawable.angry_3, R.drawable.angry_4, R.drawable.angry_5};
 
-
-        Database db = new Database(mainActivity);
-        allprayers = db.getAllOwnerPrayer(mainActivity.OwnerID);
-
-        prayerArrayAdapter = new AdapterListViewPrayer(this, this.getActivity(), R.layout.card_ui_owner_layout, allprayers);
-
         listView = (ListView) view.findViewById(R.id.prayer_listView);
-        listView.setFastScrollEnabled(true);
-        listView.setAdapter(prayerArrayAdapter);
+        TextView current = ((TextView)view.findViewById(currentCategory));
+
+        current.setOnClickListener(prayerCategoryListener);
+        current.setTextColor(Color.parseColor("#800080"));
+        current.setTypeface(null, Typeface.BOLD);
+        //false the category to refresh
+        int temp = currentCategory;
+        currentCategory = 0;
+        //false the category to refresh
+        onChangePrayerCategory(temp);
+
 
 
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
@@ -230,14 +236,59 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
     }
 
     private void onChangePrayerCategory(int category){
-        Log.e("Testing", "Category - " + String.valueOf(category));
+        if(currentCategory != category){
+            currentCategory = category;
+            switch (category){
+                case R.id.prayerlist_category_mine:
+                    getCategoryMinePrayer();
+                    break;
+                case R.id.prayerlist_category_public:
+                    getCategoryPublicPrayer();
+                    break;
+            }
+
+        }
+    }
+
+    private void getCategoryPublicPrayer() {
+        Database db = new Database(mainActivity);
+        allprayers = db.getAllPublicPrayer();
+
+        prayerArrayAdapter = new AdapterListViewPrayer(this, this.getActivity(), R.layout.card_ui_owner_layout, allprayers);
+
+        listView.setFastScrollEnabled(true);
+        listView.setAdapter(prayerArrayAdapter);
+        endlessScrollListener = new EndlessScrollListener(mainActivity, 2, currentCategory);
+        listView.setOnScrollListener(endlessScrollListener);
+    }
+
+    private void getCategoryMinePrayer(){
+        Database db = new Database(mainActivity);
+        allprayers = db.getAllOwnerPrayer(mainActivity.OwnerID);
+
+        prayerArrayAdapter = new AdapterListViewPrayer(this, this.getActivity(), R.layout.card_ui_owner_layout, allprayers);
+
+        listView.setFastScrollEnabled(true);
+        listView.setAdapter(prayerArrayAdapter);
+        listView.setOnScrollListener(null);
     }
 
     @Override
-    public void onListUpdate(final ArrayList<ModelOwnerPrayer> allprayers){
-        Runnable run = new Runnable(){
-            public void run(){
-                prayerArrayAdapter.updatePrayerList(allprayers);
+    public void onListUpdate(final int selectedCategory){
+        Runnable run = new Runnable() {
+            public void run() {
+                Database db = new Database(mainActivity);
+                if (selectedCategory == R.id.prayerlist_category_mine && currentCategory == selectedCategory) {
+
+                    ArrayList<ModelPrayer> allprayers = db.getAllOwnerPrayer(mainActivity.OwnerID);
+                    prayerArrayAdapter.updatePrayerList(allprayers);
+                }
+                else if (selectedCategory == R.id.prayerlist_category_public && currentCategory == selectedCategory) {
+
+                    ArrayList<ModelPrayer> allprayers = db.getAllPublicPrayer();
+                    prayerArrayAdapter.updatePrayerList(allprayers);
+                    endlessScrollListener.loading = false;
+                }
             }
         };
         mainActivity.runOnUiThread(run);

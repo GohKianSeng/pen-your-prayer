@@ -1,7 +1,7 @@
 package com.belvia.penyourprayer.WebAPI;
 
 import com.belvia.penyourprayer.Common.Model.ModelFriendProfile;
-import com.belvia.penyourprayer.Common.Model.ModelOwnerPrayer;
+import com.belvia.penyourprayer.Common.Model.ModelPrayer;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerAnswered;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerComment;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerRequest;
@@ -9,6 +9,7 @@ import com.belvia.penyourprayer.WebAPI.Model.SimpleJsonResponse;
 
 import java.util.ArrayList;
 
+import retrofit.Callback;
 import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.POST;
@@ -19,10 +20,16 @@ import retrofit.http.Query;
  */
 public interface PrayerInterface {
     @GET("/api/Prayer/GetLatestPrayers")
-    ArrayList<ModelOwnerPrayer> GetLatestPrayers(@Query("PrayerID") String PrayerID);
+    ArrayList<ModelPrayer> GetLatestPrayers(@Query("PrayerID") String PrayerID);
+
+    @GET("/api/Prayer/GetLatestOthersPrayers")
+    ArrayList<ModelPrayer> GetLatestOthersPrayers(@Query("useless") String useless);
+
+    @GET("/api/Prayer/GetPastOthersPrayers")
+    void GetPastOthersPrayers(@Query("LastPrayerID") String LastPrayerID, Callback<ArrayList<ModelPrayer>> cb);
 
     @POST("/api/Prayer/AddNewPrayer")
-    SimpleJsonResponse AddNewPrayer(@Body ModelOwnerPrayer body);
+    SimpleJsonResponse AddNewPrayer(@Body ModelPrayer body);
 
     @GET("/api/Prayer/DeletePrayer")
     SimpleJsonResponse DeletePrayer(@Query("QueueActionGUID") String QueueActionGUID, @Query("PrayerID") String PrayerID);

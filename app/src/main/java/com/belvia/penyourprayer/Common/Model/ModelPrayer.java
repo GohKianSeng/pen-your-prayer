@@ -15,8 +15,9 @@ import java.util.TimeZone;
 /**
  * Created by sisgks on 19/10/2015.
  */
-public class ModelOwnerPrayer implements Serializable {
+public class ModelPrayer implements Serializable {
 
+    public String UserID = "";
     public String PrayerID = "";
     public long CreatedWhen = 0;
     public long TouchedWhen = 0;
@@ -45,7 +46,7 @@ public class ModelOwnerPrayer implements Serializable {
 
     public String IfExecutedGUID;
 
-    public ModelOwnerPrayer(){}
+    public ModelPrayer(){}
 
     public String formattedCreatedWhen(){
         return Utils.UnixTimeReadableString(CreatedWhen);
