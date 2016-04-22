@@ -1,2 +1,2 @@
-include ':app', ':RTEditor-Toolbar', ':DaimajiaSlider', ':DaimajiaSlider-release', ':ViewPageIndicator-release'
+include ':app', ':RTEditor-Toolbar', ':DaimajiaSlider', ':DaimajiaSlider-release', ':ViewPageIndicator-release', ':RTEditor-Toolbar-release'
 include ':ViewPageIndicator'

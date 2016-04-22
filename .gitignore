@@ -12,3 +12,4 @@ gradlew.bat
 /app/*.iml
 /DaimajiaSlider-release/*.iml
 /ViewPageIndicator-release/*.iml
+/RTEditor-Toolbar-release/*.iml
