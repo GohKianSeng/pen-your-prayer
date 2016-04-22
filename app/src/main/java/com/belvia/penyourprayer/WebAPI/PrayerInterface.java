@@ -25,6 +25,18 @@ public interface PrayerInterface {
     @GET("/api/Prayer/GetLatestOthersPrayers")
     ArrayList<ModelPrayer> GetLatestOthersPrayers(@Query("useless") String useless);
 
+    @GET("/api/Prayer/GetLatestFriendsPrayers")
+    ArrayList<ModelPrayer> GetLatestFriendsPrayers(@Query("useless") String useless);
+
+    @GET("/api/Prayer/GetLatestFriendsPrayers")
+    void GetLatestFriendsPrayersWithCallback(@Query("useless") String useless, Callback<ArrayList<ModelPrayer>> cb);
+
+    @GET("/api/Prayer/GetLatestOthersPrayers")
+    void GetLatestOthersPrayersWithCallback(@Query("useless") String useless, Callback<ArrayList<ModelPrayer>> cb);
+
+    @GET("/api/Prayer/GetPastFriendsPrayers")
+    void GetPastFriendsPrayers(@Query("LastPrayerID") String LastPrayerID, Callback<ArrayList<ModelPrayer>> cb);
+
     @GET("/api/Prayer/GetPastOthersPrayers")
     void GetPastOthersPrayers(@Query("LastPrayerID") String LastPrayerID, Callback<ArrayList<ModelPrayer>> cb);
 

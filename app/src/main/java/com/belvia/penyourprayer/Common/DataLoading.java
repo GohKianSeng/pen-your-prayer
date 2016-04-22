@@ -55,6 +55,7 @@ public class DataLoading {
         getLatestFriends();
         getLatestOwnerPrayer();
         getLatestOthersPrayer();
+        getLatestFriendsPrayer();
     }
 
     public void getAllPrayerRequest(){
@@ -93,6 +94,13 @@ public class DataLoading {
         PrayerInterface prayerInterface = adapter.create(PrayerInterface.class);
         ArrayList<ModelPrayer> lp = prayerInterface.GetLatestOthersPrayers("useless");
         db.removeOthersPrayers();
+        db.AddPrayers(lp);
+    }
+
+    public void getLatestFriendsPrayer(){
+        PrayerInterface prayerInterface = adapter.create(PrayerInterface.class);
+        ArrayList<ModelPrayer> lp = prayerInterface.GetLatestFriendsPrayers("useless");
+        db.removeFriendsPrayers();
         db.AddPrayers(lp);
     }
 

@@ -145,12 +145,8 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
         prayer_list_swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        prayer_list_swiperefresh.setRefreshing(false);
-                    }
-                }, 5000);
+                prayer_list_swiperefresh.setEnabled(false);
+                mainActivity.getLatestPrayer(currentCategory);
             }
         });
         prayer_list_swiperefresh.setColorSchemeColors(Color.parseColor("#800080"));
@@ -242,7 +238,7 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
                     if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
                         // I load the next page of gigs using a background task,
                         // but you can call any function here.
-                        mainActivity.getMorePrayers(currentCategory);
+                        mainActivity.getMorePastPrayers(currentCategory);
                         loading = true;
                     }
                 }
@@ -265,9 +261,23 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
                 case R.id.prayerlist_category_public:
                     getCategoryPublicPrayer();
                     break;
+                case R.id.prayerlist_category_friend:
+                    getCategoryFriendsPrayer();
+                    break;
             }
 
         }
+    }
+
+    private void getCategoryFriendsPrayer() {
+        Database db = new Database(mainActivity);
+        allprayers = db.getAllFriendsPrayer();
+
+        prayerArrayAdapter = new AdapterListViewPrayer(this, this.getActivity(), R.layout.card_ui_owner_layout, allprayers);
+
+        listView.setFastScrollEnabled(true);
+        listView.setAdapter(prayerArrayAdapter);
+        prayer_list_swiperefresh.setEnabled(false);
     }
 
     private void getCategoryPublicPrayer() {
@@ -292,6 +302,19 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
         prayer_list_swiperefresh.setEnabled(false);
     }
 
+    public void replacePrayerList(int selectedCategory){
+        if (selectedCategory == R.id.prayerlist_category_public && currentCategory == selectedCategory) {
+            currentCategory = 0;
+            //false the category to refresh
+            onChangePrayerCategory(R.id.prayerlist_category_public);
+        }
+        else if (selectedCategory == R.id.prayerlist_category_friend && currentCategory == selectedCategory) {
+            currentCategory = 0;
+            //false the category to refresh
+            onChangePrayerCategory(R.id.prayerlist_category_friend);
+        }
+    }
+
     @Override
     public void onListUpdate(final int selectedCategory){
         Runnable run = new Runnable() {
@@ -304,6 +327,13 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
                 }
                 else if (selectedCategory == R.id.prayerlist_category_public && currentCategory == selectedCategory) {
                     loading = false;
+                    prayer_list_swiperefresh.setRefreshing(false);
+                    prayer_list_swiperefresh.setEnabled(true);
+                }
+                else if (selectedCategory == R.id.prayerlist_category_friend && currentCategory == selectedCategory) {
+                    loading = false;
+                    prayer_list_swiperefresh.setRefreshing(false);
+                    prayer_list_swiperefresh.setEnabled(true);
                 }
             }
         };

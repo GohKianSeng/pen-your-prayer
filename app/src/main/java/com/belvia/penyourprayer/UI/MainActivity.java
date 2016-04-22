@@ -744,7 +744,69 @@ public class MainActivity extends AppCompatActivity {
         task.execute();
     }
 
-    public void getMorePrayers(final int currentCategory){
+    public void getLatestPrayer(final int currentCategory){
+        String loginType = sharedPreferences.getString(QuickstartPreferences.OwnerLoginType, "");
+        String HMacKey = sharedPreferences.getString(QuickstartPreferences.OwnerHMACKey, "");
+        String username = sharedPreferences.getString(QuickstartPreferences.OwnerUserName, "");
+
+        Gson gson = new GsonBuilder().setDateFormat(QuickstartPreferences.DefaultTimeFormat).create();
+        RestAdapter adapter = new RestAdapter.Builder()
+                .setConverter(new GsonConverter(gson))
+                .setEndpoint(QuickstartPreferences.api_server)
+                .setClient(new OkClient(new httpClient(loginType, username, HMacKey)))
+                .build();
+
+        if(currentCategory == R.id.prayerlist_category_public){
+            PrayerInterface int_pr = adapter.create(PrayerInterface.class);
+            final Database db = new Database(this);
+            final MainActivity temp_mainactivity = this;
+            int_pr.GetLatestOthersPrayersWithCallback("useless", new retrofit.Callback<ArrayList<ModelPrayer>>() {
+                @Override
+                public void success(ArrayList<ModelPrayer> prayers, Response response) {
+                    db.removeOthersPrayers();
+                    db.AddPrayers(prayers);
+                    Fragment f = temp_mainactivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
+                    if (f instanceof FragmentPrayerList) {
+                        ((FragmentPrayerList) f).replacePrayerList(currentCategory);
+                        ((FragmentPrayerList) f).onListUpdate(currentCategory);
+
+                    }
+
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+
+                }
+            });
+        }
+        else if(currentCategory == R.id.prayerlist_category_friend){
+            PrayerInterface int_pr = adapter.create(PrayerInterface.class);
+            final Database db = new Database(this);
+            final MainActivity temp_mainactivity = this;
+            int_pr.GetLatestFriendsPrayersWithCallback("useless", new retrofit.Callback<ArrayList<ModelPrayer>>() {
+                @Override
+                public void success(ArrayList<ModelPrayer> prayers, Response response) {
+                    db.removeFriendsPrayers();
+                    db.AddPrayers(prayers);
+                    Fragment f = temp_mainactivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
+                    if (f instanceof FragmentPrayerList) {
+                        ((FragmentPrayerList) f).replacePrayerList(currentCategory);
+                        ((FragmentPrayerList) f).onListUpdate(currentCategory);
+
+                    }
+
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+
+                }
+            });
+        }
+    }
+
+    public void getMorePastPrayers(final int currentCategory){
         String loginType = sharedPreferences.getString(QuickstartPreferences.OwnerLoginType, "");
         String HMacKey = sharedPreferences.getString(QuickstartPreferences.OwnerHMACKey, "");
         String username = sharedPreferences.getString(QuickstartPreferences.OwnerUserName, "");
@@ -767,8 +829,40 @@ public class MainActivity extends AppCompatActivity {
                     boolean result = db.AddPrayers(prayers);
                     if(result) {
                         String condition = "PrayerID IN (";
-                        for (int x = 0; x < prayers.size(); x++) {
-                            condition += "'" + prayers.get(x).PrayerID + "', ";
+                        for(ModelPrayer p : prayers){
+                            condition += "'" + p.PrayerID + "', ";
+                        }
+                        condition = condition.substring(0, condition.length() - 2);
+                        condition += ")";
+
+                        Fragment f = temp_mainactivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
+                        if (f instanceof FragmentPrayerList) {
+                            ArrayList<ModelPrayer> p = db.getAllPrayer_CustomQuery(condition + " ORDER BY CreatedWhen, PrayerID DESC");
+                            ((FragmentPrayerList) f).prayerArrayAdapter.appendItems(p);
+                            ((FragmentPrayerList) f).onListUpdate(currentCategory);
+                        }
+                    }
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+
+                }
+            });
+        }
+        else if(currentCategory == R.id.prayerlist_category_friend){
+            PrayerInterface int_pr = adapter.create(PrayerInterface.class);
+            final Database db = new Database(this);
+            String temp_prayerid = db.getLastFriendsPrayerID();
+            final MainActivity temp_mainactivity = this;
+            int_pr.GetPastFriendsPrayers(temp_prayerid, new retrofit.Callback<ArrayList<ModelPrayer>>() {
+                @Override
+                public void success(ArrayList<ModelPrayer> prayers, Response response) {
+                    boolean result = db.AddPrayers(prayers);
+                    if (result) {
+                        String condition = "PrayerID IN (";
+                        for (ModelPrayer p : prayers) {
+                            condition += "'" + p.PrayerID + "', ";
                         }
                         condition = condition.substring(0, condition.length() - 2);
                         condition += ")";
