@@ -327,7 +327,6 @@ public class AdapterListViewPrayer extends ArrayAdapter implements NativeAdsMana
         }
 
         public void appendItems(ArrayList<ModelPrayer> allprayers){
-                this.addAll(allprayers);
                 resources.addAll(allprayers);
                 this.notifyDataSetChanged();
         }

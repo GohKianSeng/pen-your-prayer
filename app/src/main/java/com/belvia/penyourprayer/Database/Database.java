@@ -375,10 +375,10 @@ public class Database extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void AddPrayers(ArrayList<ModelPrayer> prayers){
+    public boolean AddPrayers(ArrayList<ModelPrayer> prayers){
         SQLiteDatabase db = getWritableDatabase();
         if(prayers == null)
-            return;
+            return false;
         for(int x=0; x<prayers.size(); x++){
             ContentValues cv = new ContentValues();
             cv.put("UserID", prayers.get(x).UserID);
@@ -389,7 +389,9 @@ public class Database extends SQLiteOpenHelper {
             cv.put("InQueue", 0);
             cv.put("CreatedWhen", prayers.get(x).CreatedWhen);
             cv.put("TouchedWhen", prayers.get(x).TouchedWhen);
-            db.insert("tb_ownerPrayer", null, cv);
+            long tt = db.insert("tb_ownerPrayer", null, cv);
+            if(tt == -1)
+                return false;
 
             if(prayers.get(x).amen != null)
                 AddAmens(db, prayers.get(x).amen, prayers.get(x).PrayerID);
@@ -402,6 +404,7 @@ public class Database extends SQLiteOpenHelper {
             if(prayers.get(x).selectedFriends != null)
                 AddTagFriends(db, prayers.get(x).selectedFriends, prayers.get(x).PrayerID);
         }
+        return true;
     }
 
     public void AddNewPrayer(String prayer, boolean publicView, ArrayList<ModelFriendProfile> selectedFriends, ArrayList<ModelPrayerAttachement> attachment){

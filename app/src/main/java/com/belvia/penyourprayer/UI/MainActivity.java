@@ -764,19 +764,21 @@ public class MainActivity extends AppCompatActivity {
             int_pr.GetPastOthersPrayers(temp_prayerid, new retrofit.Callback<ArrayList<ModelPrayer>>() {
                 @Override
                 public void success(ArrayList<ModelPrayer> prayers, Response response) {
-                    db.AddPrayers(prayers);
-                    String condition = "PrayerID IN (";
-                    for(int x=0; x<prayers.size(); x++){
-                        condition += "'" + prayers.get(x).PrayerID + "', ";
-                    }
-                    condition = condition.substring(0, condition.length() - 2);
-                    condition += ")";
+                    boolean result = db.AddPrayers(prayers);
+                    if(result) {
+                        String condition = "PrayerID IN (";
+                        for (int x = 0; x < prayers.size(); x++) {
+                            condition += "'" + prayers.get(x).PrayerID + "', ";
+                        }
+                        condition = condition.substring(0, condition.length() - 2);
+                        condition += ")";
 
-                    Fragment f = temp_mainactivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
-                    if (f instanceof FragmentPrayerList) {
-                        ArrayList<ModelPrayer> p = db.getAllPrayer_CustomQuery(condition);
-                        ((FragmentPrayerList) f).prayerArrayAdapter.appendItems(p);
-                        ((FragmentPrayerList) f).onListUpdate(currentCategory);
+                        Fragment f = temp_mainactivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
+                        if (f instanceof FragmentPrayerList) {
+                            ArrayList<ModelPrayer> p = db.getAllPrayer_CustomQuery(condition + " ORDER BY CreatedWhen, PrayerID DESC");
+                            ((FragmentPrayerList) f).prayerArrayAdapter.appendItems(p);
+                            ((FragmentPrayerList) f).onListUpdate(currentCategory);
+                        }
                     }
                 }
 
