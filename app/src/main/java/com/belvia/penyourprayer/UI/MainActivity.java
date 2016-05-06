@@ -706,13 +706,22 @@ public class MainActivity extends AppCompatActivity {
     public void isSocialLoginValid(){
         String loginType = this.sharedPreferences.getString(QuickstartPreferences.OwnerLoginType, "");
         if(loginType.compareToIgnoreCase(ModelUserLogin.LoginType.GooglePlus.toString()) == 0){
+            setInitialSplashProgressText("Signing In with Google+ ...");
             GooglePlus gp = new GooglePlus(this);
             gp.checkLoginStatus();
         }
         else if(loginType.compareToIgnoreCase(ModelUserLogin.LoginType.Facebook.toString()) == 0){
+            setInitialSplashProgressText("Signing In with Facebook ...");
             fb = new Facebook(this);
             fb.checkLoginStatus();
 
+        }
+    }
+
+    public void setInitialSplashProgressText(String text){
+        Fragment f = this.getSupportFragmentManager().findFragmentById(R.id.fragment);
+        if (f instanceof FragmentInitialSplash) {
+            ((FragmentInitialSplash) f).setProgressText(text);
         }
     }
 

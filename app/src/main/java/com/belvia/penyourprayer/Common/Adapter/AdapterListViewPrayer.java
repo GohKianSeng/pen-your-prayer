@@ -33,8 +33,13 @@ import com.belvia.penyourprayer.UI.MainActivity;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 import com.squareup.picasso.Picasso;
 import com.facebook.ads.*;
+
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.UUID;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class AdapterListViewPrayer extends ArrayAdapter implements NativeAdsManager.Listener{
         private MainActivity mainactivity;
@@ -105,6 +110,8 @@ public class AdapterListViewPrayer extends ArrayAdapter implements NativeAdsMana
                                 p.image3 = (ImageButton) convertView.findViewById(R.id.prayerlist_imageButton3);
                                 p.image4 = (ImageButton) convertView.findViewById(R.id.prayerlist_imageButton4);
                                 p.image5 = (ImageButton) convertView.findViewById(R.id.prayerlist_imageButton5);
+                                p.profileImage = (CircleImageView) convertView.findViewById(R.id.prayerlist_circular_profile_imageView);
+                                p.profileName = (TextView) convertView.findViewById(R.id.prayerlist_profile_name_textView);
                                 if (p.containAttachment)
                                         p.thumbnailHorizontalView.setVisibility(View.VISIBLE);
                                 else
@@ -298,6 +305,21 @@ public class AdapterListViewPrayer extends ArrayAdapter implements NativeAdsMana
                         p.publicView_imageButton.setImageResource(R.drawable.public_2);
                 else
                         p.publicView_imageButton.setImageResource(R.drawable.public_1);
+
+                if(resources.get(position).UserID.compareToIgnoreCase(mainactivity.OwnerID) != 0){
+                        p.delete_imageButton.setOnClickListener(null);
+                        p.delete_imageButton.setVisibility(View.GONE);
+
+                        p.answered_imageButton.setOnClickListener(null);
+                        p.answered_imageButton.setVisibility(View.GONE);
+
+                        p.publicView_imageButton.setOnClickListener(null);
+                }
+                else {
+                        p.profileName.setText(mainactivity.OwnerDisplayName);
+                        if(mainactivity.OwnerProfilePictureURL != null && mainactivity.OwnerProfilePictureURL.length() > 0)
+                                Picasso.with(convertView.getContext()).load(mainactivity.OwnerProfilePictureURL).resize(witdthHeight, witdthHeight).centerCrop().into(p.profileImage);
+                }
 
                 return convertView;
         }

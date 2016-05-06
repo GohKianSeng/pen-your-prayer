@@ -1,7 +1,7 @@
 package com.belvia.penyourprayer.UI;
 
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -11,9 +11,13 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.belvia.penyourprayer.Common.Model.ModelFriendProfile;
+import com.belvia.penyourprayer.Common.Model.ModelPrayer;
 import com.belvia.penyourprayer.Common.Model.ModelUserLogin;
+import com.belvia.penyourprayer.Database.Database;
 import com.belvia.penyourprayer.QuickstartPreferences;
 import com.belvia.penyourprayer.R;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -32,7 +36,7 @@ public class FragmentInitialSplash extends Fragment {
     private String mParam1;
     private String mParam2;
     private ArrayList<ModelFriendProfile> friends;
-
+    private TextView progressText;
     private MainActivity mainActivity;
 
     /**
@@ -85,6 +89,8 @@ public class FragmentInitialSplash extends Fragment {
         ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
         mainActivity = ((MainActivity) getActivity());
 
+        progressText = (TextView)view.findViewById(R.id.initial_splash_progess_textview);
+
         // Loading Font Face
         Typeface tf = Typeface.createFromAsset(this.getActivity().getAssets(), "fonts/journal.ttf");
         ((TextView) view.findViewById(R.id.splash_appname)).setTypeface(tf);
@@ -110,5 +116,12 @@ public class FragmentInitialSplash extends Fragment {
         }
     }
 
-
+    public void setProgressText(final String text){
+        Runnable run = new Runnable() {
+            public void run() {
+                progressText.setText(text);
+            }
+        };
+        mainActivity.runOnUiThread(run);
+    }
 }

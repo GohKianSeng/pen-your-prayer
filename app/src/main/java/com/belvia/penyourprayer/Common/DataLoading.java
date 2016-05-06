@@ -51,10 +51,15 @@ public class DataLoading {
                 .setClient(new OkClient(new httpClient(loginType, username, HMacKey)))
                 .build();
 
+        mainActivity.setInitialSplashProgressText("Loading your latest prayer request ...");
         getAllPrayerRequest();
+        mainActivity.setInitialSplashProgressText("Loading any new friends ...");
         getLatestFriends();
+        mainActivity.setInitialSplashProgressText("Loading your latest prayers ...");
         getLatestOwnerPrayer();
+        mainActivity.setInitialSplashProgressText("Loading latest public's prayers ...");
         getLatestOthersPrayer();
+        mainActivity.setInitialSplashProgressText("Loading latest friends' prayers ...");
         getLatestFriendsPrayer();
     }
 

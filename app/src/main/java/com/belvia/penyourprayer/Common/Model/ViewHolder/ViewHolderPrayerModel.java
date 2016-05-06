@@ -10,6 +10,8 @@ import android.widget.TextView;
 import com.facebook.ads.MediaView;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 /**
  * Created by sisgks on 07/10/2015.
  */
@@ -22,6 +24,8 @@ public class ViewHolderPrayerModel {
     public boolean isPrayerAnswered = false;
     public boolean containAttachment = false;
     public ImageButton image1, image2, image3, image4, image5;
+    public CircleImageView profileImage;
+    public TextView profileName;
 
     public ExpandableTextView expandableTextView;
     public String PrayerID;
