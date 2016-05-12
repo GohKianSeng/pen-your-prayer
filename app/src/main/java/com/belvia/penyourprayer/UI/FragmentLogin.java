@@ -40,6 +40,7 @@ public class FragmentLogin extends Fragment  {
     private RestAdapter adapter;
     private MainActivity mainActivity;
     private Facebook fb;
+    private GooglePlus gp;
     private EditText email;
     private EditText password;
     private Button emailLogin;
@@ -109,7 +110,7 @@ public class FragmentLogin extends Fragment  {
             public void onClick(View v) {
                 showLoginComponent(View.GONE);
                 loginProgressbar.setVisibility(View.VISIBLE);
-                GooglePlus gp = new GooglePlus(mainActivity);
+                gp = new GooglePlus(mainActivity);
                 gp.loginGooglePlus();
             }
         });
@@ -145,6 +146,9 @@ public class FragmentLogin extends Fragment  {
         super.onActivityResult(requestCode, resultCode, data);
         if(fb != null)
             fb.mCallbackManager.onActivityResult(requestCode, resultCode, data);
+
+        if(gp != null)
+            gp.AfterActivityResult_Connect();
     }
 
     private void startLoginProcess(ModelUserLogin user){

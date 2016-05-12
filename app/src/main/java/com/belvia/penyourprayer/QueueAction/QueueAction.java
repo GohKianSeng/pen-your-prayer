@@ -146,10 +146,12 @@ public class QueueAction extends AsyncTask<String, Void, String> {
                     submitUpdatePrayerComment(db, adapter, t, p.ID, p.IfExecutedGUID);
                 }
                 else if(p.Item == ModelQueueAction.ItemType.PrayerAmen && p.Action == ModelQueueAction.ActionType.Insert){
-                    submitNewPrayerAmen(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
+                    ModelPrayer t = (ModelPrayer) Utils.deserialize(p.ItemID);
+                    submitNewPrayerAmen(db, adapter, t, p.ID, p.IfExecutedGUID);
                 }
                 else if(p.Item == ModelQueueAction.ItemType.PrayerAmen && p.Action == ModelQueueAction.ActionType.Delete){
-                    submitDeletePrayerAmen(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
+                    ModelPrayer t = (ModelPrayer) Utils.deserialize(p.ItemID);
+                    submitDeletePrayerAmen(db, adapter, t, p.ID, p.IfExecutedGUID);
                 }
                 else if(p.Item == ModelQueueAction.ItemType.PrayerAnswered && p.Action == ModelQueueAction.ActionType.Insert){
                     ModelPrayerAnswered t = (ModelPrayerAnswered) Utils.deserialize(p.ItemID);
@@ -316,30 +318,30 @@ public class QueueAction extends AsyncTask<String, Void, String> {
         }
     }
 
-    private void submitDeletePrayerAmen(Database db, RestAdapter adapter, String PrayerID, int QueueID, String IfExecutedGUID){
+    private void submitDeletePrayerAmen(Database db, RestAdapter adapter, ModelPrayer p, int QueueID, String IfExecutedGUID){
         PrayerInterface prayerInterface = adapter.create(PrayerInterface.class);
-        SimpleJsonResponse response = prayerInterface.DeletePrayerAmen(IfExecutedGUID, PrayerID);
+        SimpleJsonResponse response = prayerInterface.DeletePrayerAmen(IfExecutedGUID, p.PrayerID);
         if (response.StatusCode == 200) {
             db.deleteQueue(QueueID);
 
-            db.decrementPrayerInQueue(String.valueOf(PrayerID));
+            db.decrementPrayerInQueue(String.valueOf(p.PrayerID));
             Fragment f = mainActivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
             if (f instanceof InterfacePrayerListUpdated && mainActivity.OwnerID.length() > 0) {
-                ((InterfacePrayerListUpdated) f).onListUpdate(R.id.prayerlist_category_mine);
+                ((InterfacePrayerListUpdated) f).onListUpdate(p.PrayerCategory);
             }
         }
     }
 
-    private void submitNewPrayerAmen(Database db, RestAdapter adapter, String PrayerID, int QueueID, String IfExecutedGUID){
+    private void submitNewPrayerAmen(Database db, RestAdapter adapter, ModelPrayer p, int QueueID, String IfExecutedGUID){
         PrayerInterface prayerInterface = adapter.create(PrayerInterface.class);
-        SimpleJsonResponse response = prayerInterface.AddNewPrayerAmen(IfExecutedGUID, PrayerID);
+        SimpleJsonResponse response = prayerInterface.AddNewPrayerAmen(IfExecutedGUID, p.PrayerID);
         if (response.StatusCode == 200) {
             db.deleteQueue(QueueID);
 
-            db.decrementPrayerInQueue(String.valueOf(PrayerID));
+            db.decrementPrayerInQueue(String.valueOf(p.PrayerID));
             Fragment f = mainActivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
             if (f instanceof InterfacePrayerListUpdated && mainActivity.OwnerID.length() > 0) {
-                ((InterfacePrayerListUpdated) f).onListUpdate(R.id.prayerlist_category_mine);
+                ((InterfacePrayerListUpdated) f).onListUpdate(p.PrayerCategory);
             }
         }
     }

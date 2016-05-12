@@ -36,6 +36,7 @@ public class ModelPrayer implements Serializable {
     public ArrayList<ModelPrayerComment> comments = new ArrayList<ModelPrayerComment>();
     public ArrayList<ModelPrayerAnswered> answers = new ArrayList<ModelPrayerAnswered>();
     public ArrayList<ModelPrayerAmen> amen = new ArrayList<ModelPrayerAmen>();
+    public ModelUserLogin OwnerProfile;
 
     public transient boolean isNativeAd = false;
     public enum AdNetwork {Facebook, Avocarrot };
@@ -43,6 +44,7 @@ public class ModelPrayer implements Serializable {
     public transient NativeAd facebook_nativeAd;
     public transient CustomModel avocarrot_nativeAds;
 
+    public int PrayerCategory;
 
     public String IfExecutedGUID;
 

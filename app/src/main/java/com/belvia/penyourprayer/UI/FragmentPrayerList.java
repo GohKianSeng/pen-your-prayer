@@ -253,6 +253,7 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
 
     private void onChangePrayerCategory(int category){
         if(currentCategory != category){
+            loading = false;
             currentCategory = category;
             switch (category){
                 case R.id.prayerlist_category_mine:
@@ -327,11 +328,15 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
                 }
                 else if (selectedCategory == R.id.prayerlist_category_public && currentCategory == selectedCategory) {
                     loading = false;
+                    ArrayList<ModelPrayer> allprayers = db.getAllPublicPrayer();
+                    prayerArrayAdapter.updatePrayerList(allprayers);
                     prayer_list_swiperefresh.setRefreshing(false);
                     prayer_list_swiperefresh.setEnabled(true);
                 }
                 else if (selectedCategory == R.id.prayerlist_category_friend && currentCategory == selectedCategory) {
                     loading = false;
+                    ArrayList<ModelPrayer> allprayers = db.getAllFriendsPrayer();
+                    prayerArrayAdapter.updatePrayerList(allprayers);
                     prayer_list_swiperefresh.setRefreshing(false);
                     prayer_list_swiperefresh.setEnabled(true);
                 }

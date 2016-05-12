@@ -202,10 +202,10 @@ public class AdapterListViewPrayer extends ArrayAdapter implements NativeAdsMana
                                 if (resources.get(position).ownerAmen) {
                                         resources.get(position).ownerAmen = false;
                                         ((ImageButton) v).setImageResource(R.drawable.amen_1);
-                                        db.AmenOwnerPrayer(resources.get(position).PrayerID, mainactivity.OwnerID, mainactivity.OwnerDisplayName, mainactivity.OwnerProfilePictureURL, false);
+                                        db.AmenOwnerPrayer(resources.get(position), mainactivity.OwnerID, mainactivity.OwnerDisplayName, mainactivity.OwnerProfilePictureURL, false);
                                 } else {
                                         resources.get(position).ownerAmen = true;
-                                        db.AmenOwnerPrayer(resources.get(position).PrayerID, mainactivity.OwnerID, mainactivity.OwnerDisplayName, mainactivity.OwnerProfilePictureURL, true);
+                                        db.AmenOwnerPrayer(resources.get(position), mainactivity.OwnerID, mainactivity.OwnerDisplayName, mainactivity.OwnerProfilePictureURL, true);
                                         ((ImageButton) v).setImageResource(R.drawable.amen_2);
                                 }
                                 updateItem(position, db.GetPrayer(resources.get(position).PrayerID));
@@ -314,6 +314,14 @@ public class AdapterListViewPrayer extends ArrayAdapter implements NativeAdsMana
                         p.answered_imageButton.setVisibility(View.GONE);
 
                         p.publicView_imageButton.setOnClickListener(null);
+
+                        if(resources.get(position).OwnerProfile != null) {
+                                if (resources.get(position).OwnerProfile.Name != null)
+                                        p.profileName.setText(resources.get(position).OwnerProfile.Name);
+                                if (resources.get(position).OwnerProfile.URLPictureProfile != null)
+                                        Picasso.with(convertView.getContext()).load(resources.get(position).OwnerProfile.URLPictureProfile).resize(witdthHeight, witdthHeight).centerCrop().into(p.profileImage);
+
+                        }
                 }
                 else {
                         p.profileName.setText(mainactivity.OwnerDisplayName);

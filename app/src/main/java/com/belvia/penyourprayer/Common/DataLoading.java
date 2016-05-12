@@ -3,6 +3,7 @@ package com.belvia.penyourprayer.Common;
 import com.belvia.penyourprayer.Common.Model.ModelFriendProfile;
 import com.belvia.penyourprayer.Common.Model.ModelPrayer;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerRequest;
+import com.belvia.penyourprayer.Common.Model.ModelUserLogin;
 import com.belvia.penyourprayer.Database.Database;
 import com.belvia.penyourprayer.QuickstartPreferences;
 import com.belvia.penyourprayer.UI.MainActivity;
@@ -98,6 +99,8 @@ public class DataLoading {
     public void getLatestOthersPrayer(){
         PrayerInterface prayerInterface = adapter.create(PrayerInterface.class);
         ArrayList<ModelPrayer> lp = prayerInterface.GetLatestOthersPrayers("useless");
+        ModelUserLogin d = lp.get(0).OwnerProfile;
+        long sdf = d.ID;
         db.removeOthersPrayers();
         db.AddPrayers(lp);
     }

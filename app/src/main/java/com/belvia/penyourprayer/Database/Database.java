@@ -15,8 +15,10 @@ import com.belvia.penyourprayer.Common.Model.ModelPrayerComment;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerRequest;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerRequestAttachement;
 import com.belvia.penyourprayer.Common.Model.ModelQueueAction;
+import com.belvia.penyourprayer.Common.Model.ModelUserLogin;
 import com.belvia.penyourprayer.Common.Utils;
 import com.belvia.penyourprayer.QuickstartPreferences;
+import com.belvia.penyourprayer.R;
 import com.belvia.penyourprayer.UI.MainActivity;
 
 import java.text.SimpleDateFormat;
@@ -32,7 +34,7 @@ public class Database extends SQLiteOpenHelper {
     private MainActivity mainActivity;
     // All Static variables
     // Database Version
-    private static final int DATABASE_VERSION = 55;
+    private static final int DATABASE_VERSION = 56;
 
     private String OwnerID;
 
@@ -43,7 +45,7 @@ public class Database extends SQLiteOpenHelper {
     private static final String tb_OwnerPrayerComment = "CREATE TABLE tb_OwnerPrayerComment (CommentID TEXT NOT NULL UNIQUE, OwnerPrayerID TEXT NOT NULL, WhoID TEXT NOT NULL, WhoName TEXT NOT NULL,WhoProfilePicture TEXT, Comment TEXT NOT NULL, ServerSent INTEGER NOT NULL DEFAULT 0, InQueue INTEGER NOT NULL DEFAULT 0, CreatedWhen INTEGER NOT NULL, TouchedWhen INTEGER NOT NULL, PRIMARY KEY(CommentID,OwnerPrayerID))";
     private static final String tb_OwnerPrayerAnswered = "CREATE TABLE tb_OwnerPrayerAnswered (AnsweredID TEXT NOT NULL UNIQUE, OwnerPrayerID TEXT NOT NULL, WhoID TEXT NOT NULL, WhoName TEXT NOT NULL,WhoProfilePicture TEXT, Answered TEXT NOT NULL, ServerSent INTEGER NOT NULL DEFAULT 0, InQueue INTEGER NOT NULL DEFAULT 0, CreatedWhen INTEGER NOT NULL, TouchedWhen INTEGER NOT NULL, PRIMARY KEY(AnsweredID,OwnerPrayerID))";
     private static final String tb_OwnerPrayerTagFriends = "CREATE TABLE tb_OwnerPrayerTagFriends ( OwnerPrayerID TEXT NOT NULL, WhoID TEXT NOT NULL, PRIMARY KEY(OwnerPrayerID,WhoID))";
-    private static final String tb_ownerPrayer = "CREATE TABLE tb_ownerPrayer (UserID TEXT NOT NULL, PrayerID TEXT NOT NULL UNIQUE, CreatedWhen INTEGER NOT NULL, TouchedWhen INTEGER NOT NULL, Content TEXT NOT NULL, PublicView INTEGER NOT NULL DEFAULT 0, ServerSent INTEGER NOT NULL DEFAULT 0, InQueue INTEGER NOT NULL DEFAULT 0, Deleted INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(PrayerID, UserID))";
+    private static final String tb_ownerPrayer = "CREATE TABLE tb_ownerPrayer (UserID TEXT NOT NULL, PrayerID TEXT NOT NULL UNIQUE, CreatedWhen INTEGER NOT NULL, TouchedWhen INTEGER NOT NULL, Content TEXT NOT NULL, PublicView INTEGER NOT NULL DEFAULT 0, ServerSent INTEGER NOT NULL DEFAULT 0, InQueue INTEGER NOT NULL DEFAULT 0, Deleted INTEGER NOT NULL DEFAULT 0, ProfileDisplayName TEXT, ProfilePictureURL TEXT, PRIMARY KEY(PrayerID, UserID))";
     private static final String tb_QueueAction = "CREATE TABLE tb_QueueAction (ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, Action TEXT NOT NULL, Item TEXT NOT NULL, ItemID TEXT NOT NULL, IfExecutedGUID TEXT NOT NULL, CreatedWhen INTEGER NOT NULL DEFAULT (STRFTIME('%s', 'now')))";
     private static final String tb_OwnerPrayerAttachment = "CREATE TABLE tb_OwnerPrayerAttachment (OwnerPrayerID TEXT NOT NULL, GUID TEXT NOT NULL, UserID TEXT NOT NULL, OriginalFilePath TEXT NOT NULL, FileName TEXT NOT NULL, PRIMARY KEY(OwnerPrayerID,GUID))";
     private static final String tb_PrayerRequest = "CREATE TABLE tb_PrayerRequest (PrayerRequestID TEXT NOT NULL UNIQUE, Subject TEXT NOT NULL, Description TEXT, Answered NOT NULL DEFAULT 0, AnsweredWhen INTEGER, AnswerComment TEXT, InQueue INTEGER NOT NULL DEFAULT 0, CreatedWhen INTEGER NOT NULL, TouchedWhen INTEGER NOT NULL, PRIMARY KEY(PrayerRequestID))";
@@ -389,20 +391,26 @@ public class Database extends SQLiteOpenHelper {
             cv.put("InQueue", 0);
             cv.put("CreatedWhen", prayers.get(x).CreatedWhen);
             cv.put("TouchedWhen", prayers.get(x).TouchedWhen);
+            if(prayers.get(x).OwnerProfile != null){
+                cv.put("ProfileDisplayName", prayers.get(x).OwnerProfile.Name);
+                cv.put("ProfilePictureURL", prayers.get(x).OwnerProfile.URLPictureProfile);
+            }
+
             long tt = db.insert("tb_ownerPrayer", null, cv);
             if(tt == -1)
                 return false;
 
-            if(prayers.get(x).amen != null)
+            if (prayers.get(x).amen != null)
                 AddAmens(db, prayers.get(x).amen, prayers.get(x).PrayerID);
-            if(prayers.get(x).answers != null)
+            if (prayers.get(x).answers != null)
                 AddAnswereds(db, prayers.get(x).answers, prayers.get(x).PrayerID);
-            if(prayers.get(x).attachments != null)
+            if (prayers.get(x).attachments != null)
                 AddAttachments(db, prayers.get(x).attachments, prayers.get(x).PrayerID);
-            if(prayers.get(x).comments != null)
+            if (prayers.get(x).comments != null)
                 AddComments(db, prayers.get(x).comments, prayers.get(x).PrayerID);
             if(prayers.get(x).selectedFriends != null)
                 AddTagFriends(db, prayers.get(x).selectedFriends, prayers.get(x).PrayerID);
+
         }
         return true;
     }
@@ -453,11 +461,11 @@ public class Database extends SQLiteOpenHelper {
 
     }
 
-    public ArrayList<ModelPrayer> getAllPrayer_CustomQuery(String conditions){
+    public ArrayList<ModelPrayer> getAllPrayer_CustomQuery(String conditions, int DisplayPrayerCatrgory){
         ArrayList<ModelPrayer> prayer = new ArrayList<ModelPrayer>();
 
         SQLiteDatabase db = getReadableDatabase();
-        String query = "SELECT UserID, PrayerID, CreatedWhen, TouchedWhen, Content, PublicView, InQueue, Deleted, " +
+        String query = "SELECT UserID, PrayerID, CreatedWhen, TouchedWhen, Content, PublicView, InQueue, Deleted, ProfileDisplayName, ProfilePictureURL, " +
                 "(SELECT COUNT(1) FROM tb_OwnerPrayerTagFriends WHERE OwnerPrayerID = A.PrayerID) AS NumberOfFriendsTag, " +
                 "(SELECT COUNT(1) FROM tb_OwnerPrayerComment WHERE OwnerPrayerID = A.PrayerID) AS NumberOfComment, " +
                 "(SELECT COUNT(1) FROM tb_OwnerPrayerAnswered WHERE OwnerPrayerID = A.PrayerID) AS NumberOfAnswered, " +
@@ -486,6 +494,18 @@ public class Database extends SQLiteOpenHelper {
             o.Answered = c.getString(c.getColumnIndex("Answered"));
             o.ownerAmen = convertToBoolean(c.getInt(c.getColumnIndex("OwnerAmen")));
             o.attachments = getAllOwnerPrayerAttachment(o.PrayerID, db);
+
+            o.PrayerCategory = DisplayPrayerCatrgory;
+
+            String ProfilePictureURL = c.getString(c.getColumnIndex("ProfilePictureURL"));
+            String ProfileDisplayName = c.getString(c.getColumnIndex("ProfileDisplayName"));
+            if(ProfilePictureURL != null || ProfilePictureURL != null){
+                ModelUserLogin userLogin = new ModelUserLogin();
+                userLogin.Name = ProfileDisplayName;
+                userLogin.URLPictureProfile = ProfilePictureURL;
+                o.OwnerProfile = userLogin;
+            }
+
             prayer.add(o);
         }
         if(c != null)
@@ -502,7 +522,7 @@ public class Database extends SQLiteOpenHelper {
         condition = condition.substring(0, condition.length() - 2);
         condition += ")";
 
-        return getAllPrayer_CustomQuery("Deleted = 0 AND UserID <> '" + OwnerID + "' AND " + condition + "  ORDER BY PrayerID DESC");
+        return getAllPrayer_CustomQuery("Deleted = 0 AND UserID <> '" + OwnerID + "' AND " + condition + "  ORDER BY PrayerID DESC", R.id.prayerlist_category_public);
     }
 
     public ArrayList<ModelPrayer> getAllFriendsPrayer(){
@@ -515,11 +535,11 @@ public class Database extends SQLiteOpenHelper {
         condition = condition.substring(0, condition.length() - 2);
         condition += ")";
 
-        return getAllPrayer_CustomQuery("Deleted = 0 AND " + condition + "  ORDER BY PrayerID DESC");
+        return getAllPrayer_CustomQuery("Deleted = 0 AND " + condition + "  ORDER BY PrayerID DESC", R.id.prayerlist_category_friend);
     }
 
     public ArrayList<ModelPrayer> getAllOwnerPrayer(String OwnerID){
-        return getAllPrayer_CustomQuery("Deleted = 0 AND UserID = '" + OwnerID + "' ORDER BY TouchedWhen DESC");
+        return getAllPrayer_CustomQuery("Deleted = 0 AND UserID = '" + OwnerID + "' ORDER BY TouchedWhen DESC", R.id.prayerlist_category_mine);
     }
 
     public ModelPrayer GetPrayer(String PrayerID){
@@ -800,29 +820,29 @@ public class Database extends SQLiteOpenHelper {
      * Amen section
      *
      **********************************************/
-    public void AmenOwnerPrayer(String OwnerPrayerID, String WhoID, String whoName, String whoProfilePicture, boolean amen){
+    public void AmenOwnerPrayer(ModelPrayer prayer, String WhoID, String whoName, String whoProfilePicture, boolean amen){
         SQLiteDatabase db = getWritableDatabase();
         if(amen) {
             ContentValues cv = new ContentValues();
             cv.put("WhoID", WhoID);
             cv.put("WhoName", whoName);
             cv.put("WhoProfilePicture", whoProfilePicture);
-            cv.put("OwnerPrayerID", OwnerPrayerID);
+            cv.put("OwnerPrayerID", prayer.PrayerID);
             cv.put("CreatedWhen", Utils.getCurrentUnixDatetime());
-            db.delete("tb_OwnerPrayerAmen", "OwnerPrayerID" + "= '" + OwnerPrayerID + "' AND WhoID = '" + WhoID + "'", null);
+            db.delete("tb_OwnerPrayerAmen", "OwnerPrayerID" + "= '" + prayer.PrayerID + "' AND WhoID = '" + WhoID + "'", null);
             db.insert("tb_OwnerPrayerAmen", null, cv);
 
             String sql =    "UPDATE tb_ownerPrayer" +
                     " SET InQueue = InQueue+1" +
-                    " WHERE PrayerID = '" + OwnerPrayerID + "'";
+                    " WHERE PrayerID = '" + prayer.PrayerID + "'";
             db.execSQL(sql);
 
-            addQueue(db, ModelQueueAction.ActionType.Insert, ModelQueueAction.ItemType.PrayerAmen, OwnerPrayerID);
+            addQueue(db, ModelQueueAction.ActionType.Insert, ModelQueueAction.ItemType.PrayerAmen, prayer);
         }
         else{
-            db.delete("tb_OwnerPrayerAmen", "OwnerPrayerID" + "= '" + OwnerPrayerID + "' AND WhoID = '" + WhoID + "'", null);
+            db.delete("tb_OwnerPrayerAmen", "OwnerPrayerID" + "= '" + prayer.PrayerID + "' AND WhoID = '" + WhoID + "'", null);
 
-            addQueue(db, ModelQueueAction.ActionType.Delete, ModelQueueAction.ItemType.PrayerAmen, OwnerPrayerID);
+            addQueue(db, ModelQueueAction.ActionType.Delete, ModelQueueAction.ItemType.PrayerAmen, prayer);
         }
     }
 

@@ -846,7 +846,7 @@ public class MainActivity extends AppCompatActivity {
 
                         Fragment f = temp_mainactivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
                         if (f instanceof FragmentPrayerList) {
-                            ArrayList<ModelPrayer> p = db.getAllPrayer_CustomQuery(condition + " ORDER BY CreatedWhen, PrayerID DESC");
+                            ArrayList<ModelPrayer> p = db.getAllPrayer_CustomQuery(condition + " ORDER BY CreatedWhen, PrayerID DESC", R.id.prayerlist_category_public);
                             ((FragmentPrayerList) f).prayerArrayAdapter.appendItems(p);
                             ((FragmentPrayerList) f).onListUpdate(currentCategory);
                         }
@@ -878,7 +878,7 @@ public class MainActivity extends AppCompatActivity {
 
                         Fragment f = temp_mainactivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
                         if (f instanceof FragmentPrayerList) {
-                            ArrayList<ModelPrayer> p = db.getAllPrayer_CustomQuery(condition + " ORDER BY CreatedWhen, PrayerID DESC");
+                            ArrayList<ModelPrayer> p = db.getAllPrayer_CustomQuery(condition + " ORDER BY CreatedWhen, PrayerID DESC", R.id.prayerlist_category_friend);
                             ((FragmentPrayerList) f).prayerArrayAdapter.appendItems(p);
                             ((FragmentPrayerList) f).onListUpdate(currentCategory);
                         }

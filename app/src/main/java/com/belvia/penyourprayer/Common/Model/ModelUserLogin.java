@@ -3,10 +3,12 @@ package com.belvia.penyourprayer.Common.Model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * Created by sisgks on 20/10/2015.
  */
-public class ModelUserLogin {
+public class ModelUserLogin implements Serializable {
 
     public enum LoginType {Email, Facebook, Twitter, GooglePlus};
 
@@ -18,7 +20,7 @@ public class ModelUserLogin {
     @Expose
     public String UserName;
 
-    @SerializedName("Id")
+    @SerializedName("ID")
     @Expose
     public long ID;
 

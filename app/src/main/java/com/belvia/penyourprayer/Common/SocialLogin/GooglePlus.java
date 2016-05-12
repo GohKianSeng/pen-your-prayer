@@ -18,7 +18,9 @@ import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.plus.People;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 
@@ -41,6 +43,10 @@ public class GooglePlus implements
     public GooglePlus(MainActivity ma){
         this.mainActivity = ma;
         mShouldResolve = false;
+    }
+
+    public void AfterActivityResult_Connect(){
+        mainActivity.mGoogleApiClient.connect();
     }
 
     public void loginGooglePlus(){
