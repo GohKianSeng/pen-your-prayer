@@ -3,21 +3,32 @@ package com.belvia.penyourprayer.Common.SocialLogin;
 import android.accounts.Account;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 
 import com.belvia.penyourprayer.Common.Model.ModelUserLogin;
 import com.belvia.penyourprayer.Common.Utils;
 import com.belvia.penyourprayer.QuickstartPreferences;
+import com.belvia.penyourprayer.R;
 import com.belvia.penyourprayer.UI.MainActivity;
 import com.belvia.penyourprayer.WebAPI.UserAccountInterface;
 import com.belvia.penyourprayer.WebAPI.httpClient;
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.People;
@@ -34,15 +45,24 @@ import retrofit.client.Response;
 /**
  * Created by ks on 3/26/2016.
  */
-public class GooglePlus implements
-        GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener{
+public class GooglePlus {
 
+    public String signedInID;
     public MainActivity mainActivity;
     public boolean mShouldResolve;
     public GooglePlus(MainActivity ma){
         this.mainActivity = ma;
         mShouldResolve = false;
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .requestIdToken("1036182018589-qq5e49a73sc4p0q9f02isfin56snbcsd.apps.googleusercontent.com")
+                .build();
+
+        mainActivity.mGoogleApiClient = new GoogleApiClient.Builder(mainActivity)
+                //.enableAutoManage(mainActivity /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
     }
 
     public void AfterActivityResult_Connect(){
@@ -50,121 +70,46 @@ public class GooglePlus implements
     }
 
     public void loginGooglePlus(){
-        mShouldResolve = true;
-        mainActivity.mGoogleApiClient = new GoogleApiClient.Builder(mainActivity)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .enableAutoManage(mainActivity, 22, this)
-                .addApi(Plus.API)
-                .addScope(new Scope(Scopes.PROFILE))
-                .build();
+        mainActivity.StartGoogleSignInActvity();
     }
 
     public void checkLoginStatus(){
-        mainActivity.mGoogleApiClient = new GoogleApiClient.Builder(mainActivity)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Plus.API)
-                .addScope(new Scope(Scopes.PROFILE))
-                .build();
-        mainActivity.mGoogleApiClient.connect();
+        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mainActivity.mGoogleApiClient);
+        if (opr.isDone()) {
+            // If the user's cached credentials are valid, the OptionalPendingResult will be "done"
+            // and the GoogleSignInResult will be available instantly.
+            GoogleSignInResult result = opr.get();
+            handleSignInResult(result);
+        } else {
+            // If the user has not previously signed in on this device or the sign-in has expired,
+            // this asynchronous branch will attempt to sign in the user silently.  Cross-device
+            // single sign-on will occur in this branch.
+            opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
+                @Override
+                public void onResult(GoogleSignInResult googleSignInResult) {
+                    handleSignInResult(googleSignInResult);
+                }
+            });
+            mainActivity.mGoogleApiClient.connect();
+        }
     }
 
-    @Override
-    public void onConnected(Bundle bundle) {
-        // onConnected indicates that an account was selected on the device, that the selected
-        // account has granted any requested permissions to our app and that we were able to
-        // establish a service connection to Google Play services.
-        //Log.d(TAG, "onConnected:" + bundle);
-        //mShouldResolve = false;
-
-        // Show the signed-in UI
-        //showSignedInUI();
-        if (Plus.PeopleApi.getCurrentPerson(mainActivity.mGoogleApiClient) != null) {
-            Person currentPerson = Plus.PeopleApi.getCurrentPerson(mainActivity.mGoogleApiClient);
+    public void handleSignInResult(GoogleSignInResult result) {
+        if (result.isSuccess()) {
+            // Signed in successfully, show authenticated UI.
+            GoogleSignInAccount acct = result.getSignInAccount();
 
             ModelUserLogin user = new ModelUserLogin();
             user.loginType = ModelUserLogin.LoginType.GooglePlus;
-            user.UserName = currentPerson.getId();
-            user.Name = currentPerson.getDisplayName();
-            user.URLPictureProfile = currentPerson.getUrl();
-
-            AsyncTask<ModelUserLogin, Void, ModelUserLogin> task = new AsyncTask<ModelUserLogin, Void, ModelUserLogin>() {
-                @Override
-                protected ModelUserLogin doInBackground(ModelUserLogin... params) {
-                    String token = "";
-                    ModelUserLogin user = params[0];
-                    String accountName = Plus.AccountApi.getAccountName(mainActivity.mGoogleApiClient);
-                    user.SocialMediaEmail = accountName;
-                    Account account = new Account(accountName, GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
-                    String scopes = "audience:server:client_id:" + "1036182018589-qq5e49a73sc4p0q9f02isfin56snbcsd.apps.googleusercontent.com"; // Not the app's client ID.
-                    try {
-                        String googleToken = GoogleAuthUtil.getToken(mainActivity, account, scopes);
-                        user.accessToken = googleToken;
-                    } catch (IOException e) {
-                        String sss = "";
-                        //Log.e(TAG, "Error retrieving ID token.", e);
-                        return null;
-                    } catch (GoogleAuthException e) {
-                        //Log.e(TAG, "Error retrieving ID token.", e);
-                        String ddd = "";
-                        return null;
-                    }
-
-                    return user;
-                    //https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=eyJhbGciOiJSUzI1NiIsImtpZCI6Ijg4NTEyODVhNzM5ZjY0YTY0MGVjOGU5YTc2MjVlMjAzYWMwNGMwOTAifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXVkIjoiMTAzNjE4MjAxODU4OS1xcTVlNDlhNzNzYzRwMHE5ZjAyaXNmaW41NnNuYmNzZC5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbSIsInN1YiI6IjExNzg4NzA0NTM3ODc4ODY4NTMyOCIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhenAiOiIxMDM2MTgyMDE4NTg5LWtxMjZmMnFpM2dhZGlvMWFnZ3QwcWFvYzEzZ3Z2NjQ2LmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiZW1haWwiOiJ6bml0ZXI4MUBnbWFpbC5jb20iLCJpYXQiOjE0NDE2MTE1NzMsImV4cCI6MTQ0MTYxNTE3MywibmFtZSI6IktpYW4gU2VuZyIsInBpY3R1cmUiOiJodHRwczovL2xoNi5nb29nbGV1c2VyY29udGVudC5jb20vLWNKRVp5aUk5N05VL0FBQUFBQUFBQUFJL0FBQUFBQUFBQnkwLzdGU2dMYmIxd21ZL3M5Ni1jL3Bob3RvLmpwZyIsImdpdmVuX25hbWUiOiJLaWFuIiwiZmFtaWx5X25hbWUiOiJTZW5nIn0.Z-3MpKeZo2GYrMHrCxTMn39clk0JTJOYTubLi4s0q6AXfiqyw2ZLKN_YvugZfNttsfBh4YKnscTXFiAWFpXVyfXkG-s5YpDu1SGz2aVyHZtOIE8WLAXNn3aETuwNIe8BnndbwwSp9b1Hn-z9vj4q1iSM-em0El3z-tHD-VG5e9PDcGP5XLhLQWtX89ClOfsk3xNFMVo__Gd8HIB8BBBqxdX6DT491lRpa78WMA65oQ31TPwAdrcfzi3m9HzIbQTknopwsAPOKd-kBKR66udcaUKZa9fZ_lxhDb_aF_td-CF8Co3YhOPmzJBNWguCtcjB-SqAF5d5w67z-hgbt6TigQ
-                    /**
-                     *
-                     * {
-                     "iss": "accounts.google.com",
-                     this is my AppID "aud": "1036182018589-qq5e49a73sc4p0q9f02isfin56snbcsd.apps.googleusercontent.com",
-                     Signed in unique userid "sub": "117887045378788685328",
-                     "email_verified": "true",
-                     "azp": "1036182018589-kq26f2qi3gadio1aggt0qaoc13gvv646.apps.googleusercontent.com",
-                     "email": "zniter81@gmail.com",
-                     "iat": "1441611573",
-                     "exp": "1441615173",
-                     "name": "Kian Seng",
-                     "picture": "https://lh6.googleusercontent.com/-cJEZyiI97NU/AAAAAAAAAAI/AAAAAAAABy0/7FSgLbb1wmY/s96-c/photo.jpg",
-                     "given_name": "Kian",
-                     "family_name": "Seng",
-                     "alg": "RS256",
-                     "kid": "8851285a739f64a640ec8e9a7625e203ac04c090"
-                     }
-                     *
-                     *
-                     */
-                }
-
-                @Override
-                protected void onPostExecute(ModelUserLogin user) {
-                    canProceedPrayerList(user);
-                }
-
-            };
-
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, user);
-            else
-                task.execute(user);
-
-        }
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        // Could not connect to Google Play Services.  The user needs to select an account,
-        // grant permissions or resolve an error in order to sign in. Refer to the javadoc for
-        // ConnectionResult to see possible error codes.
-        //Log.d(TAG, "onConnectionFailed:" + connectionResult);
-        if(!mShouldResolve || !connectionResult.hasResolution()) {
+            user.UserName = acct.getId();
+            user.Name = acct.getDisplayName();
+            user.URLPictureProfile = acct.getPhotoUrl().toString();
+            user.SocialMediaEmail = acct.getEmail();
+            user.accessToken = acct.getIdToken();
+            canProceedPrayerList(user);
+        } else {
             mainActivity.replaceWithLoginFragment();
         }
-    }
-
-    @Override
-    public void onConnectionSuspended(int id){
-
     }
 
     private void canProceedPrayerList(ModelUserLogin user){

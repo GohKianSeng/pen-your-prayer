@@ -1,5 +1,7 @@
 package com.belvia.penyourprayer.UI;
 
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -60,6 +62,7 @@ import com.belvia.penyourprayer.WebAPI.httpClient;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -108,6 +111,11 @@ public class MainActivity extends AppCompatActivity {
     private boolean checkFbstatusNow = false;
     private Facebook fb;
     private AdapterListViewDrawerProfileFriend adapter;
+
+    public void StartGoogleSignInActvity(){
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        startActivityForResult(signInIntent, 9001);
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -903,9 +911,8 @@ public class MainActivity extends AppCompatActivity {
         this.sharedPreferences.edit().remove(QuickstartPreferences.OwnerLoginType).apply();
 
         if(loginType.compareToIgnoreCase(ModelUserLogin.LoginType.GooglePlus.toString()) ==0){
-            if(mGoogleApiClient.isConnected()){
-                Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-                mGoogleApiClient.disconnect();
+            if(mGoogleApiClient.isConnected()) {
+                Auth.GoogleSignInApi.signOut(mGoogleApiClient);
             }
         }
         else if(loginType.compareToIgnoreCase(ModelUserLogin.LoginType.Facebook.toString()) ==0){

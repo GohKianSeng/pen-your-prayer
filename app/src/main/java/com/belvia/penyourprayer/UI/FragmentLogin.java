@@ -26,6 +26,9 @@ import com.belvia.penyourprayer.R;
 import com.belvia.penyourprayer.WebAPI.Model.SimpleJsonResponse;
 import com.belvia.penyourprayer.WebAPI.UserAccountInterface;
 import com.belvia.penyourprayer.WebAPI.httpClient;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
@@ -147,8 +150,11 @@ public class FragmentLogin extends Fragment  {
         if(fb != null)
             fb.mCallbackManager.onActivityResult(requestCode, resultCode, data);
 
-        if(gp != null)
-            gp.AfterActivityResult_Connect();
+        if(gp != null) {
+            //gp.AfterActivityResult_Connect();
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            gp.handleSignInResult(result);
+        }
     }
 
     private void startLoginProcess(ModelUserLogin user){

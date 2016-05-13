@@ -1,0 +1,71 @@
+{
+  "project_info": {
+    "project_number": "1036182018589",
+    "project_id": "pen-your-prayer"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1036182018589:android:174cd5595540383a",
+        "android_client_info": {
+          "package_name": "com.belvia.penyourprayer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1036182018589-qq5e49a73sc4p0q9f02isfin56snbcsd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1036182018589:android:ba764f3821bf1f8e",
+        "android_client_info": {
+          "package_name": "com.belvia.penyourprayer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1036182018589-kq26f2qi3gadio1aggt0qaoc13gvv646.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.belvia.penyourprayer",
+            "certificate_hash": "1201F48FB1FC59FAFBBF9180A17107E8F85CA02B"
+          }
+        },
+        {
+          "client_id": "1036182018589-qq5e49a73sc4p0q9f02isfin56snbcsd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
