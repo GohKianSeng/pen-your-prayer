@@ -212,15 +212,23 @@ public class AdapterListViewPrayer extends ArrayAdapter implements NativeAdsMana
                         }
                 });
 
-                        p.tagfriend_imageButton.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
+                p.tagfriend_imageButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                                if(resources.get(position).UserID.compareToIgnoreCase(mainactivity.OwnerID) == 0) {
                                         Database db = new Database(mainactivity);
                                         resources.get(position).selectedFriends = db.getSelectedTagFriend(resources.get(position).PrayerID, mainactivity.OwnerID);
                                         mainactivity.selectedFriends = resources.get(position).selectedFriends;
-                                        mainactivity.replaceWithTagAFriend(resources.get(position).PrayerID);
+                                        mainactivity.replaceWithTagAFriend(resources.get(position).PrayerID, false);
                                 }
-                        });
+                                else{
+                                        Database db = new Database(mainactivity);
+                                        resources.get(position).selectedFriends = db.getSelectedTagFriend(resources.get(position).PrayerID, mainactivity.OwnerID);
+                                        mainactivity.selectedFriends = resources.get(position).selectedFriends;
+                                        mainactivity.replaceWithTagAFriend(resources.get(position).PrayerID, true);
+                                }
+                        }
+                });
 
 
 

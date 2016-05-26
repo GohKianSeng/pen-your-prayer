@@ -33,6 +33,7 @@ public class FragmentTagAFriend extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "GUID";
+    private static final String ARG_PARAM2 = "ReadOnly";
 
     private ListView list;
     private ArrayList<ModelFriendProfile> friends;
@@ -40,14 +41,16 @@ public class FragmentTagAFriend extends Fragment {
     private String searchFor = "";
     // TODO: Rename and change types of parameters
     private String GUID;
+    private boolean ReadOnly = false;
     private MainActivity mainActivity;
     EditText searcheditText;
     private AdapterListViewProfileFriend adapter;
 
-    public static FragmentTagAFriend newInstance(String GUID) {
+    public static FragmentTagAFriend newInstance(String GUID, boolean readOnly) {
         FragmentTagAFriend fragment = new FragmentTagAFriend();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, GUID);
+        args.putBoolean(ARG_PARAM2, readOnly);
         fragment.setArguments(args);
         return fragment;
     }
@@ -62,6 +65,7 @@ public class FragmentTagAFriend extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             GUID = getArguments().getString(ARG_PARAM1);
+            ReadOnly = getArguments().getBoolean(ARG_PARAM2);
         }
     }
 
@@ -96,7 +100,7 @@ public class FragmentTagAFriend extends Fragment {
                     if (friends.get(x).selected)
                         selectedFriends.add(friends.get(x));
                 }
-                if (GUID == null) {
+                if (GUID == null || ReadOnly) {
                     mainActivity.selectedFriends = selectedFriends;
                     mainActivity.popBackFragmentStack();
                 } else if (GUID.length() > 0) {
@@ -138,7 +142,7 @@ public class FragmentTagAFriend extends Fragment {
         list = (ListView)view.findViewById(R.id.tag_a_friend_listView);
 
 
-        adapter = new AdapterListViewProfileFriend(this.getActivity(), R.layout.list_view_row_tag_friend, friends);
+        adapter = new AdapterListViewProfileFriend(this.getActivity(), R.layout.list_view_row_tag_friend, friends, ReadOnly);
         list.setAdapter(adapter);
 
         list.setItemsCanFocus(false);

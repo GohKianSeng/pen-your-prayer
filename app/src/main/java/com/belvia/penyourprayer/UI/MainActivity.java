@@ -650,9 +650,9 @@ public class MainActivity extends AppCompatActivity {
         transaction.commit();
     }
 
-    public void replaceWithTagAFriend(String GUID){
+    public void replaceWithTagAFriend(String GUID, boolean readOnly){
         // Create fragment and give it an argument specifying the article it should show
-        Fragment newFragment = FragmentTagAFriend.newInstance(GUID);
+        Fragment newFragment = FragmentTagAFriend.newInstance(GUID, readOnly);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);

@@ -136,7 +136,7 @@ public class FragmentCreateNewPrayer extends Fragment implements InterfaceFragme
         tagFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mainActivity.replaceWithTagAFriend(null);
+                mainActivity.replaceWithTagAFriend(null, false);
             }
         });
 

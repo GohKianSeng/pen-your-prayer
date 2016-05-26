@@ -26,13 +26,15 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class AdapterListViewProfileFriend extends ArrayAdapter {
         public ArrayList<ModelFriendProfile> friends = null;
         public Context context;
+        public boolean ReadOnly = false;
         private ImageLoader imageLoader;
 
-        public AdapterListViewProfileFriend(Context context, int resourcesID, ArrayList<ModelFriendProfile> resource) {
+        public AdapterListViewProfileFriend(Context context, int resourcesID, ArrayList<ModelFriendProfile> resource, boolean readOnly) {
                 super(context, resourcesID, resource);
                 // TODO Auto-generated constructor stub
                 this.context = context;
                 this.friends = resource;
+                this.ReadOnly = readOnly;
                 imageLoader=new ImageLoader(context.getApplicationContext());
         }
 
@@ -48,6 +50,9 @@ public class AdapterListViewProfileFriend extends ArrayAdapter {
                         p.name_TextView = (TextView) convertView.findViewById(R.id.profile_name_textView);
                         p.selected_CheckBox= (CheckBox) convertView.findViewById(R.id.profile_checkBox);
                         p.profile_ImageView = (CircleImageView)convertView.findViewById(R.id.profile_img_imageView);
+
+                        if(ReadOnly)
+                                p.selected_CheckBox.setVisibility(View.GONE);
 
                         convertView.setTag(p);
                 }
