@@ -119,10 +119,14 @@ public class FragmentTagAFriend extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Database db = new Database(mainActivity);
-        friends = db.getAllFriends(mainActivity.OwnerID);
-        updateFriendList();
-
+        if(!ReadOnly) {
+            Database db = new Database(mainActivity);
+            friends = db.getAllFriends(mainActivity.OwnerID);
+            updateFriendList();
+        }
+        else{
+            friends = mainActivity.selectedFriends;
+        }
 
         searcheditText = (EditText) view.findViewById(R.id.search_editText);
         searcheditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {

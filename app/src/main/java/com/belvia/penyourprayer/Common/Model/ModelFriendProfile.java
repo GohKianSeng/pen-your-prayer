@@ -13,6 +13,7 @@ public class ModelFriendProfile implements Serializable{
     public String DisplayName, ProfilePictureURL;
     public boolean selected = false;
     public String UserID = "";
+    public boolean isStranger = false;
 
     public ModelFriendProfile(String UserID, String name, String img_url, boolean selected){
         this.UserID = UserID;

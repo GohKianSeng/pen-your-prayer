@@ -272,13 +272,13 @@ public class MainActivity extends AppCompatActivity {
         // Add code to print out the key hash
         try {
             PackageInfo info = getPackageManager().getPackageInfo(
-                    "com.penyourprayer.penyourprayer",
+                    "com.belvia.penyourprayer",
                     PackageManager.GET_SIGNATURES);
             for (Signature signature : info.signatures) {
                 MessageDigest md = MessageDigest.getInstance("SHA");
                 md.update(signature.toByteArray());
                 String key = Base64.encodeToString(md.digest(), Base64.DEFAULT);
-                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+                key.toString();
             }
         } catch (PackageManager.NameNotFoundException e) {
 
@@ -852,11 +852,14 @@ public class MainActivity extends AppCompatActivity {
                         condition = condition.substring(0, condition.length() - 2);
                         condition += ")";
 
+                        if(prayers.size() == 0)
+                            condition = "1=0";
                         Fragment f = temp_mainactivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
                         if (f instanceof FragmentPrayerList) {
                             ArrayList<ModelPrayer> p = db.getAllPrayer_CustomQuery(condition + " ORDER BY CreatedWhen, PrayerID DESC", R.id.prayerlist_category_public);
                             ((FragmentPrayerList) f).prayerArrayAdapter.appendItems(p);
-                            ((FragmentPrayerList) f).onListUpdate(currentCategory);
+                            ((FragmentPrayerList) f).enableLoadingForPastPrayers();
+                            //((FragmentPrayerList) f).onListUpdate(currentCategory);
                         }
                     }
                 }
@@ -883,7 +886,8 @@ public class MainActivity extends AppCompatActivity {
                         }
                         condition = condition.substring(0, condition.length() - 2);
                         condition += ")";
-
+                        if(prayers.size() == 0)
+                            condition = "1=0";
                         Fragment f = temp_mainactivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
                         if (f instanceof FragmentPrayerList) {
                             ArrayList<ModelPrayer> p = db.getAllPrayer_CustomQuery(condition + " ORDER BY CreatedWhen, PrayerID DESC", R.id.prayerlist_category_friend);

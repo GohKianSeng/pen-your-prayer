@@ -12,10 +12,16 @@ apply plugin: 'io.fabric'
 
 android {
     signingConfigs {
+        //config {
+        //    keyAlias 'KeyStore'
+        //    keyPassword 'yWqikr1981'
+        //    storeFile file('../keystore.jks')
+        //    storePassword 'yWqikr1981'
+        //}
         config {
-            keyAlias 'KeyStore'
+            keyAlias 'PenYourPrayer'
             keyPassword 'yWqikr1981'
-            storeFile file('../keystore.jks')
+            storeFile file('../PenYourPrayer.jks')
             storePassword 'yWqikr1981'
         }
     }
@@ -34,6 +40,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
         debug {
             signingConfig signingConfigs.config

@@ -34,12 +34,13 @@ public class Database extends SQLiteOpenHelper {
     private MainActivity mainActivity;
     // All Static variables
     // Database Version
-    private static final int DATABASE_VERSION = 56;
+    private static final int DATABASE_VERSION = 57;
 
     private String OwnerID;
 
     // Database Name
     private static final String DATABASE_NAME = "PenYourPrayerSQLite";
+    private static final String tb_Strangers = "CREATE TABLE tb_Strangers ('UserID' TEXT NOT NULL, 'DisplayName' TEXT NOT NULL, 'ProfilePictureURL' TEXT, PRIMARY KEY(UserID))";
     private static final String tb_Friends = "CREATE TABLE tb_Friends ('UserID' TEXT NOT NULL, 'OwnerID' TEXT NOT NULL, 'DisplayName' TEXT NOT NULL, 'ProfilePictureURL' TEXT, PRIMARY KEY(UserID, OwnerID))";
     private static final String tb_OwnerPrayerAmen = "CREATE TABLE tb_OwnerPrayerAmen ('OwnerPrayerID' TEXT NOT NULL,'WhoID' TEXT NOT NULL,'WhoName' TEXT NOT NULL,'WhoProfilePicture' TEXT, 'CreatedWhen' INTEGER NOT NULL, PRIMARY KEY(OwnerPrayerID,WhoID))";
     private static final String tb_OwnerPrayerComment = "CREATE TABLE tb_OwnerPrayerComment (CommentID TEXT NOT NULL UNIQUE, OwnerPrayerID TEXT NOT NULL, WhoID TEXT NOT NULL, WhoName TEXT NOT NULL,WhoProfilePicture TEXT, Comment TEXT NOT NULL, ServerSent INTEGER NOT NULL DEFAULT 0, InQueue INTEGER NOT NULL DEFAULT 0, CreatedWhen INTEGER NOT NULL, TouchedWhen INTEGER NOT NULL, PRIMARY KEY(CommentID,OwnerPrayerID))";
@@ -66,6 +67,7 @@ public class Database extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase database) {
 
+        database.execSQL(tb_Strangers);
         database.execSQL(tb_Friends);
         database.execSQL(tb_OwnerPrayerAmen);
         database.execSQL(tb_OwnerPrayerComment);
@@ -80,6 +82,7 @@ public class Database extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS tb_Strangers");
         db.execSQL("DROP TABLE IF EXISTS tb_Friends");
         db.execSQL("DROP TABLE IF EXISTS tb_OwnerPrayerAmen");
         db.execSQL("DROP TABLE IF EXISTS tb_OwnerPrayerComment");
@@ -515,27 +518,34 @@ public class Database extends SQLiteOpenHelper {
 
     public ArrayList<ModelPrayer> getAllPublicPrayer(){
         ArrayList<ModelFriendProfile> fr = getAllFriends_IDOnly(mainActivity.OwnerID);
-        String condition = "UserID NOT IN (";
-        for(ModelFriendProfile f : fr){
-            condition += "'" + f.UserID + "', ";
+        String condition = " AND UserID NOT IN (";
+        if(fr.size() == 0)
+            condition = "";
+        else {
+            for (ModelFriendProfile f : fr) {
+                condition += "'" + f.UserID + "', ";
+            }
+            condition = condition.substring(0, condition.length() - 2);
+            condition += ")";
         }
-        condition = condition.substring(0, condition.length() - 2);
-        condition += ")";
-
-        return getAllPrayer_CustomQuery("Deleted = 0 AND UserID <> '" + OwnerID + "' AND " + condition + "  ORDER BY PrayerID DESC", R.id.prayerlist_category_public);
+        return getAllPrayer_CustomQuery("Deleted = 0 AND UserID <> '" + OwnerID + "' " + condition + "  ORDER BY PrayerID DESC", R.id.prayerlist_category_public);
     }
 
     public ArrayList<ModelPrayer> getAllFriendsPrayer(){
 
         ArrayList<ModelFriendProfile> fr = getAllFriends_IDOnly(mainActivity.OwnerID);
-        String condition = "UserID IN (";
-        for(ModelFriendProfile f : fr){
-            condition += "'" + f.UserID + "', ";
-        }
-        condition = condition.substring(0, condition.length() - 2);
-        condition += ")";
+        String condition = " AND UserID IN (";
 
-        return getAllPrayer_CustomQuery("Deleted = 0 AND " + condition + "  ORDER BY PrayerID DESC", R.id.prayerlist_category_friend);
+        if(fr.size() == 0)
+            return new ArrayList<ModelPrayer>();
+        else {
+            for (ModelFriendProfile f : fr) {
+                condition += "'" + f.UserID + "', ";
+            }
+            condition = condition.substring(0, condition.length() - 2);
+            condition += ")";
+        }
+        return getAllPrayer_CustomQuery("Deleted = 0 " + condition + "  ORDER BY PrayerID DESC", R.id.prayerlist_category_friend);
     }
 
     public ArrayList<ModelPrayer> getAllOwnerPrayer(String OwnerID){
@@ -567,28 +577,35 @@ public class Database extends SQLiteOpenHelper {
 
     public void removeFriendsPrayers(){
         ArrayList<ModelFriendProfile> fr = getAllFriends_IDOnly(mainActivity.OwnerID);
-        String condition = "UserID IN (";
-        for(ModelFriendProfile f : fr){
-            condition += "'" + f.UserID + "', ";
+        String condition = " AND UserID IN (";
+        if(fr.size() == 0)
+            return;
+        else {
+            for (ModelFriendProfile f : fr) {
+                condition += "'" + f.UserID + "', ";
+            }
+            condition = condition.substring(0, condition.length() - 2);
+            condition += ")";
         }
-        condition = condition.substring(0, condition.length() - 2);
-        condition += ")";
-
         SQLiteDatabase db = getWritableDatabase();
-        db.delete("tb_ownerPrayer", "UserID <> '" + OwnerID + "' AND " + condition, null);
+        db.delete("tb_ownerPrayer", "UserID <> '" + OwnerID + "' " + condition, null);
     }
 
     public void removeOthersPrayers(){
         ArrayList<ModelFriendProfile> fr = getAllFriends_IDOnly(mainActivity.OwnerID);
-        String condition = "UserID NOT IN (";
-        for(ModelFriendProfile f : fr){
-            condition += "'" + f.UserID + "', ";
+        String condition = " AND UserID NOT IN (";
+        if(fr.size() == 0) {
+            condition = "";
         }
-        condition = condition.substring(0, condition.length() - 2);
-        condition += ")";
-
+        else {
+            for (ModelFriendProfile f : fr) {
+                condition += "'" + f.UserID + "', ";
+            }
+            condition = condition.substring(0, condition.length() - 2);
+            condition += ")";
+        }
         SQLiteDatabase db = getWritableDatabase();
-        db.delete("tb_ownerPrayer", "UserID <> '" + OwnerID + "' AND " + condition, null);
+        db.delete("tb_ownerPrayer", "UserID <> '" + OwnerID + "' " + condition, null);
     }
 
     public void deletePrayer(String PrayerID){
@@ -605,6 +622,8 @@ public class Database extends SQLiteOpenHelper {
 
     public String getLastFriendsPrayerID(){
         ArrayList<ModelFriendProfile> fr = getAllFriends_IDOnly(mainActivity.OwnerID);
+        if(fr.size() == 0)
+            return "0";
         String condition = "UserID IN (";
         for(ModelFriendProfile f : fr){
             condition += "'" + f.UserID + "', ";
@@ -670,6 +689,21 @@ public class Database extends SQLiteOpenHelper {
 
 
 
+
+
+    /***********************************************
+     *
+     * Tag Strangers section
+     *
+     **********************************************/
+    public void removeAllStrangers() {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete("tb_Strangers", "1=1", null);
+    }
+
+
+
+
     /***********************************************
      *
      * Tag Friends section
@@ -685,6 +719,28 @@ public class Database extends SQLiteOpenHelper {
             values.put("ProfilePictureURL", f.get(x).ProfilePictureURL);
             db.insert("tb_Friends", null, values);
         }
+    }
+
+    public ArrayList<ModelFriendProfile> getOtherPrayerTagFriend(String PrayerID, String OwnerID){
+        String query = "SELECT D.UserID AS AlreadyFriend, C.UserID, C.DisplayName, C.ProfilePictureURL FROM tb_ownerPrayer AS A LEFT OUTER JOIN tb_OwnerPrayerTagFriends AS B ON A.PrayerID = B.OwnerPrayerID LEFT OUTER JOIN tb_Strangers AS C ON C.UserID = B.WhoID LEFT OUTER JOIN tb_Friends AS D ON D.UserID = B.WhoID AND D.OwnerID = '" + OwnerID + "' WHERE A.PrayerID = '" + PrayerID + "'";
+        ArrayList<ModelFriendProfile> selectedFriends = new ArrayList<ModelFriendProfile>();
+
+        SQLiteDatabase db = getReadableDatabase();
+
+        Cursor c = db.rawQuery(query, new String[]{});
+        while (c.moveToNext()) {
+            ModelFriendProfile f = new ModelFriendProfile(c.getString(c.getColumnIndex("UserID")),
+                    c.getString(c.getColumnIndex("DisplayName")),
+                    c.getString(c.getColumnIndex("ProfilePictureURL")),
+                    true);
+            String temp = c.getString(c.getColumnIndex("AlreadyFriend"));
+            if(temp == null)
+                f.isStranger = true;
+            selectedFriends.add(f);
+        }
+        if(c != null)
+            c.close();
+        return selectedFriends;
     }
 
     public ArrayList<ModelFriendProfile> getSelectedTagFriend(String PrayerID, String OwnerID){
@@ -763,6 +819,13 @@ public class Database extends SQLiteOpenHelper {
             cv.put("OwnerPrayerID", PrayerID);
             cv.put("WhoID", friend.get(x).UserID);
             db.insert("tb_OwnerPrayerTagFriends", null, cv);
+
+            cv = new ContentValues();
+
+            cv.put("DisplayName", friend.get(x).DisplayName);
+            cv.put("UserID", friend.get(x).UserID);
+            cv.put("ProfilePictureURL", friend.get(x).ProfilePictureURL);
+            db.insert("tb_Strangers", null, cv);
         }
     }
 

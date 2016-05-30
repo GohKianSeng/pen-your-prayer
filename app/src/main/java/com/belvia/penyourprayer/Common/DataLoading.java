@@ -94,13 +94,15 @@ public class DataLoading {
         PrayerInterface prayerInterface = adapter.create(PrayerInterface.class);
         ArrayList<ModelPrayer> lp = prayerInterface.GetLatestPrayers(latestPrayerID);
         db.AddPrayers(lp);
+
+        //do once only.
+        db.removeAllStrangers();
     }
 
     public void getLatestOthersPrayer(){
         PrayerInterface prayerInterface = adapter.create(PrayerInterface.class);
         ArrayList<ModelPrayer> lp = prayerInterface.GetLatestOthersPrayers("useless");
         ModelUserLogin d = lp.get(0).OwnerProfile;
-        long sdf = d.ID;
         db.removeOthersPrayers();
         db.AddPrayers(lp);
     }

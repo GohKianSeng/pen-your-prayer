@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Filter;
 import android.widget.TextView;
@@ -50,9 +51,15 @@ public class AdapterListViewProfileFriend extends ArrayAdapter {
                         p.name_TextView = (TextView) convertView.findViewById(R.id.profile_name_textView);
                         p.selected_CheckBox= (CheckBox) convertView.findViewById(R.id.profile_checkBox);
                         p.profile_ImageView = (CircleImageView)convertView.findViewById(R.id.profile_img_imageView);
+                        p.addFriend = (Button) convertView.findViewById(R.id.profile_addfriend_button);
+                        p.addFriend.setVisibility(View.INVISIBLE);
 
-                        if(ReadOnly)
+                        if(ReadOnly) {
                                 p.selected_CheckBox.setVisibility(View.GONE);
+                                if(friends.get(position).isStranger)
+                                        p.addFriend.setVisibility(View.VISIBLE);
+                        }
+
 
                         convertView.setTag(p);
                 }

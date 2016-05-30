@@ -223,7 +223,7 @@ public class AdapterListViewPrayer extends ArrayAdapter implements NativeAdsMana
                                 }
                                 else{
                                         Database db = new Database(mainactivity);
-                                        resources.get(position).selectedFriends = db.getSelectedTagFriend(resources.get(position).PrayerID, mainactivity.OwnerID);
+                                        resources.get(position).selectedFriends = db.getOtherPrayerTagFriend(resources.get(position).PrayerID, mainactivity.OwnerID);
                                         mainactivity.selectedFriends = resources.get(position).selectedFriends;
                                         mainactivity.replaceWithTagAFriend(resources.get(position).PrayerID, true);
                                 }

@@ -199,8 +199,8 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
                         scrollCount --;
 
                     if(scrollCount < -1) {
-                        fab.hide(true);
-                        actionBar.hide();
+                        //fab.hide(true);
+                        //actionBar.hide();
                     }
                 }
                 if(mLastFirstVisibleItem>firstVisibleItem)
@@ -211,8 +211,8 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
                         scrollCount ++;
 
                     if(scrollCount > 1) {
-                        fab.show(true);
-                        actionBar.show();
+                        //fab.show(true);
+                        //actionBar.show();
                     }
                 }
                 mLastFirstVisibleItem=firstVisibleItem;
@@ -314,6 +314,10 @@ public class FragmentPrayerList extends Fragment implements InterfacePrayerListU
             //false the category to refresh
             onChangePrayerCategory(R.id.prayerlist_category_friend);
         }
+    }
+
+    public void enableLoadingForPastPrayers(){
+        loading = false;
     }
 
     @Override
