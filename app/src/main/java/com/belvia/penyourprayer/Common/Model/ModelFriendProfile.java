@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class ModelFriendProfile implements Serializable{
 
     public enum ActionName {
-        Logout, Settings
+        Logout, Settings, Upgrade
     }
 
     public ActionName actionName;

@@ -1,5 +1,9 @@
 package com.belvia.penyourprayer.UI;
 
+import com.belvia.penyourprayer.Common.inappbilliing.util.IabHelper;
+import com.belvia.penyourprayer.Common.inappbilliing.util.IabResult;
+import com.belvia.penyourprayer.Common.inappbilliing.util.Inventory;
+import com.belvia.penyourprayer.Common.inappbilliing.util.Purchase;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import android.content.BroadcastReceiver;
@@ -117,9 +121,82 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(signInIntent, 9001);
     }
 
+    IabHelper.QueryInventoryFinishedListener mReceivedInventoryListener;
+    IabHelper.OnConsumeFinishedListener mConsumeFinishedListener;
+    final String ITEM_SKU = "android.test.purchased";
+    IabHelper mHelper;
+    @Override
+    protected void onStart() {
+        super.onStart();
+        String base64EncodedPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhy1yThWa5j+gE/q+TrBIGFVWFuyOvrcoc5ZrIOgu6xQfZEhoL6uKbyLyTsxLDsm/VhXK9E8UEqvHZIJVNcTdwuUjvnQvwb4Fa4MGLHUPLYM5WCkC0Mm/m2GpOtQjTANEC23vU5N10/MFcrWtQJz88Y5TWvI5z54dxeOSv41AA6afilblcW9+XVxHYdnRjno/fGGYMp8BUY+fDcKM8rtlmStcN96mWPA3kMBeZC4EghpU6rtkoXJnGZ6xSgOeFn6aRB9AGuMsMOTZrC6697de7ZKgQSl1OqdodjrbHk047X89oRT82uOahl2f9gF/vTmjdOGPdDMlV0dEcGof0mpSrQIDAQAB";
+
+        mHelper = new IabHelper(this, base64EncodedPublicKey);
+
+        mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
+                                       public void onIabSetupFinished(IabResult result) {
+                                           if (!result.isSuccess()) {
+                                               String sdf = "";
+                                               sdf.toString();
+                                           } else {
+                                               String sdf = "";
+                                               sdf.toString();
+                                           }
+                                       }
+                                   });
+
+        mConsumeFinishedListener =
+                new IabHelper.OnConsumeFinishedListener() {
+                    public void onConsumeFinished(Purchase purchase,
+                                                  IabResult result) {
+
+                        if (result.isSuccess()) {
+                            //clickButton.setEnabled(true);
+                            String sdf = "";
+                            sdf.toString();
+                        } else {
+                            // handle error
+                            String sdf = "";
+                            sdf.toString();
+                        }
+                    }
+                };
+
+        mReceivedInventoryListener
+                = new IabHelper.QueryInventoryFinishedListener() {
+            public void onQueryInventoryFinished(IabResult result,
+                                                 Inventory inventory) {
+
+
+                if (result.isFailure()) {
+                    // Handle failure
+                    String sdf = "";
+                    sdf.toString();
+                } else {
+                    try {
+                        mHelper.consumeAsync(inventory.getPurchase(ITEM_SKU), mConsumeFinishedListener);
+                    }catch (Exception e) {
+                        e.toString();
+                    }
+                }
+            }
+        };
+
+
+    }
+
+    public void consumeItem() {
+        try {
+            mHelper.queryInventoryAsync(mReceivedInventoryListener);
+        }catch (Exception e){
+            e.toString();
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        mHelper.handleActivityResult(requestCode, resultCode, data);
+
         //android.support.v4.app.Fragment fragment = null;
         Object sss =  this.getFragmentManager();
         Fragment fragment=  this.getSupportFragmentManager().findFragmentById(R.id.fragment);
@@ -294,6 +371,8 @@ public class MainActivity extends AppCompatActivity {
         settings.add(set);
         set = new ModelFriendProfile(ModelFriendProfile.ActionName.Settings);
         settings.add(set);
+        set = new ModelFriendProfile(ModelFriendProfile.ActionName.Upgrade);
+        settings.add(set);
 
 
         if(drawerCurrentFriendMode){
@@ -326,9 +405,32 @@ public class MainActivity extends AppCompatActivity {
             list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    if(((ModelFriendProfile)parent.getItemAtPosition(position)).actionName.compareTo(ModelFriendProfile.ActionName.Logout) == 0){
-                        ((MainActivity)parent.getContext()).logout();
-                        ((MainActivity)parent.getContext()).replaceWithLoginFragment();
+                    if (((ModelFriendProfile) parent.getItemAtPosition(position)).actionName.compareTo(ModelFriendProfile.ActionName.Logout) == 0) {
+                        ((MainActivity) parent.getContext()).logout();
+                        ((MainActivity) parent.getContext()).replaceWithLoginFragment();
+                    } else if (((ModelFriendProfile) parent.getItemAtPosition(position)).actionName.compareTo(ModelFriendProfile.ActionName.Upgrade) == 0) {
+                        //upgrade.
+                        IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener
+                                = new IabHelper.OnIabPurchaseFinishedListener() {
+                            public void onIabPurchaseFinished(IabResult result,
+                                                              Purchase purchase) {
+                                if (result.isFailure()) {
+                                    // Handle error
+                                    return;
+                                } else if (purchase.getSku().equals(ITEM_SKU)) {
+                                    consumeItem();
+                                    //buyButton.setEnabled(false);
+                                }
+
+                            }
+                        };
+
+                        try {
+                            mHelper.launchPurchaseFlow((AppCompatActivity) view.getContext(), "gas", 10001,
+                                    mPurchaseFinishedListener, "mypurchasetoken");//mypurchasetoken any random string
+                        } catch (Exception e) {
+                            e.toString();
+                        }
                     }
                 }
             });
