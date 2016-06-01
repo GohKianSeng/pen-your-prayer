@@ -310,6 +310,10 @@ public class IabHelper {
         }
     }
 
+    public IInAppBillingService getBillingService(){
+        return mService;
+    }
+
     /**
      * Dispose of object, releasing resources. It's very important to call this
      * method when you are done with this object. It will release any resources

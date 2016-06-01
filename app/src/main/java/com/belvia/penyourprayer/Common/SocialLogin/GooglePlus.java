@@ -103,7 +103,10 @@ public class GooglePlus {
             user.loginType = ModelUserLogin.LoginType.GooglePlus;
             user.UserName = acct.getId();
             user.Name = acct.getDisplayName();
-            user.URLPictureProfile = acct.getPhotoUrl().toString();
+            if(acct.getPhotoUrl() != null)
+                user.URLPictureProfile = acct.getPhotoUrl().toString();
+            else
+                user.URLPictureProfile = "";
             user.SocialMediaEmail = acct.getEmail();
             user.accessToken = acct.getIdToken();
             canProceedPrayerList(user);

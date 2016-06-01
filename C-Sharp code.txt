@@ -1,3 +1,60 @@
+String serviceAccountEmail = "penyourprayer-server@pen-your-prayer.iam.gserviceaccount.com";
+
+            var certificate = new X509Certificate2(@"C:\Users\sisgks\Desktop\mini Project\pen-your-prayer\Pen-Your-Prayer-bcb1aab33d4e.p12", "notasecret", X509KeyStorageFlags.Exportable);
+
+            ServiceAccountCredential credential = new ServiceAccountCredential(
+               new ServiceAccountCredential.Initializer(serviceAccountEmail)
+               {
+                   Scopes = new[] { "https://www.googleapis.com/auth/androidpublisher" }
+               }.FromCertificate(certificate));
+
+
+            var service = new AndroidPublisherService(
+           new BaseClientService.Initializer()
+           {
+               HttpClientInitializer = credential,
+               ApplicationName = "Pen Your Prayer",
+           });
+            // try catch this function because if you input wrong params ( wrong token) google will return error.
+            var request = service.Inapppurchases.Get("com.belvia.penyourprayer", "gas1", "pppepnhmlomipjnfhghoeade.AO-J1OxUsQLZ07wYqRWIs5PwzN-IO1LNXSDR7dF_tTA192EWU5AzFaKLmNwbsfp1fuuclI7JzC34GCd5XrDEU5adXCmHEpeywZOx15jYrx8nmyM7CO6rhOI");
+            var purchaseState = request.Execute();
+
+            // var request = service.Purchases.Products.Get(
+            //"your-package-name", "your-inapp-item-id", "purchase-token"); get purchase'status
+
+
+
+            Console.WriteLine(JsonConvert.SerializeObject(purchaseState));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:sszzz").create();
 
             RestAdapter adapter = new RestAdapter.Builder()

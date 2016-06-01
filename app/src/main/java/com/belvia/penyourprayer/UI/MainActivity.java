@@ -1,9 +1,11 @@
 package com.belvia.penyourprayer.UI;
 
+import com.android.vending.billing.IInAppBillingService;
 import com.belvia.penyourprayer.Common.inappbilliing.util.IabHelper;
 import com.belvia.penyourprayer.Common.inappbilliing.util.IabResult;
 import com.belvia.penyourprayer.Common.inappbilliing.util.Inventory;
 import com.belvia.penyourprayer.Common.inappbilliing.util.Purchase;
+import com.belvia.penyourprayer.Common.inappbilliing.util.Security;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import android.content.BroadcastReceiver;
@@ -80,6 +82,7 @@ import com.twitter.sdk.android.core.TwitterAuthConfig;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.util.ArrayList;
 
 import io.fabric.sdk.android.Fabric;
@@ -123,26 +126,56 @@ public class MainActivity extends AppCompatActivity {
 
     IabHelper.QueryInventoryFinishedListener mReceivedInventoryListener;
     IabHelper.OnConsumeFinishedListener mConsumeFinishedListener;
-    final String ITEM_SKU = "android.test.purchased";
+    final String ITEM_SKU = "gas2";
     IabHelper mHelper;
     @Override
     protected void onStart() {
         super.onStart();
-        String base64EncodedPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhy1yThWa5j+gE/q+TrBIGFVWFuyOvrcoc5ZrIOgu6xQfZEhoL6uKbyLyTsxLDsm/VhXK9E8UEqvHZIJVNcTdwuUjvnQvwb4Fa4MGLHUPLYM5WCkC0Mm/m2GpOtQjTANEC23vU5N10/MFcrWtQJz88Y5TWvI5z54dxeOSv41AA6afilblcW9+XVxHYdnRjno/fGGYMp8BUY+fDcKM8rtlmStcN96mWPA3kMBeZC4EghpU6rtkoXJnGZ6xSgOeFn6aRB9AGuMsMOTZrC6697de7ZKgQSl1OqdodjrbHk047X89oRT82uOahl2f9gF/vTmjdOGPdDMlV0dEcGof0mpSrQIDAQAB";
+        final String base64EncodedPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhy1yThWa5j+gE/q+TrBIGFVWFuyOvrcoc5ZrIOgu6xQfZEhoL6uKbyLyTsxLDsm/VhXK9E8UEqvHZIJVNcTdwuUjvnQvwb4Fa4MGLHUPLYM5WCkC0Mm/m2GpOtQjTANEC23vU5N10/MFcrWtQJz88Y5TWvI5z54dxeOSv41AA6afilblcW9+XVxHYdnRjno/fGGYMp8BUY+fDcKM8rtlmStcN96mWPA3kMBeZC4EghpU6rtkoXJnGZ6xSgOeFn6aRB9AGuMsMOTZrC6697de7ZKgQSl1OqdodjrbHk047X89oRT82uOahl2f9gF/vTmjdOGPdDMlV0dEcGof0mpSrQIDAQAB";
 
         mHelper = new IabHelper(this, base64EncodedPublicKey);
 
         mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
-                                       public void onIabSetupFinished(IabResult result) {
-                                           if (!result.isSuccess()) {
-                                               String sdf = "";
-                                               sdf.toString();
-                                           } else {
-                                               String sdf = "";
-                                               sdf.toString();
-                                           }
-                                       }
-                                   });
+            public void onIabSetupFinished(IabResult result) {
+                if (!result.isSuccess()) {
+                    String sdf = "";
+                    sdf.toString();
+                } else {
+                    String sdf = "";
+                    sdf.toString();
+
+                    try {
+                        IInAppBillingService mService = mHelper.getBillingService();
+                        Bundle ownedItems = mService.getPurchases(3, getPackageName(), "inapp", null);
+                        int response = ownedItems.getInt("RESPONSE_CODE");
+
+                        ArrayList ownedSkus = ownedItems.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
+                        ArrayList purchaseDataList = ownedItems.getStringArrayList("INAPP_PURCHASE_DATA_LIST");
+                        ArrayList signatureList = ownedItems.getStringArrayList("INAPP_DATA_SIGNATURE_LIST");
+
+
+                        for (int i = 0; i < purchaseDataList.size(); ++i) {
+                            String purchaseData = (String) purchaseDataList.get(i);
+                            String sku = (String) ownedSkus.get(i);
+                            String signedData = (String) signatureList.get(i);
+                            PublicKey key = Security.generatePublicKey(base64EncodedPublicKey);
+                            boolean verified = Security.verify(key, purchaseData, signedData);
+
+                            String sdfp = sku.toString() + purchaseData.toString();
+
+                            // do something with this purchase information
+                            // e.g. display the updated list of products owned by user
+                        }
+                    }catch (Exception e){
+                        e.toString();
+                    }
+                }
+            }
+        });
+
+
+
+
 
         mConsumeFinishedListener =
                 new IabHelper.OnConsumeFinishedListener() {
@@ -426,7 +459,7 @@ public class MainActivity extends AppCompatActivity {
                         };
 
                         try {
-                            mHelper.launchPurchaseFlow((AppCompatActivity) view.getContext(), "gas", 10001,
+                            mHelper.launchPurchaseFlow((AppCompatActivity) view.getContext(), ITEM_SKU, 10001,
                                     mPurchaseFinishedListener, "mypurchasetoken");//mypurchasetoken any random string
                         } catch (Exception e) {
                             e.toString();
