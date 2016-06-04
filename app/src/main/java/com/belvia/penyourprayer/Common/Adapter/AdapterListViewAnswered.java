@@ -17,19 +17,23 @@ import android.widget.TextView;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerAnswered;
 import com.belvia.penyourprayer.Common.Model.ViewHolder.ViewHolderPrayerAnsweredModel;
 import com.belvia.penyourprayer.Common.Utils;
+import com.belvia.penyourprayer.QuickstartPreferences;
 import com.belvia.penyourprayer.R;
 import com.belvia.penyourprayer.UI.MainActivity;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 public class AdapterListViewAnswered extends ArrayAdapter {
         private MainActivity mainactivity;
         private ArrayList<ModelPrayerAnswered> answered;
+        int witdthHeight;
         public AdapterListViewAnswered(Context context, int resourcesID, ArrayList<ModelPrayerAnswered> a) {
                 super(context, resourcesID, a);
                 // TODO Auto-generated constructor stub
                 this.mainactivity = (MainActivity)context;
                 answered = a;
+                witdthHeight = Utils.dpToPx(mainactivity, QuickstartPreferences.thumbnailDPsize);
         }
 
         @Override
@@ -78,11 +82,13 @@ public class AdapterListViewAnswered extends ArrayAdapter {
                 p.displayname_textview.setText(answered.get(position).WhoName);
                 p.touchedwhen_textView.setText(modification + Utils.UnixTimeReadableString(answered.get(position).CreatedWhen));
 
+                if(mainactivity.OwnerProfilePictureURL != null && mainactivity.OwnerProfilePictureURL.length() > 0)
+                        Picasso.with(convertView.getContext()).load(answered.get(position).WhoProfilePicture).resize(witdthHeight, witdthHeight).centerCrop().into(p.profilePicture_imageView);
+
                 return convertView;
         }
 
         public void addComment(ModelPrayerAnswered a){
-                this.insert(a, 0);
                 this.answered.add(0, a);
                 this.notifyDataSetChanged();
         }

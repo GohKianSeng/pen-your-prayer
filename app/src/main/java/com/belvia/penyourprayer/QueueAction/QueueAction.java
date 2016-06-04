@@ -70,7 +70,7 @@ public class QueueAction extends AsyncTask<String, Void, String> {
             if(paused)
                 break;
             ProcessMessageQueue(adapter);
-            SystemClock.sleep(2000);
+            SystemClock.sleep(20000);
         }
         return "";
     }
