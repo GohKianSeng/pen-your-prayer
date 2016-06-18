@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:weightSum="1"
+    android:descendantFocusability="blocksDescendants"
+    android:paddingBottom="5dp">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical|right"
+        android:id="@+id/comment_reply_more_layout"
+        android:layout_marginTop="5dp">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="View Previous"
+            android:id="@+id/textView14"
+            android:layout_marginRight="10dp" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView3"
+            android:src="@drawable/ic_actionbar_left_black"
+            android:layout_marginRight="10dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/comment_reply_layout1">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="top"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="5dp">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:id="@+id/comment_profile_img_imageView1"
+                android:src="@drawable/profile2"
+                android:layout_weight="0.05"
+                app:civ_border_width="2dp"
+                app:civ_border_color="#FF000000" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Joshua Ng"
+                    android:id="@+id/comment_profile_name_textView1"
+                    android:paddingLeft="5dp"
+                    android:layout_weight="0"
+                    android:gravity="center_vertical"
+                    android:textColor="#800080"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="called twice, with position 0 and 1. When you you scroll page forward, extra instantiateItem() with"
+                android:id="@+id/comment_textView1"
+                android:paddingLeft="12dp"
+                android:textColor="#000000"
+                android:layout_weight="1"
+                android:layout_marginBottom="7dp"
+                android:paddingRight="12dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/comment_reply_layout2">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="top"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="5dp">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:id="@+id/comment_profile_img_imageView2"
+                android:src="@drawable/profile2"
+                android:layout_weight="0.05"
+                app:civ_border_width="2dp"
+                app:civ_border_color="#FF000000" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Joshua Ng"
+                    android:id="@+id/comment_profile_name_textView2"
+                    android:paddingLeft="5dp"
+                    android:layout_weight="0"
+                    android:gravity="center_vertical"
+                    android:textColor="#800080"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="called twice, with position 0 and 1. When you you scroll page forward, extra instantiateItem() with"
+                android:id="@+id/comment_textView2"
+                android:paddingLeft="12dp"
+                android:textColor="#000000"
+                android:layout_weight="1"
+                android:layout_marginBottom="7dp"
+                android:paddingRight="12dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/comment_reply_layout3">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="top"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="5dp">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:id="@+id/comment_profile_img_imageView3"
+                android:src="@drawable/profile2"
+                android:layout_weight="0.05"
+                app:civ_border_width="2dp"
+                app:civ_border_color="#FF000000" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Joshua Ng"
+                    android:id="@+id/comment_profile_name_textView3"
+                    android:paddingLeft="5dp"
+                    android:layout_weight="0"
+                    android:gravity="center_vertical"
+                    android:textColor="#800080"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="called twice, with position 0 and 1. When you you scroll page forward, extra instantiateItem() with"
+                android:id="@+id/comment_textView3"
+                android:paddingLeft="12dp"
+                android:textColor="#000000"
+                android:layout_weight="1"
+                android:layout_marginBottom="7dp"
+                android:paddingRight="12dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

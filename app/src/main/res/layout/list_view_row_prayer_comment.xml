@@ -123,6 +123,15 @@
                 android:textSize="10sp"
                 android:textColor="#800080" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/comment_reply_button"
+                android:text="Reply"
+                android:layout_marginRight="30dp"
+                android:textSize="10sp"
+                android:textColor="#800080" />
+
         </LinearLayout>
 
     </LinearLayout>
