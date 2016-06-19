@@ -12,9 +12,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.avocarrot.vastparser.model.Linear;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerComment;
 import com.belvia.penyourprayer.Common.Model.ViewHolder.ViewHolderPrayerCommentModel;
 import com.belvia.penyourprayer.Common.Utils;
@@ -33,6 +35,7 @@ public class AdapterListViewComment extends ArrayAdapter {
         private AdapterListViewComment current;
         public AdapterListViewComment(Context context, int resourcesID, ArrayList<ModelPrayerComment> c) {
                 super(context, resourcesID, c);
+
                 // TODO Auto-generated constructor stub
                 this.mainactivity = (MainActivity)context;
                 comment = c;
@@ -50,6 +53,9 @@ public class AdapterListViewComment extends ArrayAdapter {
                         return convertView;
                 if(convertView == null || ((ViewHolderPrayerCommentModel)convertView.getTag()).CommentID.compareToIgnoreCase(comment.get(position).CommentID) != 0) {
                         convertView = inflater.inflate(R.layout.list_view_row_prayer_comment, parent, false);
+
+                        p.viewPreviousReplyLayout = (LinearLayout) convertView.findViewById(R.id.comment_reply_previous_layout);
+                        p.replyMainLayout = (LinearLayout) convertView.findViewById(R.id.comment_reply_main_layout);
                         p.comment_textview = (TextView) convertView.findViewById(R.id.comment_textView);
                         p.displayname_textview = (TextView) convertView.findViewById(R.id.comment_profile_name_textView);
                         p.touchedwhen_textView = (TextView) convertView.findViewById(R.id.comment_touchedwhen_textView);
@@ -58,6 +64,7 @@ public class AdapterListViewComment extends ArrayAdapter {
                         p.CommentID = comment.get(position).CommentID;
                         p.edit_imageButton = (TextView) convertView.findViewById(R.id.comment_edit_button);
                         p.delete_imageButton = (TextView) convertView.findViewById(R.id.comment_delete_button);
+                        p.reply_imageButton = (TextView) convertView.findViewById(R.id.comment_reply_button);
                         p.OwnerLayout = convertView.findViewById(R.id.comment_owner_layout);
 
                         p.edit_imageButton.setOnClickListener(new View.OnClickListener() {
@@ -75,6 +82,19 @@ public class AdapterListViewComment extends ArrayAdapter {
                                         current.notifyDataSetChanged();
                                 }
                         });
+
+
+                        View.OnClickListener i = new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                        String sdf = "";
+                                        sdf.toString();
+                                }
+                        };
+
+                        p.reply_imageButton.setOnClickListener(i);
+                        p.viewPreviousReplyLayout.setOnClickListener(i);
+                        p.replyMainLayout.setOnClickListener(i);
 
                         convertView.setTag(p);
                 }
