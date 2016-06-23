@@ -10,13 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.avocarrot.vastparser.model.Linear;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerComment;
 import com.belvia.penyourprayer.Common.Model.ViewHolder.ViewHolderPrayerCommentModel;
 import com.belvia.penyourprayer.Common.Utils;
@@ -28,12 +26,12 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class AdapterListViewComment extends ArrayAdapter {
+public class AdapterListViewCommentReply extends ArrayAdapter {
         private MainActivity mainactivity;
         private ArrayList<ModelPrayerComment> comment;
         private int witdthHeight;
-        private AdapterListViewComment current;
-        public AdapterListViewComment(Context context, int resourcesID, ArrayList<ModelPrayerComment> c) {
+        private AdapterListViewCommentReply current;
+        public AdapterListViewCommentReply(Context context, int resourcesID, ArrayList<ModelPrayerComment> c) {
                 super(context, resourcesID, c);
 
                 // TODO Auto-generated constructor stub
@@ -87,7 +85,8 @@ public class AdapterListViewComment extends ArrayAdapter {
                         View.OnClickListener i = new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                        mainactivity.replaceWithPrayerCommentReply(comment.get(position).CommentID, comment.get(position).OwnerPrayerID);
+                                        String sdf = "";
+                                        sdf.toString();
                                 }
                         };
 

@@ -171,9 +171,7 @@ public class AdapterListViewPrayer extends ArrayAdapter implements NativeAdsMana
                 p.comment_imageButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                                Database db = new Database(mainactivity);
-                                ArrayList<ModelPrayerComment> comments = db.getAllOwnerPrayerComment(resources.get(position).PrayerID);
-                                mainactivity.replaceWithPrayerComment(comments, resources.get(position).PrayerID);
+                                mainactivity.replaceWithPrayerComment(resources.get(position).PrayerID);
                         }
                 });
 

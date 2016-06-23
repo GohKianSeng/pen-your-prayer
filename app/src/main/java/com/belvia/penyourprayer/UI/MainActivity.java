@@ -606,10 +606,24 @@ public class MainActivity extends AppCompatActivity {
         transaction.commit();
     }
 
-    public void replaceWithPrayerComment(ArrayList<ModelPrayerComment> comment, String PrayerID){
+    public void replaceWithPrayerCommentReply(String MainCommentID, String PrayerID){
 
         // Create fragment and give it an argument specifying the article it should show
-        Fragment newFragment = FragmentPrayerComment.newInstance(comment, PrayerID);
+        Fragment newFragment = FragmentPrayerCommentReply.newInstance(MainCommentID, PrayerID);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
+
+        transaction.replace(R.id.fragment, newFragment);
+        transaction.addToBackStack(null);
+
+        transaction.commit();
+    }
+
+    public void replaceWithPrayerComment(String PrayerID){
+
+        // Create fragment and give it an argument specifying the article it should show
+        Fragment newFragment = FragmentPrayerComment.newInstance(PrayerID);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);

@@ -15,8 +15,7 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
-
-import com.belvia.penyourprayer.Common.Adapter.AdapterListViewComment;
+import com.belvia.penyourprayer.Common.Adapter.AdapterListViewCommentReply;
 import com.belvia.penyourprayer.Common.Interface.InterfacePrayerCommentListViewUpdated;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerComment;
 import com.belvia.penyourprayer.Common.Utils;
@@ -27,24 +26,23 @@ import com.belvia.penyourprayer.WebAPI.httpClient;
 
 import java.util.ArrayList;
 
-import retrofit.RestAdapter;
-import retrofit.client.OkClient;
-
-public class FragmentPrayerComment extends Fragment implements InterfacePrayerCommentListViewUpdated {
+public class FragmentPrayerCommentReply extends Fragment implements InterfacePrayerCommentListViewUpdated {
     private MainActivity mainActivity;
     public ArrayList<ModelPrayerComment> comment;
     public String PrayerID;
+    public String MainCommentID;
     private ImageButton donebutton;
     private ListView comment_listView;
     private EditText comment_editText;
-    private AdapterListViewComment adapterListViewComment;
-    public FragmentPrayerComment() {
+    private AdapterListViewCommentReply adapterListViewComment;
+    public FragmentPrayerCommentReply() {
         // Required empty public constructor
     }
 
-    public static FragmentPrayerComment newInstance(String PrayerID) {
-        FragmentPrayerComment fragment = new FragmentPrayerComment();
+    public static FragmentPrayerCommentReply newInstance(String MainCommentID, String PrayerID) {
+        FragmentPrayerCommentReply fragment = new FragmentPrayerCommentReply();
         fragment.PrayerID = PrayerID;
+        fragment.MainCommentID = MainCommentID;
         return fragment;
     }
 
@@ -59,17 +57,18 @@ public class FragmentPrayerComment extends Fragment implements InterfacePrayerCo
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_prayer_comment, container, false);
+        return inflater.inflate(R.layout.fragment_prayer_comment_reply, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        //get from DB
         Database db = new Database(mainActivity);
-        comment = db.getAllOwnerPrayerComment(PrayerID);
+        comment = new ArrayList<ModelPrayerComment>();
 
 
-        comment_editText = (EditText) view.findViewById(R.id.comment_editText);
+        comment_editText = (EditText) view.findViewById(R.id.comment_reply_editText);
         comment_editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -90,21 +89,18 @@ public class FragmentPrayerComment extends Fragment implements InterfacePrayerCo
             }
         });
 
-        donebutton = (ImageButton) view.findViewById(R.id.comment_done_imageButton);
+        donebutton = (ImageButton) view.findViewById(R.id.comment_reply_done_imageButton);
         donebutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Database db = new Database(mainActivity);
-                db.addOwnerPrayerComment(PrayerID, comment_editText.getText().toString(), mainActivity.OwnerID, mainActivity.OwnerDisplayName, mainActivity.OwnerProfilePictureURL);
-                ModelPrayerComment newcomment = db.getAllOwnerPrayerComment(PrayerID).get(0);
-                adapterListViewComment.addComment(newcomment);
+                //insert new comment reply to db
                 comment_editText.setText("");
                 donebutton.setVisibility(View.GONE);
             }
         });
 
-        comment_listView = (ListView) view.findViewById(R.id.comment_listView);
-        adapterListViewComment = new AdapterListViewComment(this.getActivity(), R.layout.list_view_row_prayer_comment, comment);
+        comment_listView = (ListView) view.findViewById(R.id.comment_reply_listView);
+        adapterListViewComment = new AdapterListViewCommentReply(this.getActivity(), R.layout.list_view_row_prayer_comment, comment);
         if (comment_listView != null) {
             comment_listView.setAdapter(adapterListViewComment);
         }
