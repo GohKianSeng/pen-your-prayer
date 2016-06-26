@@ -4,6 +4,7 @@ import com.belvia.penyourprayer.Common.Model.ModelFriendProfile;
 import com.belvia.penyourprayer.Common.Model.ModelPrayer;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerAnswered;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerComment;
+import com.belvia.penyourprayer.Common.Model.ModelPrayerCommentReply;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerRequest;
 import com.belvia.penyourprayer.WebAPI.Model.SimpleJsonResponse;
 
@@ -54,6 +55,9 @@ public interface PrayerInterface {
 
     @POST("/api/Prayer/AddNewPrayerComment")
     SimpleJsonResponse AddNewPrayerComment(@Query("QueueActionGUID") String QueueActionGUID, @Query("PrayerID") String PrayerID, @Body ModelPrayerComment body);
+
+    @POST("/api/Prayer/AddNewPrayerCommentReply")
+    SimpleJsonResponse AddNewPrayerCommentReply(@Query("QueueActionGUID") String QueueActionGUID, @Query("PrayerID") String PrayerID, @Query("MainCommentID") String MainCommentID, @Body ModelPrayerCommentReply body);
 
     @POST("/api/Prayer/UpdatePrayerComment")
     SimpleJsonResponse UpdatePrayerComment(@Query("QueueActionGUID") String QueueActionGUID, @Body ModelPrayerComment body);

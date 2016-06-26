@@ -18,6 +18,7 @@ import com.belvia.penyourprayer.Common.Model.ModelPrayer;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerAnswered;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerAttachement;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerComment;
+import com.belvia.penyourprayer.Common.Model.ModelPrayerCommentReply;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerRequest;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerRequestAttachement;
 import com.belvia.penyourprayer.Common.Model.ModelQueueAction;
@@ -25,6 +26,7 @@ import com.belvia.penyourprayer.Common.Utils;
 import com.belvia.penyourprayer.Database.Database;
 import com.belvia.penyourprayer.QuickstartPreferences;
 import com.belvia.penyourprayer.R;
+import com.belvia.penyourprayer.UI.FragmentPrayerCommentReply;
 import com.belvia.penyourprayer.UI.MainActivity;
 import com.belvia.penyourprayer.WebAPI.InterfaceUploadFile;
 import com.belvia.penyourprayer.WebAPI.Model.SimpleJsonResponse;
@@ -163,6 +165,10 @@ public class QueueAction extends AsyncTask<String, Void, String> {
                 }
                 else if(p.Item == ModelQueueAction.ItemType.PrayerAnswered && p.Action == ModelQueueAction.ActionType.Delete){
                     submitDeletePrayerAnswered(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
+                }
+                else if(p.Item == ModelQueueAction.ItemType.PrayerCommentReply && p.Action == ModelQueueAction.ActionType.Insert){
+                    ModelPrayerCommentReply t = (ModelPrayerCommentReply) Utils.deserialize(p.ItemID);
+                    submitnewPrayerCommentReply(db, adapter, t, p.ID, p.IfExecutedGUID);
                 }
 
             }
@@ -374,6 +380,31 @@ public class QueueAction extends AsyncTask<String, Void, String> {
 
             db.deleteQueue(QueueID);
             //update the commentID from server
+        }
+    }
+
+    private void submitnewPrayerCommentReply(Database db, RestAdapter adapter, ModelPrayerCommentReply p, int QueueID, String IfExecutedGUID){
+        if(p == null)
+            return;
+
+        PrayerInterface prayerInterface = adapter.create(PrayerInterface.class);
+        SimpleJsonResponse response = prayerInterface.AddNewPrayerCommentReply(IfExecutedGUID, p.OwnerPrayerID, p.MainCommentID, p);
+        if (response.StatusCode == 200) {
+            if(response.Description.toUpperCase().startsWith("OK-") || response.Description.toUpperCase().startsWith("EXISTS-")){
+                String newCommentReplyID = response.Description.substring(response.Description.indexOf("-") + 1);
+                db.UpdatePrayerCommentReplyID(newCommentReplyID, p.CommentReplyID);
+                p.CommentReplyID = newCommentReplyID;
+            }
+            db.decrementPrayerCommentReplyInQueue(p.CommentReplyID);
+            db.deleteQueue(QueueID);
+
+            Fragment f = mainActivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
+            if (f instanceof FragmentPrayerCommentReply && mainActivity.OwnerID.length() > 0) {
+                ((FragmentPrayerCommentReply) f).onCommentReplyUpdate(db.getAllOwnerPrayerCommentReply(p.OwnerPrayerID, p.MainCommentID));
+            }
+            else if (f instanceof InterfacePrayerCommentEditUpdated && mainActivity.OwnerID.length() > 0) {
+                //((InterfacePrayerCommentEditUpdated) f).onCommentUpdate(p);
+            }
         }
     }
 

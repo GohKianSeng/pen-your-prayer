@@ -84,10 +84,6 @@ public class DataLoading {
     }
 
     public void getLatestOwnerPrayer(){
-        String displayName = mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerDisplayName, "");
-        String profilePixURL = mainActivity.sharedPreferences.getString(QuickstartPreferences.OwnerProfilePictureURL, "");
-        String userID = String.valueOf(mainActivity.sharedPreferences.getLong(QuickstartPreferences.OwnerID, -1));
-
         db = new Database(mainActivity);
         String latestPrayerID = db.getLastPrayerIDFromServer();
 

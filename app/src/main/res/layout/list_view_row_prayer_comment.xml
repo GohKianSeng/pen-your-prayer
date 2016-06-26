@@ -147,7 +147,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="View Previous"
+                    android:text="More..."
                     android:id="@+id/textView14"
                     android:layout_marginRight="10dp" />
 
@@ -172,7 +172,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="35dp"
                 android:id="@+id/comment_reply_layout1"
-                android:layout_marginLeft="30dp">
+                android:layout_marginLeft="30dp"
+                android:visibility="gone">
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:layout_width="35dp"
@@ -214,7 +215,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="35dp"
                 android:id="@+id/comment_reply_layout2"
-                android:layout_marginLeft="30dp">
+                android:layout_marginLeft="30dp"
+                android:visibility="gone">
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:layout_width="35dp"

@@ -18,6 +18,7 @@ import android.widget.ListView;
 import com.belvia.penyourprayer.Common.Adapter.AdapterListViewCommentReply;
 import com.belvia.penyourprayer.Common.Interface.InterfacePrayerCommentListViewUpdated;
 import com.belvia.penyourprayer.Common.Model.ModelPrayerComment;
+import com.belvia.penyourprayer.Common.Model.ModelPrayerCommentReply;
 import com.belvia.penyourprayer.Common.Utils;
 import com.belvia.penyourprayer.Database.Database;
 import com.belvia.penyourprayer.QuickstartPreferences;
@@ -26,9 +27,9 @@ import com.belvia.penyourprayer.WebAPI.httpClient;
 
 import java.util.ArrayList;
 
-public class FragmentPrayerCommentReply extends Fragment implements InterfacePrayerCommentListViewUpdated {
+public class FragmentPrayerCommentReply extends Fragment {
     private MainActivity mainActivity;
-    public ArrayList<ModelPrayerComment> comment;
+    public ArrayList<ModelPrayerCommentReply> comment;
     public String PrayerID;
     public String MainCommentID;
     private ImageButton donebutton;
@@ -65,7 +66,7 @@ public class FragmentPrayerCommentReply extends Fragment implements InterfacePra
         super.onViewCreated(view, savedInstanceState);
         //get from DB
         Database db = new Database(mainActivity);
-        comment = new ArrayList<ModelPrayerComment>();
+        comment = db.getAllOwnerPrayerCommentReply(PrayerID, MainCommentID);
 
 
         comment_editText = (EditText) view.findViewById(R.id.comment_reply_editText);
@@ -94,6 +95,12 @@ public class FragmentPrayerCommentReply extends Fragment implements InterfacePra
             @Override
             public void onClick(View v) {
                 //insert new comment reply to db
+                Database db = new Database(mainActivity);
+                db.addOwnerPrayerCommentReply(PrayerID, MainCommentID, comment_editText.getText().toString(), mainActivity.OwnerID, mainActivity.OwnerDisplayName, mainActivity.OwnerProfilePictureURL);
+                ModelPrayerCommentReply newcomment = db.getAllOwnerPrayerCommentReply(PrayerID, MainCommentID).get(0);
+
+                adapterListViewComment.addComment(newcomment);
+
                 comment_editText.setText("");
                 donebutton.setVisibility(View.GONE);
             }
@@ -140,8 +147,7 @@ public class FragmentPrayerCommentReply extends Fragment implements InterfacePra
 
     }
 
-    @Override
-    public void onCommentUpdate(final ArrayList<ModelPrayerComment> comment){
+    public void onCommentReplyUpdate(final ArrayList<ModelPrayerCommentReply> comment){
         Runnable run = new Runnable(){
             public void run(){
                 adapterListViewComment.updateCommentList(comment);

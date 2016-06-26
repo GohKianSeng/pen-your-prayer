@@ -28,6 +28,15 @@ public class ViewHolderPrayerCommentModel {
     public LinearLayout replyMainLayout;
     public LinearLayout viewPreviousReplyLayout;
 
+    public LinearLayout commentreply2_Layout;
+    public LinearLayout commentreply1_Layout;
+    public ImageView commentreply2_profilePicture_imageview;
+    public ImageView commentreply1_profilePicture_imageview;
+    public TextView commentreply2_name_textview;
+    public TextView commentreply1_name_textview;
+    public TextView commentreply2_content_textview;
+    public TextView commentreply1_content_textview;
+
     public ViewHolderPrayerCommentModel(){
 
     }

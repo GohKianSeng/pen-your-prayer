@@ -5,7 +5,7 @@ package com.belvia.penyourprayer.Common.Model;
  */
 public class ModelQueueAction {
 
-    public enum ItemType {Prayer, PrayerPublicView, PrayerTagFriends, PrayerContent, PrayerComment, PrayerAnswered, PrayerAmen, PrayerRequest };
+    public enum ItemType {Prayer, PrayerPublicView, PrayerTagFriends, PrayerContent, PrayerComment, PrayerCommentReply, PrayerAnswered, PrayerAmen, PrayerRequest };
 
     public enum ActionType {Insert, Update, Delete };
 

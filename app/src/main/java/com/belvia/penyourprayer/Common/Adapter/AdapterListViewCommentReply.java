@@ -16,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.belvia.penyourprayer.Common.Model.ModelPrayerComment;
+import com.belvia.penyourprayer.Common.Model.ModelPrayerCommentReply;
 import com.belvia.penyourprayer.Common.Model.ViewHolder.ViewHolderPrayerCommentModel;
 import com.belvia.penyourprayer.Common.Utils;
 import com.belvia.penyourprayer.Database.Database;
@@ -28,10 +29,10 @@ import java.util.ArrayList;
 
 public class AdapterListViewCommentReply extends ArrayAdapter {
         private MainActivity mainactivity;
-        private ArrayList<ModelPrayerComment> comment;
+        private ArrayList<ModelPrayerCommentReply> comment;
         private int witdthHeight;
         private AdapterListViewCommentReply current;
-        public AdapterListViewCommentReply(Context context, int resourcesID, ArrayList<ModelPrayerComment> c) {
+        public AdapterListViewCommentReply(Context context, int resourcesID, ArrayList<ModelPrayerCommentReply> c) {
                 super(context, resourcesID, c);
 
                 // TODO Auto-generated constructor stub
@@ -49,7 +50,7 @@ public class AdapterListViewCommentReply extends ArrayAdapter {
                 LayoutInflater inflater = ((Activity)mainactivity).getLayoutInflater();
                 if(position >= comment.size())
                         return convertView;
-                if(convertView == null || ((ViewHolderPrayerCommentModel)convertView.getTag()).CommentID.compareToIgnoreCase(comment.get(position).CommentID) != 0) {
+                if(convertView == null || ((ViewHolderPrayerCommentModel)convertView.getTag()).CommentID.compareToIgnoreCase(comment.get(position).CommentReplyID) != 0) {
                         convertView = inflater.inflate(R.layout.list_view_row_prayer_comment, parent, false);
 
                         p.viewPreviousReplyLayout = (LinearLayout) convertView.findViewById(R.id.comment_reply_previous_layout);
@@ -59,40 +60,29 @@ public class AdapterListViewCommentReply extends ArrayAdapter {
                         p.touchedwhen_textView = (TextView) convertView.findViewById(R.id.comment_touchedwhen_textView);
                         p.profilePicture_imageView = (ImageView) convertView.findViewById(R.id.comment_profile_img_imageView);
                         p.progressBar = (ProgressBar) convertView.findViewById(R.id.comment_progressbar);
-                        p.CommentID = comment.get(position).CommentID;
+                        p.CommentID = comment.get(position).CommentReplyID;
                         p.edit_imageButton = (TextView) convertView.findViewById(R.id.comment_edit_button);
                         p.delete_imageButton = (TextView) convertView.findViewById(R.id.comment_delete_button);
                         p.reply_imageButton = (TextView) convertView.findViewById(R.id.comment_reply_button);
                         p.OwnerLayout = convertView.findViewById(R.id.comment_owner_layout);
 
+                        p.reply_imageButton.setVisibility(View.GONE);
+
                         p.edit_imageButton.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                        mainactivity.replaceWithPrayerCommentModification(comment.get(position));
+                                        //mainactivity.replaceWithPrayerCommentModification(comment.get(position));
                                 }
                         });
                         p.delete_imageButton.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                        Database db = new Database(mainactivity);
-                                        db.DeletePrayerComment(comment.get(position).CommentID);
+                                        //Database db = new Database(mainactivity);
+                                        //db.DeletePrayerComment(comment.get(position).CommentID);
                                         comment.remove(position);
                                         current.notifyDataSetChanged();
                                 }
                         });
-
-
-                        View.OnClickListener i = new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                        String sdf = "";
-                                        sdf.toString();
-                                }
-                        };
-
-                        p.reply_imageButton.setOnClickListener(i);
-                        p.viewPreviousReplyLayout.setOnClickListener(i);
-                        p.replyMainLayout.setOnClickListener(i);
 
                         convertView.setTag(p);
                 }
@@ -122,7 +112,7 @@ public class AdapterListViewCommentReply extends ArrayAdapter {
                         p.touchedwhen_textView.setVisibility(View.VISIBLE);
                 }
 
-                p.comment_textview.setText(comment.get(position).Comment);
+                p.comment_textview.setText(comment.get(position).CommentReply);
                 p.displayname_textview.setText(comment.get(position).WhoName);
                 p.touchedwhen_textView.setText(modification + Utils.UnixTimeReadableString(comment.get(position).TouchedWhen));
 
@@ -139,12 +129,12 @@ public class AdapterListViewCommentReply extends ArrayAdapter {
                 return convertView;
         }
 
-        public void addComment(ModelPrayerComment c){
+        public void addComment(ModelPrayerCommentReply c){
                 this.comment.add(0, c);
                 this.notifyDataSetChanged();
         }
 
-        public void updateCommentList(ArrayList<ModelPrayerComment> c){
+        public void updateCommentList(ArrayList<ModelPrayerCommentReply> c){
                 this.comment = c;
                 this.clear();
                 this.addAll(c);

@@ -55,6 +55,15 @@ public class AdapterListViewComment extends ArrayAdapter {
                         convertView = inflater.inflate(R.layout.list_view_row_prayer_comment, parent, false);
 
                         p.viewPreviousReplyLayout = (LinearLayout) convertView.findViewById(R.id.comment_reply_previous_layout);
+                        p.commentreply1_Layout = (LinearLayout) convertView.findViewById(R.id.comment_reply_layout1);
+                        p.commentreply2_Layout = (LinearLayout) convertView.findViewById(R.id.comment_reply_layout2);
+                        p.commentreply1_profilePicture_imageview = (ImageView) convertView.findViewById(R.id.comment_profile_img_imageView1);
+                        p.commentreply2_profilePicture_imageview = (ImageView) convertView.findViewById(R.id.comment_profile_img_imageView2);
+                        p.commentreply1_name_textview = (TextView) convertView.findViewById(R.id.comment_profile_name_textView1);
+                        p.commentreply2_name_textview = (TextView) convertView.findViewById(R.id.comment_profile_name_textView2);
+                        p.commentreply1_content_textview = (TextView) convertView.findViewById(R.id.comment_textView1);
+                        p.commentreply2_content_textview = (TextView) convertView.findViewById(R.id.comment_textView2);
+
                         p.replyMainLayout = (LinearLayout) convertView.findViewById(R.id.comment_reply_main_layout);
                         p.comment_textview = (TextView) convertView.findViewById(R.id.comment_textView);
                         p.displayname_textview = (TextView) convertView.findViewById(R.id.comment_profile_name_textView);
@@ -83,7 +92,6 @@ public class AdapterListViewComment extends ArrayAdapter {
                                 }
                         });
 
-
                         View.OnClickListener i = new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
@@ -95,6 +103,28 @@ public class AdapterListViewComment extends ArrayAdapter {
                         p.viewPreviousReplyLayout.setOnClickListener(i);
                         p.replyMainLayout.setOnClickListener(i);
 
+                        if(comment.get(position).commentReply.size() > 0) {
+                                if(comment.get(position).commentReply.size() > 2) {
+                                        p.viewPreviousReplyLayout.setVisibility(View.VISIBLE);
+                                }
+                                p.replyMainLayout.setVisibility(View.VISIBLE);
+
+                                for(int xx=0; xx < comment.get(position).commentReply.size(); xx++){
+                                        if(xx==0){
+                                                p.commentreply2_content_textview.setText(comment.get(position).commentReply.get(xx).CommentReply);
+                                                p.commentreply2_name_textview.setText(comment.get(position).commentReply.get(xx).WhoName);
+                                                Picasso.with(convertView.getContext()).load(comment.get(position).commentReply.get(xx).WhoProfilePicture).resize(witdthHeight, witdthHeight).centerCrop().into(p.commentreply2_profilePicture_imageview);
+                                                p.commentreply2_Layout.setVisibility(View.VISIBLE);
+                                        }
+
+                                        if(xx==1){
+                                                p.commentreply1_content_textview.setText(comment.get(position).commentReply.get(xx).CommentReply);
+                                                p.commentreply1_name_textview.setText(comment.get(position).commentReply.get(xx).WhoName);
+                                                Picasso.with(convertView.getContext()).load(comment.get(position).commentReply.get(xx).WhoProfilePicture).resize(witdthHeight, witdthHeight).centerCrop().into(p.commentreply1_profilePicture_imageview);
+                                                p.commentreply1_Layout.setVisibility(View.VISIBLE);
+                                        }
+                                }
+                        }
                         convertView.setTag(p);
                 }
                 else{
