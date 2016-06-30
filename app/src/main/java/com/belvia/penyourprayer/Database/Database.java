@@ -1185,22 +1185,19 @@ public class Database extends SQLiteOpenHelper {
         addQueue(db, ModelQueueAction.ActionType.Insert, ModelQueueAction.ItemType.PrayerCommentReply, GetPrayerCommentReply(CommentReplyID));
     }
 
-    public void updateOwnerPrayerCommentReply(ModelPrayerComment comment){
+    public void updateOwnerPrayerCommentReply(ModelPrayerCommentReply comment){
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
-        cv.put("Comment", comment.Comment);
+        cv.put("CommentReply", comment.CommentReply);
         cv.put("TouchedWhen", Utils.getCurrentUnixDatetime());
-        db.update("tb_OwnerPrayerComment", cv, "OwnerPrayerID = '" + comment.OwnerPrayerID + "' AND CommentID = '" + comment.CommentID + "'", null);
+        db.update("tb_OwnerPrayerCommentReply", cv, "CommentReplyID = '" + comment.CommentReplyID + "'", null);
 
-        String sql =    "UPDATE tb_OwnerPrayerComment" +
+        String sql =    "UPDATE tb_OwnerPrayerCommentReply" +
                 " SET InQueue = InQueue+1" +
-                " WHERE CommentID = '" + comment.CommentID + "'";
+                " WHERE CommentReplyID = '" + comment.CommentReplyID + "'";
 
         db.execSQL(sql);
-
-
-
-        addQueue(db, ModelQueueAction.ActionType.Update, ModelQueueAction.ItemType.PrayerComment, GetPrayerComment(comment.CommentID));
+        addQueue(db, ModelQueueAction.ActionType.Update, ModelQueueAction.ItemType.PrayerCommentReply, GetPrayerCommentReply(comment.CommentReplyID));
     }
 
     public ArrayList<ModelPrayerCommentReply> getTop3OwnerPrayerCommentReply(String PrayerID, String MainCommentID){
@@ -1300,11 +1297,11 @@ public class Database extends SQLiteOpenHelper {
 
     }
 
-    public void DeletePrayerCommentReply(String CommentID){
+    public void DeletePrayerCommentReply(String CommentReplyID){
         SQLiteDatabase db = getWritableDatabase();
 
-        db.delete("tb_OwnerPrayerComment", "CommentID = '" + CommentID + "'", null);
-        addQueue(db, ModelQueueAction.ActionType.Delete, ModelQueueAction.ItemType.PrayerComment, CommentID);
+        db.delete("tb_OwnerPrayerCommentReply", "CommentReplyID = '" + CommentReplyID + "'", null);
+        addQueue(db, ModelQueueAction.ActionType.Delete, ModelQueueAction.ItemType.PrayerCommentReply, CommentReplyID);
     }
 
     public void AddCommentReplies(SQLiteDatabase db, ArrayList<ModelPrayerCommentReply> comments){

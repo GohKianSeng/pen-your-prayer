@@ -170,6 +170,13 @@ public class QueueAction extends AsyncTask<String, Void, String> {
                     ModelPrayerCommentReply t = (ModelPrayerCommentReply) Utils.deserialize(p.ItemID);
                     submitnewPrayerCommentReply(db, adapter, t, p.ID, p.IfExecutedGUID);
                 }
+                else if(p.Item == ModelQueueAction.ItemType.PrayerCommentReply && p.Action == ModelQueueAction.ActionType.Delete){
+                    submitDeletePrayerCommentReply(db, adapter, p.ItemID, p.ID, p.IfExecutedGUID);
+                }
+                else if(p.Item == ModelQueueAction.ItemType.PrayerCommentReply && p.Action == ModelQueueAction.ActionType.Update){
+                    ModelPrayerCommentReply t = (ModelPrayerCommentReply) Utils.deserialize(p.ItemID);
+                    submitUpdatePrayerCommentReply(db, adapter, t, p.ID, p.IfExecutedGUID);
+                }
 
             }
             db.close();
@@ -369,10 +376,41 @@ public class QueueAction extends AsyncTask<String, Void, String> {
         }
     }
 
+    private void submitUpdatePrayerCommentReply(Database db, RestAdapter adapter, ModelPrayerCommentReply p, int QueueID, String IfExecutedGUID){
+        if(p == null)
+            return;
+
+        PrayerInterface prayerInterface = adapter.create(PrayerInterface.class);
+        SimpleJsonResponse response = prayerInterface.UpdatePrayerCommentReply(IfExecutedGUID, p);
+        if (response.StatusCode == 200) {
+            db.deleteQueue(QueueID);
+            db.decrementPrayerCommentReplyInQueue(p.CommentReplyID);
+
+            Fragment f = mainActivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
+            if (f instanceof FragmentPrayerCommentReply && mainActivity.OwnerID.length() > 0) {
+                ((FragmentPrayerCommentReply) f).onCommentReplyUpdate(db.getAllOwnerPrayerCommentReply(p.OwnerPrayerID, p.MainCommentID));
+            }
+        }
+    }
+
     private void submitDeletePrayerComment(Database db, RestAdapter adapter, String CommentID, int QueueID, String IfExecutedGUID){
 
         PrayerInterface prayerInterface = adapter.create(PrayerInterface.class);
         SimpleJsonResponse response = prayerInterface.DeletePrayerComment(IfExecutedGUID, CommentID);
+        if (response.StatusCode == 200) {
+            if(response.Description.toUpperCase().compareToIgnoreCase("NOTEXISTS") == 0){
+                return;
+            }
+
+            db.deleteQueue(QueueID);
+            //update the commentID from server
+        }
+    }
+
+    private void submitDeletePrayerCommentReply(Database db, RestAdapter adapter, String CommentID, int QueueID, String IfExecutedGUID){
+
+        PrayerInterface prayerInterface = adapter.create(PrayerInterface.class);
+        SimpleJsonResponse response = prayerInterface.DeletePrayerCommentReply(IfExecutedGUID, CommentID);
         if (response.StatusCode == 200) {
             if(response.Description.toUpperCase().compareToIgnoreCase("NOTEXISTS") == 0){
                 return;

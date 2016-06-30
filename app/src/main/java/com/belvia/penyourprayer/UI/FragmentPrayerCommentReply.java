@@ -123,14 +123,14 @@ public class FragmentPrayerCommentReply extends Fragment {
 
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     public boolean onMenuItemClick(MenuItem item) {
-                        ModelPrayerComment comment = (ModelPrayerComment) adapterListViewComment.getItem(position);
+                        ModelPrayerCommentReply commentReply = (ModelPrayerCommentReply) adapterListViewComment.getItem(position);
 
                         if (item.toString().compareToIgnoreCase("Edit") == 0) {
-                            mainActivity.replaceWithPrayerCommentModification(comment);
+                            mainActivity.replaceWithPrayerCommentReplyModification(commentReply);
                         } else if (item.toString().compareToIgnoreCase("Delete") == 0) {
                             Database db = new Database(mainActivity);
-                            db.DeletePrayerComment(comment.CommentID);
-                            adapterListViewComment.remove(comment);
+                            db.DeletePrayerCommentReply(commentReply.CommentReplyID);
+                            adapterListViewComment.remove(commentReply);
                             adapterListViewComment.notifyDataSetChanged();
                         }
 

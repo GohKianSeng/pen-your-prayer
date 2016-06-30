@@ -1,6 +1,7 @@
 package com.belvia.penyourprayer.UI;
 
 import com.android.vending.billing.IInAppBillingService;
+import com.belvia.penyourprayer.Common.Model.ModelPrayerCommentReply;
 import com.belvia.penyourprayer.Common.inappbilliing.util.IabHelper;
 import com.belvia.penyourprayer.Common.inappbilliing.util.IabResult;
 import com.belvia.penyourprayer.Common.inappbilliing.util.Inventory;
@@ -569,6 +570,19 @@ public class MainActivity extends AppCompatActivity {
     public void replaceWithPrayerCommentModification(ModelPrayerComment c){
         // Create fragment and give it an argument specifying the article it should show
         Fragment newFragment = FragmentPrayerCommentEdit.newInstance(c);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
+
+        transaction.replace(R.id.fragment, newFragment);
+        transaction.addToBackStack(null);
+
+        transaction.commit();
+    }
+
+    public void replaceWithPrayerCommentReplyModification(ModelPrayerCommentReply c){
+        // Create fragment and give it an argument specifying the article it should show
+        Fragment newFragment = FragmentPrayerCommentReplyEdit.newInstance(c);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);

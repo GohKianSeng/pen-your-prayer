@@ -71,14 +71,14 @@ public class AdapterListViewCommentReply extends ArrayAdapter {
                         p.edit_imageButton.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                        //mainactivity.replaceWithPrayerCommentModification(comment.get(position));
+                                        mainactivity.replaceWithPrayerCommentReplyModification(comment.get(position));
                                 }
                         });
                         p.delete_imageButton.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                        //Database db = new Database(mainactivity);
-                                        //db.DeletePrayerComment(comment.get(position).CommentID);
+                                        Database db = new Database(mainactivity);
+                                        db.DeletePrayerCommentReply(comment.get(position).CommentReplyID);
                                         comment.remove(position);
                                         current.notifyDataSetChanged();
                                 }
