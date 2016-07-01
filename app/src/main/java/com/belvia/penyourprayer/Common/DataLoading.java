@@ -98,7 +98,7 @@ public class DataLoading {
     public void getLatestOthersPrayer(){
         PrayerInterface prayerInterface = adapter.create(PrayerInterface.class);
         ArrayList<ModelPrayer> lp = prayerInterface.GetLatestOthersPrayers("useless");
-        ModelUserLogin d = lp.get(0).OwnerProfile;
+
         db.removeOthersPrayers();
         db.AddPrayers(lp);
     }

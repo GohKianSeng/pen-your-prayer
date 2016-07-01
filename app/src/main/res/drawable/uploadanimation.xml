@@ -1,0 +1,11 @@
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android" android:oneshot="false">
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/sync1" android:duration="200" />
+    <item android:drawable="@drawable/sync2" android:duration="200" />
+    <item android:drawable="@drawable/sync3" android:duration="200" />
+    <item android:drawable="@drawable/sync4" android:duration="200" />
+    <item android:drawable="@drawable/sync5" android:duration="200" />
+    <item android:drawable="@drawable/sync6" android:duration="200" />
+    <item android:drawable="@drawable/sync7" android:duration="200" />
+    <item android:drawable="@drawable/sync8" android:duration="200" />
+</animation-list>

@@ -9,6 +9,8 @@ import com.belvia.penyourprayer.Common.inappbilliing.util.Purchase;
 import com.belvia.penyourprayer.Common.inappbilliing.util.Security;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -119,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean checkFbstatusNow = false;
     private Facebook fb;
     private AdapterListViewDrawerProfileFriend adapter;
+    public NotificationManager mNotificationManager;
 
     public void StartGoogleSignInActvity(){
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
@@ -256,10 +259,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         sharedPreferences = this.getSharedPreferences("PenYourPrayer.SharePreference", Context.MODE_PRIVATE);
 
-        String sdf = Utils.UnixTimeReadableString(Utils.getCurrentUnixDatetime());
-        sdf.toString();
-
-
+        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         FacebookSdk.sdkInitialize(this.getApplicationContext());
 

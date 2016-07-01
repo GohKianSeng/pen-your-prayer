@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
 
 import com.belvia.penyourprayer.Common.Interface.InterfacePrayerAnsweredEditUpdated;
 import com.belvia.penyourprayer.Common.Interface.InterfacePrayerAnsweredListViewUpdated;
@@ -50,7 +51,8 @@ import retrofit.mime.TypedFile;
  * Created by sisgks on 27/11/2015.
  */
 public class QueueAction extends AsyncTask<String, Void, String> {
-
+    private final int notificationID = 90909;
+    private boolean notificationShown = false;
     public boolean paused = false;
     MainActivity mainActivity;
     public QueueAction(MainActivity ma){
@@ -103,10 +105,35 @@ public class QueueAction extends AsyncTask<String, Void, String> {
         }
     }
 
+    public void closeSyncProcessNotification(){
+        if(notificationShown) {
+            mainActivity.mNotificationManager.cancel(notificationID);
+            notificationShown = false;
+        }
+    }
+
+    public void showSyncProcessNotification(){
+        NotificationCompat.Builder mBuilder =   new NotificationCompat.Builder(mainActivity)
+                .setSmallIcon(R.drawable.uploadanimation) // notification icon
+                .setContentTitle("Notification!") // title for notification
+                .setContentText("Hello word") // message for notification
+                .setColor(0xff800080)
+                .setOngoing(true)
+                .setAutoCancel(false); // clear notification after click
+        //Intent intent = new Intent(mainActivity, MainActivity.class);
+        //PendingIntent pi = PendingIntent.getActivity(mainActivity,0,intent, PendingIntent.FLAG_ONE_SHOT);
+        //mBuilder.setContentIntent(pi);
+        notificationShown = true;
+        mainActivity.mNotificationManager.notify(notificationID, mBuilder.build());
+    }
+
     private void ProcessMessageQueue(RestAdapter adapter){
         try {
             Database db = new Database(mainActivity);
             ArrayList<ModelQueueAction> queue = db.getAllQueueItems();
+            if(queue.size() > 0){
+                showSyncProcessNotification();
+            }
             for (int x = 0; x < queue.size(); x++) {
                 ModelQueueAction p = queue.get(x);
 
@@ -179,6 +206,7 @@ public class QueueAction extends AsyncTask<String, Void, String> {
                 }
 
             }
+            closeSyncProcessNotification();
             db.close();
         }
         catch(Exception e){

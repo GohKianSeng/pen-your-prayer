@@ -60,7 +60,7 @@ public class httpClient extends OkHttpClient {
                 try {
                     String method = original.method();
                     String contentMD5 = "";
-                    if(method.toUpperCase() != "GET") {
+                    if(method.compareToIgnoreCase("GET") != 0) {
                         String useless = bodyToString(original.body());
                         useless.toString();
                         contentMD5 = md5CheckSum(bodyToBytes(original.body())).toUpperCase();
