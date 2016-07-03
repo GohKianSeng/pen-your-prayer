@@ -1,5 +1,7 @@
 package com.belvia.penyourprayer.QueueAction;
 
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -28,6 +30,7 @@ import com.belvia.penyourprayer.Database.Database;
 import com.belvia.penyourprayer.QuickstartPreferences;
 import com.belvia.penyourprayer.R;
 import com.belvia.penyourprayer.UI.FragmentPrayerCommentReply;
+import com.belvia.penyourprayer.UI.FragmentQueueAction;
 import com.belvia.penyourprayer.UI.MainActivity;
 import com.belvia.penyourprayer.WebAPI.InterfaceUploadFile;
 import com.belvia.penyourprayer.WebAPI.Model.SimpleJsonResponse;
@@ -74,7 +77,7 @@ public class QueueAction extends AsyncTask<String, Void, String> {
             if(paused)
                 break;
             ProcessMessageQueue(adapter);
-            SystemClock.sleep(20000);
+            SystemClock.sleep(2000);
         }
         return "";
     }
@@ -123,6 +126,17 @@ public class QueueAction extends AsyncTask<String, Void, String> {
         //Intent intent = new Intent(mainActivity, MainActivity.class);
         //PendingIntent pi = PendingIntent.getActivity(mainActivity,0,intent, PendingIntent.FLAG_ONE_SHOT);
         //mBuilder.setContentIntent(pi);
+
+
+        Intent resultIntent = new Intent(mainActivity, MainActivity.class);
+        resultIntent.setAction(Intent.ACTION_MAIN);
+        resultIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        resultIntent.putExtra("uploadingNotificationClicked", true);
+        resultIntent.addFlags(Intent.FILL_IN_ACTION);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(mainActivity, 0, resultIntent, 0);
+        mBuilder.setContentIntent(pendingIntent);
+
         notificationShown = true;
         mainActivity.mNotificationManager.notify(notificationID, mBuilder.build());
     }
@@ -205,6 +219,10 @@ public class QueueAction extends AsyncTask<String, Void, String> {
                     submitUpdatePrayerCommentReply(db, adapter, t, p.ID, p.IfExecutedGUID);
                 }
 
+                Fragment f = mainActivity.getSupportFragmentManager().findFragmentById(R.id.fragment);
+                if (f instanceof FragmentQueueAction) {
+                    ((FragmentQueueAction) f).onQueueActionUpdate();
+                }
             }
             closeSyncProcessNotification();
             db.close();

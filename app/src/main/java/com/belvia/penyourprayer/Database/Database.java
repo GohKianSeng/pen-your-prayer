@@ -124,7 +124,7 @@ public class Database extends SQLiteOpenHelper {
     public ArrayList<ModelQueueAction> getAllQueueItems(){
         ArrayList<ModelQueueAction> queue = new ArrayList<ModelQueueAction>();
         SQLiteDatabase db = getReadableDatabase();
-        String query = "SELECT ID, Action, Item, ItemID, IfExecutedGUID FROM tb_QueueAction ORDER BY ID ASC";
+        String query = "SELECT ID, Action, Item, ItemID, IfExecutedGUID, CreatedWhen FROM tb_QueueAction ORDER BY ID ASC";
         Cursor c = db.rawQuery(query, new String[]{});
         while (c.moveToNext()) {
             ModelQueueAction o = new ModelQueueAction();
@@ -133,6 +133,7 @@ public class Database extends SQLiteOpenHelper {
             o.Item = ModelQueueAction.ItemType.valueOf(c.getString(c.getColumnIndex("Item")));
             o.ItemID = c.getString(c.getColumnIndex("ItemID"));
             o.IfExecutedGUID = c.getString(c.getColumnIndex("IfExecutedGUID"));
+            o.createdWhen = c.getLong(c.getColumnIndex("CreatedWhen"));
             queue.add(o);
         }
         if(c != null)

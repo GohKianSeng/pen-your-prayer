@@ -128,6 +128,13 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(signInIntent, 9001);
     }
 
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if(intent.hasExtra("uploadingNotificationClicked") && intent.getBooleanExtra("uploadingNotificationClicked", false)){
+            replaceWithQueueAction();
+        }
+    }
+
     IabHelper.QueryInventoryFinishedListener mReceivedInventoryListener;
     IabHelper.OnConsumeFinishedListener mConsumeFinishedListener;
     final String ITEM_SKU = "gas2";
@@ -565,6 +572,19 @@ public class MainActivity extends AppCompatActivity {
 
     public void reloadPrayerRequest() {
         pr_adapter.refreshAllItem(prayerRequest);
+    }
+
+    public void replaceWithQueueAction(){
+        // Create fragment and give it an argument specifying the article it should show
+        Fragment newFragment = FragmentQueueAction.newInstance();
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
+
+        transaction.replace(R.id.fragment, newFragment);
+        transaction.addToBackStack(null);
+
+        transaction.commit();
     }
 
     public void replaceWithPrayerCommentModification(ModelPrayerComment c){

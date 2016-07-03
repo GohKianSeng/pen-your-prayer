@@ -49,7 +49,7 @@ public class QuickstartPreferences {
     public static final String AnonymousHMACKey = "sSLPIZ4XmZRNEwDAQxY0yuC+MeSQVzxXJNbZTgAlRF/zAocJlTU4WPOjAXmQwbZ+XhkoYGS8exqzUKhxqCfY4SXOJTB+GG5R";
 
     //Web url
-    public static final String api_server = "http://pyptesting.com/";
+    public static final String api_server = "http://52.36.23.213/";
     public static final String locale_server = "https://www.telize.com/";
 
     //upload image standard

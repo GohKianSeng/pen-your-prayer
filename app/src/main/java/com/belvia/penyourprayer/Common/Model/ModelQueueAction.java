@@ -1,5 +1,7 @@
 package com.belvia.penyourprayer.Common.Model;
 
+import com.belvia.penyourprayer.Common.Utils;
+
 /**
  * Created by sisgks on 20/11/2015.
  */
@@ -14,5 +16,11 @@ public class ModelQueueAction {
     public ItemType Item;
     public String ItemID;
     public String IfExecutedGUID;
+    public long createdWhen;
+
+    public String formattedCreatedWhen(){
+        return Utils.UnixTimeReadableString(createdWhen);
+    }
+
     public ModelQueueAction(){}
 }

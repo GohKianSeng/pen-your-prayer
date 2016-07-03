@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:weightSum="1"
+    android:descendantFocusability="blocksDescendants"
+    android:paddingBottom="5dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="ID: sdfsdfdsfsdfsdfsdfsds f sd fsd f dsf sdf sd fsfs fd"
+                android:id="@+id/queue_action_guid"
+                android:paddingLeft="5dp"
+                android:gravity="center_vertical"
+                android:textColor="#000000"
+                android:textSize="10dp"
+                android:layout_marginRight="2dp"
+                android:visibility="visible" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Sync Type:"
+                android:paddingLeft="5dp"
+                android:gravity="center_vertical"
+                android:textColor="#000000"
+                android:textSize="10dp"
+                android:layout_marginRight="2dp"
+                android:visibility="visible"
+                android:textStyle="bold" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Update Existing"
+                android:id="@+id/queue_action_sync_type"
+                android:paddingLeft="5dp"
+                android:gravity="center_vertical"
+                android:textColor="#000000"
+                android:textSize="10dp"
+                android:layout_marginRight="2dp"
+                android:visibility="visible" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Item Type:"
+                android:paddingLeft="5dp"
+                android:gravity="center_vertical"
+                android:textColor="#000000"
+                android:textSize="10dp"
+                android:layout_marginRight="2dp"
+                android:visibility="visible"
+                android:textStyle="bold" /><TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Prayer Request"
+                android:id="@+id/queue_action_item_type"
+                android:paddingLeft="5dp"
+                android:gravity="center_vertical"
+                android:textColor="#000000"
+                android:textSize="10dp"
+                android:layout_marginRight="2dp"
+                android:visibility="visible" />
+            <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"></TextView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="21 Nov 2015 10:10:10pm"
+                android:id="@+id/queue_action_createdwhen"
+                android:paddingLeft="5dp"
+                android:textColor="#000000"
+                android:textSize="10dp"
+                android:layout_marginRight="2dp"
+                android:visibility="visible"
+                android:gravity="center_vertical" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:id="@+id/queue_action_progressbar_layout">
+
+            <ProgressBar
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/queue_action_progressbar"
+                android:indeterminate="true"
+                android:indeterminateTintMode="src_atop"
+                android:indeterminateTint="#800080"
+                android:layout_marginLeft="3dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
